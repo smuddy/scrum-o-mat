@@ -1,1 +1,65 @@
 /* You can add global styles to this file, and also import other style files */
+
+body {
+  background: black;
+  color: #fff;
+  font-size: 30px;
+  margin: 0;
+  font-family: 'Roboto Condensed', sans-serif;
+
+  input {
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: inherit;
+    margin: 0 10px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Roboto Condensed', sans-serif;
+  }
+
+  button {
+    color: inherit;
+    border: #fff 1px solid;
+    background: transparent;
+    font-size: inherit;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background: #555;
+    }
+  }
+
+  fa-icon.button {
+    color: #aaa;
+    cursor: pointer;
+    transition: all 1s ease-in-out;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .qrcode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background: #9997;
+
+    img {
+      margin: auto;
+      width: 90vh;
+      box-shadow: 0 19px 38px rgba(0, 0, 0, 0.50), 0 15px 12px rgba(0, 0, 0, 0.52);
+    }
+  }
+}

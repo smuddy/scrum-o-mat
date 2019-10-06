@@ -1,0 +1,2 @@
+<app-card (click)="selectCard(card)" *ngFor="let card of cards" [class.selected]="selectedCard === card"
+          [storypoint]="card"></app-card>

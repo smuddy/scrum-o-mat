@@ -1,0 +1,5 @@
+<div class="div-dashboard">
+  <fa-icon *ngIf="estimateRequested" [icon]="faTachometer"></fa-icon>
+  <div *ngIf="estimateSucceeded" class="success div-storypoints">{{renderStorypoint()}}</div>
+  <fa-icon *ngIf="estimateFailed" [icon]="faFailed" class="fail"></fa-icon>
+</div>

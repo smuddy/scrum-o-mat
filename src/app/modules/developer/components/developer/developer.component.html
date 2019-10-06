@@ -1,0 +1,15 @@
+<div (click)="logout()" class="div-logout">
+  <fa-icon [icon]="faTimes" class="button"></fa-icon>
+</div>
+<div class="div-subject">{{subject}}</div>
+<div *ngIf="!issue" [@fade] class="div-waiting">Warte auf neue Schätzung</div>
+
+<div *ngIf="issue" [@fade]>
+  <div class="div-issue">{{issue}}</div>
+
+  <app-cards (cardSelected)="onCardSelected($event)" *ngIf="estimateRequested" [@fade]></app-cards>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStorypoint()}}</div>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
+  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue">Wir müssen reden ...</div>
+
+</div>

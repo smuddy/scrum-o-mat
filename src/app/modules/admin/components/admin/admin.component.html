@@ -1,0 +1,20 @@
+<div *ngFor="let planning of plannings">
+  <div class="div-planning-values">
+    <div>
+      <fa-icon (click)="delete(planning.id)" [icon]="faTrash" class="button"></fa-icon>
+    </div>
+    <div>
+      <fa-icon (click)="openUser = openUser === planning.id ? null : planning.id" [icon]="faUsers"
+               class="button"></fa-icon>
+    </div>
+    <div>
+      <fa-icon (click)="goto(planning.id)" [icon]="faLink" class="button"></fa-icon>
+    </div>
+    <div>{{planning.data.subject}}</div>
+    <div>{{planning.data.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>
+  </div>
+
+  <div *ngIf="openUser === planning.id">
+    <app-users [planningId]="planning.id"></app-users>
+  </div>
+</div>

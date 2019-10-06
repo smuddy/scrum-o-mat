@@ -1,0 +1,47 @@
+:host {
+  display: flex;
+}
+
+.div-issue {
+  display: flex;
+  align-items: center;
+
+  input {
+    flex-grow: 1;
+    width: 400px;
+  }
+
+  border: 1px solid #555;
+  background: #fff2;
+  border-radius: 8px;
+  margin: 0px auto 20px;
+  padding: 10px;
+  transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+  box-shadow: none;
+
+  &.middle {
+    margin-top: 40vh;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  }
+
+  .div-subject {
+    color: #999;
+
+  }
+}
+
+input {
+  font-size: 50px;
+  text-align: center;
+}
+
+fa-icon {
+  display: block;
+  width: 35px;
+  height: 35px;
+}
+
+button {
+  margin: 0;
+  border: none;
+}

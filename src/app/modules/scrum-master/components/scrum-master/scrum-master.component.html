@@ -1,0 +1,30 @@
+<div (click)="logout()" class="div-logout">
+  <fa-icon [icon]="faTimes" class="button"></fa-icon>
+</div>
+<div class="div-scrum-master">
+  <div class="div-planning-id">
+    <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
+    &nbsp;
+    {{link()}} </div>
+
+  <app-edit-issue [middle]="!(planning && planning.issue)" [planningId]="planningId"
+                  class="div-edit-issue"></app-edit-issue>
+
+  <div *ngIf="planning && planning.issue" [@fadeTranslate] class="div-results">
+    <app-dashboard
+      [estimateFailed]="estimateFailed()"
+      [estimateRequested]="estimateRequested()"
+      [estimateSucceeded]="estimateSucceeded()"
+      [storypoints]="planning.storypoints"
+    ></app-dashboard>
+    <app-developers [developers]="developers" [showResults]="!estimateRequested()"></app-developers>
+  </div>
+
+  <div class="div-repeat">
+    <button (click)="requestEstimate()" *ngIf="estimateFailed()" [@fadeTranslate]>Schätzung wiederholen</button>
+  </div>
+</div>
+
+<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [qrc-element-type]="'url'"
+            [qrc-value]="link()">
+</ngx-qrcode>

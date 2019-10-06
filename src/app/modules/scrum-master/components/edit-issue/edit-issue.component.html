@@ -1,0 +1,15 @@
+<div [class.middle]="middle" class="div-issue">
+  <div class="div-subject">{{subject}}</div>
+  <input #input
+         (keyup.enter)="setIssue()"
+         [(ngModel)]="issue"
+         [disabled]="!edit"
+         placeholder="Schätzung für"
+         type="text">
+  <button (click)="setIssue()" *ngIf="edit">
+    <fa-icon [icon]="faCheck" class="button"></fa-icon>
+  </button>
+  <button (click)="resetIssue()" *ngIf="!edit">
+    <fa-icon [icon]="faTimes" class="button"></fa-icon>
+  </button>
+</div>

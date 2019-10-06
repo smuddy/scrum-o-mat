@@ -1,0 +1,8 @@
+<div class="div-developers">
+  <ng-container *ngFor="let developer of developers">
+    <div>
+    </div>
+    <div [class.is-ready]="devIsReady(developer.storypoints)" class="div-developer">{{developer.name}}</div>
+    <div [class.show]="showResults" class="div-results">{{renderStorypoints(developer.storypoints)}}</div>
+  </ng-container>
+</div>

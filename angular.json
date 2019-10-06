@@ -118,6 +118,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "scrum-o-mat"
 }
