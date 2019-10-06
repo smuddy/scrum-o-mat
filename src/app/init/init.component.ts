@@ -2,11 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {PlanningService} from '../services/planning.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Planning} from '../models/planning';
+import {fade} from '../animation';
 
 @Component({
   selector: 'app-init',
   templateUrl: './init.component.html',
-  styleUrls: ['./init.component.less']
+  styleUrls: ['./init.component.less'],
+  animations: [fade]
 })
 export class InitComponent implements OnInit {
   public planningId: string;
@@ -50,4 +52,5 @@ export class InitComponent implements OnInit {
       this.router.navigateByUrl('/');
     }
   }
+
 }

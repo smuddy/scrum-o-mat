@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
-import {filter} from 'rxjs/operators';
 import {Storypoints} from '../../../../models/storypoints';
 import {fade} from '../../../../animation';
 import {faTimes} from '@fortawesome/free-solid-svg-icons';
@@ -33,18 +32,18 @@ export class DeveloperComponent implements OnInit {
 
   ngOnInit() {
     window.scrollTo(0, 0);
-    this.planningService.getPlanning(this.planningId).pipe(
-      filter(_ => !!_),
-    ).subscribe(planning => {
-      this.issue = planning.issue;
-      this.subject = planning.subject;
-      this.estimateRequested = planning.estimateRequested;
-      this.estimateSucceeded = planning.estimateSucceeded;
-      this.storypoints = planning.storypoints;
-      if (!planning || !planning.subject) {
+    this.planningService.getPlanning(this.planningId).subscribe(planning => {
+      if (!planning) {
         this.router.navigateByUrl(this.router.createUrlTree(['/'], {queryParams: {session: this.planningId}}));
+      } else {
+        this.issue = planning.issue;
+        this.subject = planning.subject;
+        this.estimateRequested = planning.estimateRequested;
+        this.estimateSucceeded = planning.estimateSucceeded;
+        this.storypoints = planning.storypoints;
+
+        fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
       }
-      fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
     });
     this.planningService.getDeveloper(this.planningId, this.userId).subscribe(_ => {
       if (!_) {

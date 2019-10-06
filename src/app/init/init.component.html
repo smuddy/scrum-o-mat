@@ -1,4 +1,4 @@
-<div *ngIf="planningId" class="div-init">
+<div *ngIf="planningId" [@fade] class="div-init">
   <div>Bitte einen Namen eingeben um an der Schätzung teilzunehmen</div>
   <div class="div-estimate-id">
     <input (keyup.enter)="goDeveloper()" [(ngModel)]="user" placeholder="Name" type="text">
@@ -7,10 +7,11 @@
 </div>
 
 
-<div *ngIf="!planningId" class="div-init">
+<div *ngIf="!planningId" [@fade] class="div-init">
   <div>Bitte eine Sessionbeschreibung eingeben um die Schätzung zu starten</div>
   <div class="div-estimate-id">
     <input (keyup.enter)="goMaster()" [(ngModel)]="subject" placeholder="Beschreibung" type="text">
   </div>
   <button (click)="goMaster()">Schätzung starten</button>
+  <button routerLink="scan">QR Code Scannen</button>
 </div>

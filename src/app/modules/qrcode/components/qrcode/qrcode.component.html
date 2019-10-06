@@ -1,0 +1,6 @@
+<div class="div-scan">
+  <zxing-scanner (scanSuccess)="scanSuccessHandler($event)" *ngIf="showScanner" [@fade]
+                 [formats]="format"></zxing-scanner>
+  <div *ngIf="showText" [@fade] class="div-planning-id">Session gefunden</div>
+  <div *ngIf="showText" [@fade] class="div-planning-id">{{subject}}</div>
+</div>

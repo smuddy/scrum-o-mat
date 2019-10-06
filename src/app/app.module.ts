@@ -11,6 +11,7 @@ import {FormsModule} from '@angular/forms';
 import {ScrumMasterModule} from './modules/scrum-master/scrum-master.module';
 import {DeveloperModule} from './modules/developer/developer.module';
 import {AdminModule} from './modules/admin/admin.module';
+import {QrcodeModule} from './modules/qrcode/qrcode.module';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {AdminModule} from './modules/admin/admin.module';
 
     ScrumMasterModule,
     DeveloperModule,
-    AdminModule
+    AdminModule,
+    QrcodeModule
 
   ],
   providers: [],
