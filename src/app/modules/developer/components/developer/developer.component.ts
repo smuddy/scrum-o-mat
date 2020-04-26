@@ -59,6 +59,7 @@ export class DeveloperComponent implements OnInit {
   public renderStorypoint = () => renderStorypoint(this.storypoints);
 
   public async logout() {
+    localStorage.removeItem('last-session');
     await this.planningService.deleteUser(this.planningId, this.userId);
     await this.router.navigateByUrl(this.router.createUrlTree(['/'], {queryParams: {session: this.planningId}}));
   }
