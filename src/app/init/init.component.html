@@ -4,6 +4,7 @@
     <input (keyup.enter)="goDeveloper()" [(ngModel)]="user" placeholder="Name" type="text">
   </div>
   <button (click)="goDeveloper()">Teilnehmen</button>
+  <button (click)="goDeveloperLastSession()" *ngIf="hasLastSession()">letzter Session beitreten</button>
 </div>
 
 

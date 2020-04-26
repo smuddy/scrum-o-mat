@@ -37,6 +37,7 @@ export class InitComponent implements OnInit {
     if (this.planningService && this.user) {
       const userId = await this.planningService.addUser(this.planningId, this.user);
       if (userId) {
+        localStorage.setItem('last-session', userId);
         await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
       }
     }
@@ -53,4 +54,12 @@ export class InitComponent implements OnInit {
     }
   }
 
+  public hasLastSession(): boolean {
+    return !!localStorage.getItem('last-session');
+  }
+
+  public async goDeveloperLastSession(): Promise<void> {
+    const userId = localStorage.getItem('last-session');
+    await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
+  }
 }
