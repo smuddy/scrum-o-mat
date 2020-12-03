@@ -1,8 +1,11 @@
-<div class="div-developers">
+<div class="div-developers" *ngIf="developers">
   <ng-container *ngFor="let developer of developers">
-    <div>
-    </div>
-    <div [class.is-ready]="devIsReady(developer.storypoints)" class="div-developer">{{developer.name}}</div>
-    <div [class.show]="showResults" class="div-results">{{renderStorypoints(developer.storypoints)}}</div>
+      <div (click)="delete(developer.id)">
+    <div ><fa-icon  [icon]="faTrash"></fa-icon></div>
+    <div  [class.is-ready]="devIsReady(developer.data.storypoints)" class="div-developer">{{developer.data.name}}</div>
+    <div [class.show]="showResults" class="div-results">{{renderStorypoints(developer.data.storypoints)}}</div>
+      </div>
   </ng-container>
+
 </div>
+

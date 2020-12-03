@@ -1,18 +1,59 @@
-import {Component, Input} from '@angular/core';
-import {renderStorypoint} from '../../../../services/planning.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
 import {Developer} from '../../../../models/delevoper';
 import {Storypoints} from '../../../../models/storypoints';
 import {faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faTrash} from '@fortawesome/free-solid-svg-icons';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AdminService} from '../../../admin/components/admin.service';
+import {Planning} from '../../../../models/planning';
+import {Observable} from 'rxjs';
+import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-developers',
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.less']
 })
-export class DevelopersComponent {
-  @Input() public developers: Developer[];
+export class DevelopersComponent implements OnInit {
+  @Input() public developers: { id: string; data: Developer }[];
   @Input() public showResults: boolean;
   public faTimes = faTimes;
+  public faTrash = faTrash;
+  public planningId: string;
+
+
+  public users: { id: string, data: Developer }[];
+  // tslint:disable-next-line:max-line-length
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private planningService: PlanningService,
+    private router: Router,
+    private adminService: AdminService,
+    private afs: AngularFirestore) {
+    activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
+  }
+  ngOnInit() {
+    // added
+    if (this.planningId) {
+      this.adminService.getDevelopers(this.planningId).subscribe(_ => this.developers = _);
+    }
+  }
+
+
+
+
+  private getPlanningRef(planningId: string): AngularFirestoreDocument<Planning> {
+    return this.afs.doc<Planning>('planning/' + planningId);
+  }
+
+
+  public async delete(id: string) {
+    await this.adminService.deleteUser(this.planningId, id);
+  }
+
+
 
   renderStorypoints(storypoints: Storypoints): string {
     return renderStorypoint(storypoints);
