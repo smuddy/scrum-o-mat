@@ -57,6 +57,7 @@ export class DevelopersComponent implements OnInit {
 
   renderStorypoints(storypoints: Storypoints): string {
     return renderStorypoint(storypoints);
+
   }
 
   public devIsReady(storypoints: Storypoints) {

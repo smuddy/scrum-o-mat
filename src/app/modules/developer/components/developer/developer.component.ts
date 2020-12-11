@@ -1,9 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import { Developer } from './../../../../models/delevoper';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
 import {Storypoints} from '../../../../models/storypoints';
 import {fade} from '../../../../animation';
 import {faTimes} from '@fortawesome/free-solid-svg-icons';
+import CanvasJS from './canvasjs.min'
+import { AdminService } from 'src/app/modules/admin/components/admin.service';
+
+
 
 declare var fireworks;
 
@@ -22,15 +27,25 @@ export class DeveloperComponent implements OnInit {
   public faTimes = faTimes;
   private planningId: string;
   private userId: string;
+  public  cards : string[]= [];
+  @Input() public developers: {id: string; data: Developer }[];
+  public test : string;
 
-  constructor(activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router) {
+
+  constructor(activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router,
+    private adminService: AdminService) {
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
       this.userId = _.userId;
+
+
     });
   }
 
   ngOnInit() {
+    this.adminService.getDevelopers(this.planningId).subscribe(_ => this.developers = _);
+
+
     window.scrollTo(0, 0);
     this.planningService.getPlanning(this.planningId).subscribe(planning => {
       if (!planning) {
@@ -41,26 +56,56 @@ export class DeveloperComponent implements OnInit {
         this.estimateRequested = planning.estimateRequested;
         this.estimateSucceeded = planning.estimateSucceeded;
         this.storypoints = planning.storypoints;
-
         fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
+
+
+
       }
     });
+
     this.planningService.getDeveloper(this.planningId, this.userId).subscribe(_ => {
       if (!_) {
         this.router.navigateByUrl(this.router.createUrlTree(['/'], {queryParams: {session: this.planningId}}));
       }
     });
+
+
+
+    this.test = "■"
+
+
   }
 
   public async onCardSelected(storypoints: Storypoints) {
     await this.planningService.updateStorypoints(this.planningId, this.userId, storypoints);
+
+    this.cards.push(renderStorypoint(storypoints));
+    console.log(Storypoints[storypoints])
+    console.log(storypoints)
+    console.log(renderStorypoint(storypoints));
+    console.log(this.cards)
+
+
+
+
   }
 
   public renderStorypoint = () => renderStorypoint(this.storypoints);
+
+
+  renderStorypoints(storypoints: Storypoints): string {
+    return renderStorypoint(storypoints);
+  }
+
+
 
   public async logout() {
     localStorage.removeItem('last-session');
     await this.planningService.deleteUser(this.planningId, this.userId);
     await this.router.navigateByUrl(this.router.createUrlTree(['/'], {queryParams: {session: this.planningId}}));
+
   }
+
+
+
 }

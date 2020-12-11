@@ -23,7 +23,7 @@ export class PlanningService {
 
   private static newDeveloper(name: string): Developer {
     return {
-      name,
+      name ,
       storypoints: null
     };
   }
@@ -65,7 +65,7 @@ export class PlanningService {
 
   public async addUser(planningId: string, name: string): Promise<string> {
     const user = PlanningService.newDeveloper(name);
-
+    localStorage.setItem('user',name);
     const planningRef = this.getPlanningRef(planningId);
     const developerCollection = planningRef.collection('developer');
     const newDoc = await developerCollection.add(user);
