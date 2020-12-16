@@ -6,7 +6,6 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
-import {Planning} from '../../../../models/planning';
 import {Observable} from 'rxjs';
 import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
 
@@ -41,25 +40,14 @@ export class DevelopersComponent implements OnInit {
     }
   }
 
-
-
-
-  private getPlanningRef(planningId: string): AngularFirestoreDocument<Planning> {
-    return this.afs.doc<Planning>('planning/' + planningId);
-  }
-
-
   public async delete(id: string) {
     await this.adminService.deleteUser(this.planningId, id);
   }
-
-
 
   renderStorypoints(storypoints: Storypoints): string {
     return renderStorypoint(storypoints);
 
   }
-
   public devIsReady(storypoints: Storypoints) {
     const hasStorypoints = storypoints != null;
     const unsure = storypoints === Storypoints.unsure;
