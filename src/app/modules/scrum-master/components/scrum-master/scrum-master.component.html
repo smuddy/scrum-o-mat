@@ -26,5 +26,5 @@
 </div>
 
 <ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [qrc-element-type]="'url'"
-            [qrc-errorCorrectionLevel]="M" [qrc-value]="link()">
+            [qrc-errorCorrectionLevel]="" [qrc-value]="link()">
 </ngx-qrcode>

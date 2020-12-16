@@ -66,12 +66,27 @@ export class ScrumMasterComponent implements OnInit {
 
     const allStorypoints = developers.map(_ => _.storypoints);
     const allHaveChosen = !allStorypoints.some(_ => _ == null);
-    if (allStorypoints.length === 0 || !allHaveChosen) {
+    const allValidStorypoints = allStorypoints.filter(_ => _ !== Storypoints.unsure);
+    const coffeeIndex = allValidStorypoints.findIndex(storypoints => storypoints == Storypoints.coffee);
+
+    if (allStorypoints.length === 0 || (!allHaveChosen && coffeeIndex === -1)) {
       return;
     }
+    // tslint:disable-next-line: triple-equals
+    if (!allHaveChosen && coffeeIndex != -1) {
+    // tslint:disable-next-line: no-use-before-declare
+    await this.planningService.setEstimateResult(this.planningId, true, allValidStorypoints[coffeeIndex]);
+   }
 
-    const allValidStorypoints = allStorypoints.filter(_ => _ !== Storypoints.unsure);
-    const allValidStorypointsAreEqual = allValidStorypoints.every((val, i, array) => val === array[0]);
-    await this.planningService.setEstimateResult(this.planningId, allValidStorypointsAreEqual, allValidStorypoints[0]);
+    const allValidStorypointsAreEqual = allValidStorypoints.every((val, i, array) => val === array[0]) || coffeeIndex != -1;
+
+    let StorypointsElement;
+    if(coffeeIndex === -1) {
+     StorypointsElement = allValidStorypoints[0];
+    } else {
+     StorypointsElement = allValidStorypoints[coffeeIndex];
+    }
+
+    await this.planningService.setEstimateResult(this.planningId, allValidStorypointsAreEqual, StorypointsElement);
   }
 }
