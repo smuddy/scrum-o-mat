@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
 import {Observable} from 'rxjs';
 import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import { debounce } from 'rxjs/operators';
 
 @Component({
   selector: 'app-developers',
@@ -20,6 +21,7 @@ export class DevelopersComponent implements OnInit {
   public faTimes = faTimes;
   public faTrash = faTrash;
   public planningId: string;
+  public isPresent: boolean= false;
 
 
   public users: { id: string, data: Developer }[];
@@ -54,4 +56,6 @@ export class DevelopersComponent implements OnInit {
 
     return (!this.showResults && hasStorypoints) || (this.showResults && !unsure);
   }
+
+
 }

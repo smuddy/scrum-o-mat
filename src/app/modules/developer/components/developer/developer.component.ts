@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
 import {fade} from '../../../../animation';
 import {faTimes} from '@fortawesome/free-solid-svg-icons';
-import {AdminService} from 'src/app/modules/admin/components/admin.service';
+import {AdminService } from 'src/app/modules/admin/components/admin.service';
 
 
 
