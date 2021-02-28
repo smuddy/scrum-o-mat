@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AdminService} from '../admin.service';
-import {Developer} from '../../../../models/delevoper';
+import {Developer, DeveloperId} from '../../../../models/delevoper';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -10,7 +10,7 @@ import {faTrash} from '@fortawesome/free-solid-svg-icons';
 })
 export class UsersComponent implements OnInit {
   @Input() planningId: string;
-  public users: { id: string, data: Developer }[];
+  public users: DeveloperId[];
   public faTrash = faTrash;
 
   constructor(private adminService: AdminService) {

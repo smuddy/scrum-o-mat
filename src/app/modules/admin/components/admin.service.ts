@@ -1,27 +1,21 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
-import {Planning} from '../../../models/planning';
+import {Planning, PlanningId} from '../../../models/planning';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Developer} from '../../../models/delevoper';
+import {Developer, DeveloperId} from '../../../models/delevoper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
 
-  public plannings: Observable<{ id: string, data: Planning }[]>;
-  private planningCollection: AngularFirestoreCollection<Planning>;
+  public plannings: Observable<PlanningId[]>;
+  private planningCollection: AngularFirestoreCollection<PlanningId>;
 
   constructor(private afs: AngularFirestore) {
-    this.planningCollection = afs.collection<Planning>('planning');
-    this.plannings = this.planningCollection.snapshotChanges().pipe(map(actions => {
-      return actions.map(a => {
-        const data = a.payload.doc.data() as Planning;
-        const id = a.payload.doc.id;
-        return {id, data};
-      });
-    }));
+    this.planningCollection = afs.collection<PlanningId>('planning');
+    this.plannings = this.planningCollection.valueChanges({idField: 'id'});
   }
 
   public async deletePlanning(planningId: string) {
@@ -32,16 +26,10 @@ export class AdminService {
     await this.planningCollection.doc(planningId).collection('developer').doc(userId).delete();
   }
 
-  public getDevelopers(planningId: string): Observable<{ id: string, data: Developer }[]> {
+  public getDevelopers(planningId: string): Observable<DeveloperId[]> {
     const planningRef = this.afs.doc<Planning>('planning/' + planningId);
-    const developerCollection = planningRef.collection<Developer>('developer');
-    return developerCollection.snapshotChanges().pipe(map(actions => {
-      return actions.map(a => {
-        const data = a.payload.doc.data() as Developer;
-        const id = a.payload.doc.id;
-        return {id, data};
-      });
-    }));
+    const developerCollection = planningRef.collection<DeveloperId>('developer');
+    return developerCollection.valueChanges({idField: 'id'});
   }
 
 }

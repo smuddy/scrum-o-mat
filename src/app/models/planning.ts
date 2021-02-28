@@ -5,3 +5,7 @@ export interface Planning extends PlanningEstimatePartial {
   modified: any;
   subject: string;
 }
+
+export interface PlanningId extends Planning {
+  id: string;
+}

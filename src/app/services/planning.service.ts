@@ -3,7 +3,7 @@ import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} 
 import {Planning} from '../models/planning';
 import {Observable} from 'rxjs';
 import {Storypoints} from '../models/storypoints';
-import {Developer} from '../models/delevoper';
+import {Developer, DeveloperId} from '../models/delevoper';
 import {StorypointsPartial} from '../models/storypointsPartial';
 import {PlanningEstimatePartial} from '../models/planningEstimatePartial';
 import {first, map} from 'rxjs/operators';
@@ -96,8 +96,8 @@ export class PlanningService {
 
   public getDeveloperIds(planningId: string): Observable<string[]> {
     const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection<Developer>('developer');
-    return developerCollection.snapshotChanges().pipe(map(action => action.map(item => item.payload.doc.id)));
+    const developerCollection = planningRef.collection<DeveloperId>('developer');
+    return developerCollection.valueChanges().pipe(map(action => action.map(item => item.id)));
   }
 
   public async deleteUser(planningId: string, userId: string) {
