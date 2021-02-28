@@ -26,6 +26,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@zxing/ngx-scanner": "^2.0.1",
     "firebase": "^7.24.0",
+    "ngx-order-pipe": "^2.1.1",
     "ngx-qrcode2": "^9.0.0",
     "rxjs": "~6.6.3",
     "tslib": "^2.0.0",

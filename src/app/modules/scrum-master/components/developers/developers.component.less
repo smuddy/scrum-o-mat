@@ -1,19 +1,32 @@
-.div-developers {
-  display: grid;
-  grid-template-columns: 50px auto 50px;
-  grid-row-gap: 10px;
-  grid-column-gap: 20px;
-
+.div-developers{
   margin: 50px;
+  .div-developer-row {
+    display: grid;
+    grid-template-columns: 50px auto 50px;
+    grid-row-gap: 10px;
+    grid-column-gap: 20px ;
+    white-space: normal;
+    .deleteButton{
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 300ms ease-in-out;
+    }
+
+    &:hover .deleteButton{
+      opacity: 0.5;;
+    }
+  }
 }
 
 .div-developer {
   color: #999;
   transition: color 3s cubic-bezier(.25, .8, .25, 1);
-
+  white-space: normal;
   &.is-ready {
     color: #6f6;
   }
+
+
 }
 
 .div-results {
@@ -24,5 +37,4 @@
     opacity: 1;
   }
 }
-
 

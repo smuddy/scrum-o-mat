@@ -15,6 +15,7 @@ export class InitComponent implements OnInit {
   public user: string;
   public subject: string;
 
+
   constructor(
     private planningService: PlanningService,
     private router: Router,
@@ -24,6 +25,7 @@ export class InitComponent implements OnInit {
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(_ => this.paramsChanged(_));
+    this.user = localStorage.getItem('user');
   }
 
   public async goMaster() {
@@ -36,10 +38,13 @@ export class InitComponent implements OnInit {
   public async goDeveloper() {
     if (this.planningService && this.user) {
       const userId = await this.planningService.addUser(this.planningId, this.user);
+      localStorage.setItem('user',this.user);
+
       if (userId) {
         localStorage.setItem('last-session', userId);
         await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
       }
+
     }
   }
 
@@ -60,6 +65,6 @@ export class InitComponent implements OnInit {
 
   public async goDeveloperLastSession(): Promise<void> {
     const userId = localStorage.getItem('last-session');
-    await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
+    await this.router.navigateByUrl('/' + this.planningId + '/' + userId );
   }
 }
