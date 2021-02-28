@@ -1,5 +1,5 @@
 import {Storypoints} from '../../../../models/storypoints';
-import {Developer} from '../../../../models/delevoper';
+import {DeveloperId} from '../../../../models/delevoper';
 import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
@@ -25,7 +25,7 @@ export class DeveloperComponent implements OnInit {
   private planningId: string;
   private userId: string;
   public maxPoints = 1;
-  @Input() public developers: { id: string; data: Developer }[];
+  @Input() public developers: DeveloperId[];
   public selectedStorypoints: { storypoint: Storypoints, count: number }[] = [];
 
   constructor(activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router,
@@ -42,18 +42,19 @@ export class DeveloperComponent implements OnInit {
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
       this.developers = _;
 
-      if (!this.developers.find(x => x.data.storypoints === null)) {
+      if (!this.developers.find(x => x.storypoints === null)) {
         this.maxPoints = 1;
+
         this.selectedStorypoints = [];
         this.developers.forEach(developer => {
-          const findSelectedStorypoint = this.selectedStorypoints.find(x => x.storypoint === developer.data.storypoints);
+          const findSelectedStorypoint = this.selectedStorypoints.find(x => x.storypoint === developer.storypoints);
           if (findSelectedStorypoint) {
             findSelectedStorypoint.count++;
             if (findSelectedStorypoint.count > this.maxPoints) {
               this.maxPoints = findSelectedStorypoint.count;
             }
           } else {
-            this.selectedStorypoints.push({storypoint: developer.data.storypoints, count: 1});
+            this.selectedStorypoints.push({storypoint: developer.storypoints, count: 1});
           }
 
         });

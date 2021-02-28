@@ -23,7 +23,7 @@ export class PlanningService {
 
   private static newDeveloper(name: string): Developer {
     return {
-      name ,
+      name,
       storypoints: null
     };
   }
@@ -65,7 +65,7 @@ export class PlanningService {
 
   public async addUser(planningId: string, name: string): Promise<string> {
     const user = PlanningService.newDeveloper(name);
-    localStorage.setItem('user',name);
+    localStorage.setItem('user', name);
     const planningRef = this.getPlanningRef(planningId);
     const developerCollection = planningRef.collection('developer');
     const newDoc = await developerCollection.add(user);
@@ -79,12 +79,14 @@ export class PlanningService {
     const developerCollection = planningRef.collection('developer');
     const developer = developerCollection.doc(userId);
     await developer.update(partial);
+    console.log({userId, partial});
   }
 
-  public getDevelopers(planningId: string): Observable<Developer[]> {
-    const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection<Developer>('developer');
-    return developerCollection.valueChanges();
+
+  public getDevelopers(planningId: string): Observable<DeveloperId[]> {
+    const planningRef = this.afs.doc<Planning>('planning/' + planningId);
+    const developerCollection = planningRef.collection<DeveloperId>('developer');
+    return developerCollection.valueChanges({idField: 'id'});
   }
 
 
@@ -92,12 +94,6 @@ export class PlanningService {
     const planningRef = this.getPlanningRef(planningId);
     const developerCollection = planningRef.collection<Developer>('developer');
     return developerCollection.doc<Developer>(userId).valueChanges();
-  }
-
-  public getDeveloperIds(planningId: string): Observable<string[]> {
-    const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection<DeveloperId>('developer');
-    return developerCollection.valueChanges().pipe(map(action => action.map(item => item.id)));
   }
 
   public async deleteUser(planningId: string, userId: string) {
@@ -128,9 +124,9 @@ export class PlanningService {
   }
 
   private resetStorypoints(planningId: string) {
-    this.getDeveloperIds(planningId).pipe(first()).subscribe(developers => {
-      for (const id of developers) {
-        this.updateStorypoints(planningId, id, null);
+    this.getDevelopers(planningId).pipe(first()).subscribe(developers => {
+      for (const developer of developers) {
+        this.updateStorypoints(planningId, developer.id, null);
       }
     });
   }

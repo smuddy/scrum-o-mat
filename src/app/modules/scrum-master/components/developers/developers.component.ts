@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
-import {Developer} from '../../../../models/delevoper';
+import {Developer, DeveloperId} from '../../../../models/delevoper';
 import {Storypoints} from '../../../../models/storypoints';
 import {faTimes, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -15,7 +15,7 @@ import {listAnimation} from '../../../../animation';
   animations: [listAnimation],
 })
 export class DevelopersComponent implements OnInit {
-  @Input() public developers: { id: string; data: Developer }[];
+  @Input() public developers: DeveloperId[];
   @Input() public showResults: boolean;
   public faTimes = faTimes;
   public faTrash = faTrash;
