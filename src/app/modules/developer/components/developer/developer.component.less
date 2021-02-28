@@ -1,6 +1,10 @@
 .div-issue {
   text-align: center;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 
   &.large {
     font-size: 200px;
@@ -23,24 +27,21 @@
 }
 .div-graph {
   margin-top: 60px;
-  margin-left: 46%;
 }
 .div-graph-row{
-  display: grid;
-  grid-template-columns: 50px auto 50px;
-  grid-row-gap: 10px;
-  grid-column-gap: 10px ;
+  display: flex;
   white-space: normal;
   .div-result {
-    background-color: cyan;
+    background-color: #fff4;
     height: 27px;
     margin-top: 10px;
   }
 }
 .div-storypoint
 {
-  text-align: center;
+  text-align: left;
   font-size: 40px;
+  width: 60px;
 }
 
 

@@ -120,5 +120,8 @@
       }
     }
   },
-  "defaultProject": "scrum-o-mat"
+  "defaultProject": "scrum-o-mat",
+  "cli": {
+    "analytics": "768cec21-2b6f-4d3c-a375-5b99fb22ac6b"
+  }
 }
