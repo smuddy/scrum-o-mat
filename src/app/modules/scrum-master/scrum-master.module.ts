@@ -8,6 +8,7 @@ import {DevelopersComponent} from './components/developers/developers.component'
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {NgxQRCodeModule} from 'ngx-qrcode2';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {OrderModule} from 'ngx-order-pipe';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     BrowserAnimationsModule,
     FormsModule,
     FontAwesomeModule,
-    NgxQRCodeModule
+    NgxQRCodeModule,
+    OrderModule
   ],
   exports: [
     ScrumMasterComponent

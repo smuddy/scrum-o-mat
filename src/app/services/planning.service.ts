@@ -111,7 +111,7 @@ export class PlanningService {
     await planningRef.update(estimateResult);
   }
 
-  public async resetEsimate(planningId: string) {
+  public async resetEstimate(planningId: string) {
     this.resetStorypoints(planningId);
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: true,

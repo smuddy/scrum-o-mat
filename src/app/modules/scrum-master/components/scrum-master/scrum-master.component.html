@@ -4,6 +4,7 @@
 <div class="div-scrum-master">
   <div class="div-planning-id">
     <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
+    <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
     &nbsp;
     {{link()}} </div>
 

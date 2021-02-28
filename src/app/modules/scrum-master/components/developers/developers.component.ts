@@ -58,5 +58,5 @@ export class DevelopersComponent implements OnInit {
     return (!this.showResults && hasStorypoints) || (this.showResults && !unsure);
   }
 
-
+  public trackById = (index: number, item: DeveloperId) => item.id;
 }
