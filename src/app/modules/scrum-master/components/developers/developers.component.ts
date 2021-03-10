@@ -1,21 +1,21 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PlanningService, renderStorypoint} from '../../../../services/planning.service';
-import {Developer} from '../../../../models/delevoper';
+import {Developer, DeveloperId} from '../../../../models/delevoper';
 import {Storypoints} from '../../../../models/storypoints';
-import {faTimes} from '@fortawesome/free-solid-svg-icons';
-import {faTrash} from '@fortawesome/free-solid-svg-icons';
+import {faTimes, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
-import {Observable} from 'rxjs';
-import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {listAnimation} from '../../../../animation';
 
 @Component({
   selector: 'app-developers',
   templateUrl: './developers.component.html',
-  styleUrls: ['./developers.component.less']
+  styleUrls: ['./developers.component.less'],
+  animations: [listAnimation],
 })
 export class DevelopersComponent implements OnInit {
-  @Input() public developers: { id: string; data: Developer }[];
+  @Input() public developers: DeveloperId[];
   @Input() public showResults: boolean;
   public faTimes = faTimes;
   public faTrash = faTrash;
@@ -23,6 +23,7 @@ export class DevelopersComponent implements OnInit {
 
 
   public users: { id: string, data: Developer }[];
+
   // tslint:disable-next-line:max-line-length
 
   constructor(
@@ -33,6 +34,7 @@ export class DevelopersComponent implements OnInit {
     private afs: AngularFirestore) {
     activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
   }
+
   ngOnInit() {
     // added
     if (this.planningId) {
@@ -48,10 +50,13 @@ export class DevelopersComponent implements OnInit {
     return renderStorypoint(storypoints);
 
   }
+
   public devIsReady(storypoints: Storypoints) {
     const hasStorypoints = storypoints != null;
     const unsure = storypoints === Storypoints.unsure;
 
     return (!this.showResults && hasStorypoints) || (this.showResults && !unsure);
   }
+
+  public trackById = (index: number, item: DeveloperId) => item.id;
 }

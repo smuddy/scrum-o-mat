@@ -6,7 +6,9 @@ import {Planning} from '../../../../models/planning';
 import {Storypoints} from '../../../../models/storypoints';
 import {environment} from '../../../../../environments/environment';
 import {fadeTranslate} from '../../../../animation';
-import {faQrcode, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faClipboard} from '@fortawesome/free-solid-svg-icons/faClipboard';
+import {faQrcode} from '@fortawesome/free-solid-svg-icons/faQrcode';
+import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 
 declare var fireworks;
 
@@ -23,6 +25,7 @@ export class ScrumMasterComponent implements OnInit {
   public showQrCode = true;
   public faQrcode = faQrcode;
   public faTimes = faTimes;
+  public faClipboard = faClipboard;
 
   constructor(private activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router) {
     activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
@@ -40,7 +43,7 @@ export class ScrumMasterComponent implements OnInit {
   public estimateRequested = () => this.planning && this.planning.estimateRequested;
 
   public async requestEstimate() {
-    await this.planningService.resetEsimate(this.planningId);
+    await this.planningService.resetEstimate(this.planningId);
   }
 
   public link = (): string => environment.url + this.planningId;
@@ -67,26 +70,40 @@ export class ScrumMasterComponent implements OnInit {
     const allStorypoints = developers.map(_ => _.storypoints);
     const allHaveChosen = !allStorypoints.some(_ => _ == null);
     const allValidStorypoints = allStorypoints.filter(_ => _ !== Storypoints.unsure);
-    const coffeeIndex = allValidStorypoints.findIndex(storypoints => storypoints == Storypoints.coffee);
+    const coffeeIndex = allValidStorypoints.findIndex(storypoints => storypoints === Storypoints.coffee);
 
     if (allStorypoints.length === 0 || (!allHaveChosen && coffeeIndex === -1)) {
       return;
     }
     // tslint:disable-next-line: triple-equals
     if (!allHaveChosen && coffeeIndex != -1) {
-    // tslint:disable-next-line: no-use-before-declare
-    await this.planningService.setEstimateResult(this.planningId, true, allValidStorypoints[coffeeIndex]);
-   }
+      // tslint:disable-next-line: no-use-before-declare
+      await this.planningService.setEstimateResult(this.planningId, true, allValidStorypoints[coffeeIndex]);
+    }
 
-    const allValidStorypointsAreEqual = allValidStorypoints.every((val, i, array) => val === array[0]) || coffeeIndex != -1;
+    const allValidStorypointsAreEqual = allValidStorypoints.every((val, i, array) => val === array[0]) || coffeeIndex !== -1;
 
     let StorypointsElement;
-    if(coffeeIndex === -1) {
-     StorypointsElement = allValidStorypoints[0];
+    if (coffeeIndex === -1) {
+      StorypointsElement = allValidStorypoints[0];
     } else {
-     StorypointsElement = allValidStorypoints[coffeeIndex];
+      StorypointsElement = allValidStorypoints[coffeeIndex];
     }
 
     await this.planningService.setEstimateResult(this.planningId, allValidStorypointsAreEqual, StorypointsElement);
+  }
+
+  public copyLink(link: string) {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = link;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
   }
 }

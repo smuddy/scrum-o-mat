@@ -4,6 +4,7 @@
 <div class="div-scrum-master">
   <div class="div-planning-id">
     <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
+    <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
     &nbsp;
     {{link()}} </div>
 
@@ -17,14 +18,14 @@
       [estimateSucceeded]="estimateSucceeded()"
       [storypoints]="planning.storypoints"
     ></app-dashboard>
-    <app-developers [developers]="developers" [showResults]="!estimateRequested()"></app-developers>
+    <app-developers [developers]="developers" [showResults]="!estimateRequested()">
+      <div class="div-repeat">
+        <button (click)="requestEstimate()" *ngIf="estimateFailed()" [@fadeTranslate]>Schätzung wiederholen</button>
+      </div>
+    </app-developers>
   </div>
 
-  <div class="div-repeat">
-    <button (click)="requestEstimate()" *ngIf="estimateFailed()" [@fadeTranslate]>Schätzung wiederholen</button>
-  </div>
 </div>
 
-<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [qrc-element-type]="'url'"
-            [qrc-errorCorrectionLevel]="" [qrc-value]="link()">
+<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [value]="link()" errorCorrectionLevel="L">
 </ngx-qrcode>

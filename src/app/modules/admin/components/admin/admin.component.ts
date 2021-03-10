@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AdminService} from '../admin.service';
-import {Planning} from '../../../../models/planning';
+import {Planning, PlanningId} from '../../../../models/planning';
 import {faExternalLinkAlt, faTrash, faUserCog} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 
@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
   styleUrls: ['./admin.component.less']
 })
 export class AdminComponent implements OnInit {
-  public plannings: { id: string, data: Planning }[] = [];
+  public plannings: PlanningId[] = [];
   public faTrash = faTrash;
   public faUsers = faUserCog;
   public faLink = faExternalLinkAlt;

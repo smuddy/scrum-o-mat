@@ -4,7 +4,6 @@ import {NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {environment} from '../environments/environment';
-import {AngularFireModule} from 'angularfire2';
 import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {InitComponent} from './init/init.component';
 import {FormsModule} from '@angular/forms';
@@ -12,6 +11,7 @@ import {ScrumMasterModule} from './modules/scrum-master/scrum-master.module';
 import {DeveloperModule} from './modules/developer/developer.module';
 import {AdminModule} from './modules/admin/admin.module';
 import {QrcodeModule} from './modules/qrcode/qrcode.module';
+import {AngularFireModule} from '@angular/fire';
 
 @NgModule({
   declarations: [

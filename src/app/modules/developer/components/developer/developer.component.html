@@ -8,13 +8,18 @@
 
 <div *ngIf="issue" [@fade]>
   <div class="div-issue">{{issue}}</div>
-
   <app-cards (cardSelected)="onCardSelected($event)" *ngIf="estimateRequested" [@fade]></app-cards>
   <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStorypoint()}}</div>
   <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
-  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue" >Wir müssen reden ... </div>
+  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue" >
+    Wir müssen reden ...
+    <div class="div-graph" [@listAnimation]="selectedStorypoints.length">
+      <div *ngFor="let selectedStorypoint of selectedStorypoints|orderBy: 'storypoint'" class="div-graph-row">
+        <div class="div-storypoint">{{renderStorypoints(selectedStorypoint.storypoint)}}</div>
+        <div title={{selectedStorypoint.count}}  [ngStyle]="{'width' :  getWidthPercentage(selectedStorypoint.count)  +'vw'}" class="div-result"></div>
+      </div>
+    </div>
+  </div>
 
 </div>
-
-
 

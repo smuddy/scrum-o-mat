@@ -4,7 +4,7 @@ import {Storypoints} from '../../../../models/storypoints';
 @Component({
   selector: 'app-cards',
   templateUrl: './cards.component.html',
-  styleUrls: ['./cards.component.less']
+  styleUrls: ['./cards.component.less'],
 })
 export class CardsComponent implements OnInit {
   @Output() cardSelected = new EventEmitter<Storypoints>();

@@ -1,11 +1,12 @@
-<div class="div-developers" *ngIf="developers">
-  <ng-container *ngFor="let developer of developers">
+<div class="div-developers" *ngIf="developers" [@listAnimation]="developers.length">
+  <div *ngFor="let developer of developers|orderBy:'name'; trackBy:trackById" class="div-developer-row">
 
-    <div (click)="delete(developer.id)"><fa-icon  [icon]="faTrash"></fa-icon></div>
-    <div *ngIf="developer.data" [class.is-ready]="devIsReady(developer.data.storypoints)" class="div-developer">{{developer.data.name}}</div>
-    <div *ngIf="developer.data" [class.show]="showResults" class="div-results">{{renderStorypoints(developer.data.storypoints)}}</div>
+    <div (click)="delete(developer.id)" class="deleteButton" ><fa-icon class="button" [icon]="faTrash"></fa-icon></div>
+    <div *ngIf="developer" [class.is-ready]="devIsReady(developer.storypoints)" class="div-developer"
+     >{{developer.name}}</div>
+    <div *ngIf="developer" [class.show]="showResults" class="div-results">{{renderStorypoints(developer.storypoints)}}</div>
 
-  </ng-container>
-
+  </div>
+  <ng-content></ng-content>
 </div>
 

@@ -7,7 +7,7 @@ import {firebaseConfig} from './firebase';
 export const environment = {
   production: false,
   firebaseConfig,
-  url: 'https://scrum-o-mat.firebaseapp.com/?session='
+  url: 'http://localhost:4200/?session='
 };
 
 /*

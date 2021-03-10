@@ -10,8 +10,8 @@
     <div>
       <fa-icon (click)="goto(planning.id)" [icon]="faLink" class="button"></fa-icon>
     </div>
-    <div>{{planning.data.subject}}</div>
-    <div>{{planning.data.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>
+    <div>{{planning.subject}}</div>
+    <div>{{planning.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>
   </div>
 
   <div *ngIf="openUser === planning.id">
