@@ -1,0 +1,26 @@
+<div (click)="logout()" class="div-logout">
+  <fa-icon [icon]="faTimes" class="button"></fa-icon>
+</div>
+
+<div class="div-subject">{{subject}}</div>
+<div *ngIf="!issue" [@fade] class="div-waiting">Warte auf neue Schätzung</div>
+
+
+<div *ngIf="issue" [@fade]>
+  <div class="div-issue">{{issue}}</div>
+  <app-cards (cardSelected)="onCardSelected($event)" *ngIf="estimateRequested" [@fade]></app-cards>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStorypoint()}}</div>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
+  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue">
+    Wir müssen reden ...
+    <div [@listAnimation]="selectedStorypoints.length" class="div-graph">
+      <div *ngFor="let selectedStorypoint of selectedStorypoints|orderBy: 'storypoint'" class="div-graph-row">
+        <div class="div-storypoint">{{renderStorypoints(selectedStorypoint.storypoint)}}</div>
+        <div [ngStyle]="{'width' :  getWidthPercentage(selectedStorypoint.count)  +'vw'}"
+             class="div-result" title={{selectedStorypoint.count}}></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
