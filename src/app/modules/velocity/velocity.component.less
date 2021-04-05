@@ -1,0 +1,53 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sprints {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr 1fr 1fr 1fr;
+  grid-template-areas:
+    ". . . points points velocity velocity"
+    ". . . . . . .";
+
+  .points {
+    grid-area: points;
+  }
+
+  .velocity {
+    grid-area: velocity;
+  }
+
+  .head {
+    background: #fff3;
+
+    &.head-points {
+      background: #52acf177;
+    }
+  ;
+
+    &.head-velocity {
+      background: #ff990077;
+    }
+  ;
+  }
+
+  width: 1000px;
+  border: #fff 1px solid;
+  border-radius: 8px;
+  /* padding: 20px; */
+  margin: 20px;
+
+  .kw {
+    font-size: 0.5em;
+    color: #fff5;
+    margin-right: 5px;
+  }
+
+  > * {
+    padding: 5px;
+    text-align: center;
+  }
+}

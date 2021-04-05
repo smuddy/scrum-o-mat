@@ -8,6 +8,7 @@ const routes: Routes = [
     redirectTo: 'planning'
   },
   {path: 'planning', loadChildren: () => import('./modules/planning/planning.module').then(m => m.PlanningModule)},
+  {path: 'velocity', loadChildren: () => import('./modules/velocity/velocity.module').then(m => m.VelocityModule)},
 ];
 
 @NgModule({

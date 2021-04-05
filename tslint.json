@@ -15,7 +15,7 @@
     },
     "component-class-suffix": true,
     "contextual-lifecycle": true,
-    "curly": true,
+    "curly": false,
     "directive-class-suffix": true,
     "directive-selector": [
       true,
@@ -44,7 +44,7 @@
     "max-classes-per-file": false,
     "max-line-length": [
       true,
-      140
+      240
     ],
     "member-access": false,
     "member-ordering": [
