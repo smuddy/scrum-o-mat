@@ -1,4 +1,4 @@
-export enum Storypoints {
+export enum StoryPoints {
   sHalf,
   s1,
   s2,

@@ -13,6 +13,7 @@ export interface Sprint {
   velocityPlaned: number;
   velocityAchieved: number;
   availableStaff: Staff[];
+  isForecast: boolean;
 }
 
 export interface Velocity {

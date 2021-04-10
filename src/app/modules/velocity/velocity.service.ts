@@ -25,10 +25,14 @@ export class VelocityService {
     this.save(velo);
   }
 
-  private static calcVelocityFromHistory(velocityHistory: number[]): number {
+  private static calcVelocityFromHistory(velocityHistory: number[], isForecast: boolean, lastCalculatedVelocity: number): number {
     if (velocityHistory.length === 0) {
       return 1;
     }
+    if (isForecast) {
+      return lastCalculatedVelocity;
+    }
+
     const historyToConsider = Math.min(velocityHistory.length, 5);
     const average = simpleMovingAverage(velocityHistory, historyToConsider);
     return average[average.length - 1];
@@ -47,6 +51,7 @@ export class VelocityService {
         velocityPlaned: this.getDefaultVelocity(velocity),
         pointsAchieved: 0,
         pointsPlaned: 0,
+        isForecast: false,
         availableStaff: this.getDefaultAvailableDevelopers(velocity)
       };
       velocity.sprints.push(initialSprint);
@@ -127,14 +132,20 @@ export class VelocityService {
   private calculate(oldVelocity: Velocity): Velocity {
     return produce(oldVelocity, velocity => {
       const velocityHistory: number[] = [];
+      let previousSprint: Sprint = null;
+      let lastCalculatedVelocity = 1;
       velocity.sprints.forEach(sprint => {
         const staffCount = sprint.availableStaff.reduce((count, staff) => count + staff.days * staff.percent / 100, 0);
         sprint.velocityAchieved = staffCount ? sprint.pointsAchieved / staffCount : 0;
-        sprint.velocityPlaned = VelocityService.calcVelocityFromHistory(velocityHistory);
+
+        const isForecast = previousSprint !== null && previousSprint.pointsAchieved === 0;
+        sprint.isForecast = isForecast;
+        sprint.velocityPlaned = VelocityService.calcVelocityFromHistory(velocityHistory, isForecast, lastCalculatedVelocity);
+        if (!!sprint.velocityPlaned) lastCalculatedVelocity = sprint.velocityPlaned;
 
         sprint.pointsPlaned = sprint.velocityPlaned * staffCount;
 
-
+        previousSprint = sprint;
         velocityHistory.push(sprint.velocityAchieved);
       });
 

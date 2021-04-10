@@ -1,0 +1,12 @@
+<div @fade class="div-init">
+  <div *ngIf="errorMessage">{{errorMessage}}</div>
+  <div class="div-estimate-id">
+    <input (keyup.enter)="login()" [formControl]="email" name="email" placeholder="E-Mail Addresse" type="text">
+  </div>
+  <div class="div-estimate-id">
+    <input (keyup.enter)="login()" [formControl]="pass" name="pass" placeholder="Passwort" type="password">
+  </div>
+  <button (click)="login()" [disabled]="!email || !pass">Anmelden</button>
+  <button (click)="register()" [disabled]="!email || !pass">Registrieren</button>
+</div>
+

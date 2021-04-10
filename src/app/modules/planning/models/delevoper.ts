@@ -1,6 +1,6 @@
-import {StorypointsPartial} from './storypointsPartial';
+import {StoryPointsPartial} from './storyPointsPartial';
 
-export interface Developer extends StorypointsPartial {
+export interface Developer extends StoryPointsPartial {
   name: string;
 }
 

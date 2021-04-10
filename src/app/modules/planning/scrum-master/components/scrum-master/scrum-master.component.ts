@@ -1,14 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {faClipboard} from '@fortawesome/free-solid-svg-icons/faClipboard';
 import {faQrcode} from '@fortawesome/free-solid-svg-icons/faQrcode';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 import {fadeTranslate} from '../../../../../animation';
-import {Storypoints} from '../../../models/storypoints';
+import {StoryPoints} from '../../../models/storyPoints';
 import {PlanningService} from '../../../planning.service';
-import {Developer, DeveloperId} from '../../../models/delevoper';
+import {DeveloperId} from '../../../models/delevoper';
 import {Planning} from '../../../models/planning';
 import {environment} from '../../../../../../environments/environment';
+import {MenuService} from '../../../../../shared/menu/menu.service';
 
 declare var fireworks;
 
@@ -18,7 +19,7 @@ declare var fireworks;
   styleUrls: ['./scrum-master.component.less'],
   animations: [fadeTranslate]
 })
-export class ScrumMasterComponent implements OnInit {
+export class ScrumMasterComponent implements OnInit, OnDestroy {
   public planningId: string;
   public developers: DeveloperId[];
   public planning: Planning;
@@ -27,13 +28,23 @@ export class ScrumMasterComponent implements OnInit {
   public faTimes = faTimes;
   public faClipboard = faClipboard;
 
-  constructor(private activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router) {
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private planningService: PlanningService,
+    private router: Router,
+    private menuService: MenuService,
+  ) {
     activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
   }
 
   ngOnInit() {
     this.planningService.getDevelopers(this.planningId).subscribe(_ => this.developersChanged(_));
     this.planningService.getPlanning(this.planningId).subscribe(_ => this.planningChanged(_));
+    this.menuService.addCustomAction('Session beenden', () => this.logout());
+  }
+
+  ngOnDestroy() {
+    this.menuService.resetCustomActions();
   }
 
   public estimateSucceeded = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded;
@@ -82,10 +93,10 @@ export class ScrumMasterComponent implements OnInit {
       return;
     }
 
-    const allStoryPoints = developers.map(_ => _.storypoints);
+    const allStoryPoints = developers.map(_ => _.storyPoints);
     const allHaveChosen = !allStoryPoints.some(_ => _ == null);
-    const allValidStoryPoints = allStoryPoints.filter(_ => _ !== Storypoints.unsure);
-    const coffeeIndex = allValidStoryPoints.findIndex(sp => sp === Storypoints.coffee);
+    const allValidStoryPoints = allStoryPoints.filter(_ => _ !== StoryPoints.unsure);
+    const coffeeIndex = allValidStoryPoints.findIndex(sp => sp === StoryPoints.coffee);
 
     if (allStoryPoints.length === 0 || (!allHaveChosen && coffeeIndex === -1)) {
       return;

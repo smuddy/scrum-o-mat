@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
 import {first} from 'rxjs/operators';
-import {Storypoints} from './models/storypoints';
+import {StoryPoints} from './models/storyPoints';
 import {Developer, DeveloperId} from './models/delevoper';
 import {PlanningEstimatePartial} from './models/planningEstimatePartial';
 import {Planning} from './models/planning';
-import {StorypointsPartial} from './models/storypointsPartial';
+import {StoryPointsPartial} from './models/storyPointsPartial';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class PlanningService {
   private static newDeveloper(name: string): Developer {
     return {
       name,
-      storypoints: null
+      storyPoints: null
     };
   }
 
@@ -35,7 +35,7 @@ export class PlanningService {
       modified: new Date(),
       estimateRequested: true,
       estimateSucceeded: false,
-      storypoints: null
+      storyPoints: null
     };
     const newDoc = await this.planningCollection.add(planning);
     return newDoc.id;
@@ -47,12 +47,12 @@ export class PlanningService {
       modified: new Date(),
       estimateRequested: true,
       estimateSucceeded: false,
-      storypoints: null
+      storyPoints: null
     };
 
     const planningRef = this.getPlanningRef(planningId);
     await planningRef.update(planning);
-    this.resetStorypoints(planningId);
+    this.resetStoryPoints(planningId);
   }
 
   public getPlanning(planningId: string): Observable<Planning | undefined> {
@@ -73,8 +73,8 @@ export class PlanningService {
     return newDoc.id;
   }
 
-  public async updateStorypoints(planningId: string, userId: string, storypoints: Storypoints) {
-    const partial: StorypointsPartial = {storypoints};
+  public async updateStoryPoints(planningId: string, userId: string, storyPoints: StoryPoints) {
+    const partial: StoryPointsPartial = {storyPoints};
     const planningRef = this.getPlanningRef(planningId);
     const developerCollection = planningRef.collection('developer');
     const developer = developerCollection.doc(userId);
@@ -100,11 +100,11 @@ export class PlanningService {
     await this.planningCollection.doc(planningId).collection('developer').doc(userId).delete();
   }
 
-  public async setEstimateResult(planningId: string, allValidStorypointsAreEqual: boolean, storypoints: Storypoints) {
+  public async setEstimateResult(planningId: string, allValidStoryPointsAreEqual: boolean, storyPoints: StoryPoints) {
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: false,
-      estimateSucceeded: allValidStorypointsAreEqual,
-      storypoints
+      estimateSucceeded: allValidStoryPointsAreEqual,
+      storyPoints
     };
 
     const planningRef = this.getPlanningRef(planningId);
@@ -112,21 +112,21 @@ export class PlanningService {
   }
 
   public async resetEstimate(planningId: string) {
-    this.resetStorypoints(planningId);
+    this.resetStoryPoints(planningId);
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: true,
       estimateSucceeded: false,
-      storypoints: 0
+      storyPoints: 0
     };
 
     const planningRef = this.getPlanningRef(planningId);
     await planningRef.update(estimateResult);
   }
 
-  private resetStorypoints(planningId: string) {
+  private resetStoryPoints(planningId: string) {
     this.getDevelopers(planningId).pipe(first()).subscribe(developers => {
       for (const developer of developers) {
-        this.updateStorypoints(planningId, developer.id, null);
+        this.updateStoryPoints(planningId, developer.id, null);
       }
     });
   }
@@ -137,33 +137,33 @@ export class PlanningService {
   }
 }
 
-export function renderStorypoint(storypoints): string {
-  switch (storypoints) {
-    case Storypoints.sHalf:
+export function renderStoryPoint(storyPoints): string {
+  switch (storyPoints) {
+    case StoryPoints.sHalf:
       return '1/2';
-    case Storypoints.s1:
+    case StoryPoints.s1:
       return '1';
-    case Storypoints.s2:
+    case StoryPoints.s2:
       return '2';
-    case Storypoints.s3:
+    case StoryPoints.s3:
       return '3';
-    case Storypoints.s5:
+    case StoryPoints.s5:
       return '5';
-    case Storypoints.s8:
+    case StoryPoints.s8:
       return '8';
-    case Storypoints.s13:
+    case StoryPoints.s13:
       return '13';
-    case Storypoints.s20:
+    case StoryPoints.s20:
       return '20';
-    case Storypoints.s40:
+    case StoryPoints.s40:
       return '40';
-    case Storypoints.s100:
+    case StoryPoints.s100:
       return '100';
-    case Storypoints.unsure:
+    case StoryPoints.unsure:
       return '?';
-    case Storypoints.noway:
+    case StoryPoints.noway:
       return '∞';
-    case Storypoints.coffee:
+    case StoryPoints.coffee:
       return '☕️';
     default:
       return null;

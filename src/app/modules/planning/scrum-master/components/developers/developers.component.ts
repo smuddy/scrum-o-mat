@@ -3,8 +3,8 @@ import {faTimes, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
 import {listAnimation} from '../../../../../animation';
-import {PlanningService, renderStorypoint} from '../../../planning.service';
-import {Storypoints} from '../../../models/storypoints';
+import {PlanningService, renderStoryPoint} from '../../../planning.service';
+import {StoryPoints} from '../../../models/storyPoints';
 import {Developer, DeveloperId} from '../../../models/delevoper';
 
 @Component({
@@ -45,16 +45,16 @@ export class DevelopersComponent implements OnInit {
     await this.adminService.deleteUser(this.planningId, id);
   }
 
-  renderStorypoints(storypoints: Storypoints): string {
-    return renderStorypoint(storypoints);
+  renderStoryPoints(storyPoints: StoryPoints): string {
+    return renderStoryPoint(storyPoints);
 
   }
 
-  public devIsReady(storypoints: Storypoints) {
-    const hasStorypoints = storypoints != null;
-    const unsure = storypoints === Storypoints.unsure;
+  public devIsReady(storyPoints: StoryPoints) {
+    const hasStoryPoints = storyPoints != null;
+    const unsure = storyPoints === StoryPoints.unsure;
 
-    return (!this.showResults && hasStorypoints) || (this.showResults && !unsure);
+    return (!this.showResults && hasStoryPoints) || (this.showResults && !unsure);
   }
 
   public trackById = (index: number, item: DeveloperId) => item.id;

@@ -8,6 +8,9 @@ import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {FormsModule} from '@angular/forms';
 import {AngularFireModule} from '@angular/fire';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AngularFireAuthModule} from '@angular/fire/auth';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {MenuModule} from './shared/menu/menu.module';
 
 @NgModule({
   declarations: [
@@ -20,6 +23,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
+    AngularFireAuthModule,
+    FontAwesomeModule,
+    MenuModule,
     // AngularFirestoreModule.enablePersistence(),
 
 

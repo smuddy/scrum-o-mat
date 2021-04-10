@@ -3,8 +3,8 @@ import {fade, listAnimation} from '../../../../../animation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
-import {PlanningService, renderStorypoint} from '../../../planning.service';
-import {Storypoints} from '../../../models/storypoints';
+import {PlanningService, renderStoryPoint} from '../../../planning.service';
+import {StoryPoints} from '../../../models/storyPoints';
 import {DeveloperId} from '../../../models/delevoper';
 
 declare var fireworks;
@@ -20,11 +20,11 @@ export class DeveloperComponent implements OnInit {
   public subject: string;
   public estimateRequested: boolean;
   public estimateSucceeded: boolean;
-  public storypoints: Storypoints;
+  public storyPoints: StoryPoints;
   public faTimes = faTimes;
   public maxPoints = 1;
   @Input() public developers: DeveloperId[];
-  public selectedStorypoints: { storypoint: Storypoints, count: number }[] = [];
+  public selectedStoryPoints: { storyPoint: StoryPoints, count: number }[] = [];
   private planningId: string;
   private userId: string;
 
@@ -42,19 +42,19 @@ export class DeveloperComponent implements OnInit {
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
       this.developers = _;
 
-      if (!this.developers.find(x => x.storypoints === null)) {
+      if (!this.developers.find(x => x.storyPoints === null)) {
         this.maxPoints = 1;
 
-        this.selectedStorypoints = [];
+        this.selectedStoryPoints = [];
         this.developers.forEach(developer => {
-          const findSelectedStorypoint = this.selectedStorypoints.find(x => x.storypoint === developer.storypoints);
-          if (findSelectedStorypoint) {
-            findSelectedStorypoint.count++;
-            if (findSelectedStorypoint.count > this.maxPoints) {
-              this.maxPoints = findSelectedStorypoint.count;
+          const findSelectedStoryPoint = this.selectedStoryPoints.find(x => x.storyPoint === developer.storyPoints);
+          if (findSelectedStoryPoint) {
+            findSelectedStoryPoint.count++;
+            if (findSelectedStoryPoint.count > this.maxPoints) {
+              this.maxPoints = findSelectedStoryPoint.count;
             }
           } else {
-            this.selectedStorypoints.push({storypoint: developer.storypoints, count: 1});
+            this.selectedStoryPoints.push({storyPoint: developer.storyPoints, count: 1});
           }
 
         });
@@ -70,7 +70,7 @@ export class DeveloperComponent implements OnInit {
         this.subject = planning.subject;
         this.estimateRequested = planning.estimateRequested;
         this.estimateSucceeded = planning.estimateSucceeded;
-        this.storypoints = planning.storypoints;
+        this.storyPoints = planning.storyPoints;
         fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
       }
     });
@@ -82,15 +82,15 @@ export class DeveloperComponent implements OnInit {
 
   }
 
-  public async onCardSelected(storypoints: Storypoints) {
-    await this.planningService.updateStorypoints(this.planningId, this.userId, storypoints);
+  public async onCardSelected(storyPoints: StoryPoints) {
+    await this.planningService.updateStoryPoints(this.planningId, this.userId, storyPoints);
 
   }
 
-  public renderStorypoint = () => renderStorypoint(this.storypoints);
+  public renderStoryPoint = () => renderStoryPoint(this.storyPoints);
 
-  renderStorypoints(storypoints: Storypoints): string {
-    return renderStorypoint(storypoints);
+  renderStoryPoints(storyPoints: StoryPoints): string {
+    return renderStoryPoint(storyPoints);
   }
 
 

@@ -1,7 +1,7 @@
 <div *ngIf="planningId" [@fade] class="div-init">
   <div>Bitte einen Namen eingeben um an der Schätzung teilzunehmen</div>
   <div class="div-estimate-id">
-    <input (keyup.enter)="goDeveloper()" [(ngModel)]="user" placeholder="Name" name="Name" type="text">
+    <input (keyup.enter)="goDeveloper()" [(ngModel)]="user" name="Name" placeholder="Name" type="text">
   </div>
   <button (click)="goDeveloper()">Teilnehmen</button>
   <button (click)="goDeveloperLastSession()" *ngIf="hasLastSession()">letzter Session beitreten</button>

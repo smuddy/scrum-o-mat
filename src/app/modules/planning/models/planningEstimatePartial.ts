@@ -1,7 +1,7 @@
-import {Storypoints} from './storypoints';
+import {StoryPoints} from './storyPoints';
 
 export interface PlanningEstimatePartial {
   estimateRequested: boolean;
   estimateSucceeded: boolean;
-  storypoints: Storypoints;
+  storyPoints: StoryPoints;
 }

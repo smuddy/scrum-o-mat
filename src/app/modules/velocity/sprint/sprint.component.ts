@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {mergeMap} from 'rxjs/operators';
 import {VelocityService} from '../velocity.service';
+import {Staff} from '../models/velocity';
 
 @Component({
   selector: 'app-sprint',
@@ -30,4 +31,6 @@ export class SprintComponent {
   addStaff(id: number) {
     this.velocityService.addStaff(id);
   }
+
+  sumDays = (availableStaff: Staff[])  => availableStaff.reduce((pv, cv) => pv + cv.days, 0);
 }

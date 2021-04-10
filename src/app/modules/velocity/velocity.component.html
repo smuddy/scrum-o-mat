@@ -20,7 +20,7 @@
     <div [routerLink]="'/velocity/' + sprint.sprintNumber" class="fromDate"><span
       class="kw">{{sprint.toDate|date:'w'}}</span>{{sprint.toDate|date:'dd.MM.YYYY'}}</div>
     <div [routerLink]="'/velocity/' + sprint.sprintNumber"
-         class="pointsPlaned">{{sprint.pointsPlaned|number:'1.0-0'}}</div>
+         class="pointsPlaned" [class.forecast]="sprint.isForecast">{{sprint.pointsPlaned|number:'1.0-0'}}</div>
     <div [routerLink]="'/velocity/' + sprint.sprintNumber"
          class="pointsAchieved">{{sprint.pointsAchieved|number:'1.0-0'}}</div>
     <div [routerLink]="'/velocity/' + sprint.sprintNumber"

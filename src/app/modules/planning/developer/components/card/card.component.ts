@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Storypoints} from '../../../models/storypoints';
-import {renderStorypoint} from '../../../planning.service';
+import {StoryPoints} from '../../../models/storyPoints';
+import {renderStoryPoint} from '../../../planning.service';
 
 @Component({
   selector: 'app-card',
@@ -8,6 +8,6 @@ import {renderStorypoint} from '../../../planning.service';
   styleUrls: ['./card.component.less']
 })
 export class CardComponent {
-  @Input() storypoint: Storypoints;
-  public renderStorypoint = renderStorypoint;
+  @Input() storyPoint: StoryPoints;
+  public renderStoryPoint = renderStoryPoint;
 }

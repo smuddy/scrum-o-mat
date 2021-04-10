@@ -48,6 +48,15 @@ export class InitComponent implements OnInit {
     }
   }
 
+  public hasLastSession(): boolean {
+    return !!localStorage.getItem('last-session');
+  }
+
+  public async goDeveloperLastSession(): Promise<void> {
+    const userId = localStorage.getItem('last-session');
+    await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
+  }
+
   private paramsChanged(params) {
     this.planningId = params.session;
     this.planningService.getPlanning(params.session).subscribe(_ => this.planningChanged(_));
@@ -57,14 +66,5 @@ export class InitComponent implements OnInit {
     if (!_) {
       this.router.navigateByUrl('/');
     }
-  }
-
-  public hasLastSession(): boolean {
-    return !!localStorage.getItem('last-session');
-  }
-
-  public async goDeveloperLastSession(): Promise<void> {
-    const userId = localStorage.getItem('last-session');
-    await this.router.navigateByUrl('/' + this.planningId + '/' + userId );
   }
 }
