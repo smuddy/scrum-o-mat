@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {faBars} from '@fortawesome/free-solid-svg-icons/faBars';
+import {MenuService} from './shared/menu/menu.service';
 
 @Component({
   selector: 'app-root',
@@ -7,17 +8,20 @@ import {faBars} from '@fortawesome/free-solid-svg-icons/faBars';
   styleUrls: ['./app.component.less'],
 })
 export class AppComponent {
-  public menuVisible = false;
   public faBars = faBars;
+  public menuOpen: boolean;
+
+  constructor(
+    private menuService: MenuService,
+  ) {
+    menuService.menuOpen$.subscribe(_ => this.menuOpen = _);
+  }
 
   public onClickMenuButton() {
-    this.menuVisible = !this.menuVisible;
+    this.menuService.toggleMenu();
   }
 
   public onClickOutlet(event) {
-    if (this.menuVisible) {
-      this.menuVisible = false;
-      event.stopPropagation();
-    }
+    this.menuService.closeMenu();
   }
 }

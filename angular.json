@@ -16,6 +16,22 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
+          "allowedCommonJsDependencies": [
+            "qrcode",
+            "lodash",
+            "firebase",
+            "@zxing/library",
+            "@angular/common/locales/fr",
+            "lodash/dropRight",
+            "@firebase/app",
+            "@firebase/auth",
+            "firebase/app",
+            "@firebase/database",
+            "@firebase/firestore",
+            "@firebase/functions",
+            "@firebase/performance",
+            "@firebase/remote-config"
+          ],
           "options": {
             "outputPath": "dist/scrum-o-mat",
             "index": "src/index.html",

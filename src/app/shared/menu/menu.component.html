@@ -4,7 +4,16 @@
   <div class="version">v{{version}}</div>
   </div>
 
-  <a *ngIf="!(loggedIn|async)" routerLink="/login">Anmelden</a>
-  <div *ngIf="loggedIn|async" (click)="logout()">Abmelden</div>
-  <div *ngFor="let entry of menuEntries$|async" (click)="entry.action()">{{entry.name}}</div>
+  <div *ngIf="!(loggedIn|async)" (click)="login()" class="menu-item">Anmelden</div>
+  <div *ngIf="loggedIn|async" (click)="logout()" class="menu-item">Abmelden</div>
+  <ng-container *ngFor="let entry of menuEntries$|async" >
+    <div *ngIf="!entry.confirm" (click)="entry.action(); closeMenu()" class="menu-item">{{entry.name}}</div>
+
+    <div *ngIf="entry.confirm" (click)="entry.open=!entry.open" class="menu-item">{{entry.name}}{{entry.open?'?':''}}
+      <div *ngIf="entry.open" class="confirm">
+        <fa-icon class="button" [icon]="faCheck" (click)="entry.action(); closeMenu()"></fa-icon>
+      </div>
+    </div>
+
+  </ng-container>
 </aside>

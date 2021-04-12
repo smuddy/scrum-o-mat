@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {faClipboard} from '@fortawesome/free-solid-svg-icons/faClipboard';
 import {faQrcode} from '@fortawesome/free-solid-svg-icons/faQrcode';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
-import {fadeTranslate} from '../../../../../animation';
+import {fadeBlur, fadeTranslate} from '../../../../../animation';
 import {StoryPoints} from '../../../models/storyPoints';
 import {PlanningService} from '../../../planning.service';
 import {DeveloperId} from '../../../models/delevoper';
@@ -17,7 +17,7 @@ declare var fireworks;
   selector: 'app-scrum-master',
   templateUrl: './scrum-master.component.html',
   styleUrls: ['./scrum-master.component.less'],
-  animations: [fadeTranslate]
+  animations: [fadeTranslate, fadeBlur]
 })
 export class ScrumMasterComponent implements OnInit, OnDestroy {
   public planningId: string;
@@ -35,6 +35,11 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
     private menuService: MenuService,
   ) {
     activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
+    menuService.menuOpen$.subscribe(_ => {
+      if (_) {
+        this.showQrCode = false;
+      }
+    });
   }
 
   ngOnInit() {

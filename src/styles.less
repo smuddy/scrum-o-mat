@@ -10,7 +10,7 @@ body {
   min-height: 100vh;
 
   width: 100vw;
-  overflow-x: hidden;
+  overflow: hidden;
 
   input {
     color: inherit;
@@ -22,6 +22,26 @@ body {
     width: 100%;
     text-align: center;
     font-family: 'Roboto Condensed', sans-serif;
+    &.form {
+      margin: 0;
+      padding: 0;
+      border-bottom: 1px solid #fff8;
+      text-align: left;
+      &.center {
+        text-align: center;
+      }
+    }
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 
   button {
@@ -60,12 +80,12 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    background: #9997;
 
     img {
       margin: auto;
       width: 90vh;
       box-shadow: 0 19px 38px rgba(0, 0, 0, 0.50), 0 15px 12px rgba(0, 0, 0, 0.52);
+      border-radius: 40px;
     }
   }
 }

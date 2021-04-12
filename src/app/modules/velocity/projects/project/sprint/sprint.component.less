@@ -10,8 +10,8 @@ h1 {
 }
 
 .sprint {
-  width: 600px;
-  border: #fff 1px solid;
+  width: 1000px;
+  // border: #fff 1px solid;
   border-radius: 8px;
   /* padding: 20px; */
   margin: 20px;
@@ -32,9 +32,24 @@ h1 {
 
 .staff {
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
+  grid-template-columns: 50px 3fr 1fr 1fr;
 }
 
 .center {
   text-align: center;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.trash {
+  opacity: 0;
+  margin-right: 10px;
+}
+
+.staff:hover .trash {
+  opacity: unset;
 }

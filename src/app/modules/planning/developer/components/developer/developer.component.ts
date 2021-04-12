@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {fade, listAnimation} from '../../../../../animation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
@@ -6,6 +6,7 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 import {PlanningService, renderStoryPoint} from '../../../planning.service';
 import {StoryPoints} from '../../../models/storyPoints';
 import {DeveloperId} from '../../../models/delevoper';
+import {MenuService} from '../../../../../shared/menu/menu.service';
 
 declare var fireworks;
 
@@ -15,7 +16,7 @@ declare var fireworks;
   styleUrls: ['./developer.component.less'],
   animations: [fade, listAnimation]
 })
-export class DeveloperComponent implements OnInit {
+export class DeveloperComponent implements OnInit, OnDestroy {
   public issue: string;
   public subject: string;
   public estimateRequested: boolean;
@@ -28,15 +29,20 @@ export class DeveloperComponent implements OnInit {
   private planningId: string;
   private userId: string;
 
-  constructor(activatedRoute: ActivatedRoute, private planningService: PlanningService, private router: Router,
-              private adminService: AdminService) {
+  constructor(
+    activatedRoute: ActivatedRoute,
+    private planningService: PlanningService,
+    private router: Router,
+    private adminService: AdminService,
+    private menuService: MenuService,
+  ) {
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
       this.userId = _.userId;
     });
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     window.scrollTo(0, 0);
 
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
@@ -80,11 +86,14 @@ export class DeveloperComponent implements OnInit {
       }
     });
 
+    this.menuService.resetCustomActions();
+    this.menuService.addCustomAction('Planung verlassen', () => this.logout());
   }
+
+  public ngOnDestroy = () => this.menuService.resetCustomActions();
 
   public async onCardSelected(storyPoints: StoryPoints) {
     await this.planningService.updateStoryPoints(this.planningId, this.userId, storyPoints);
-
   }
 
   public renderStoryPoint = () => renderStoryPoint(this.storyPoints);
@@ -92,7 +101,6 @@ export class DeveloperComponent implements OnInit {
   renderStoryPoints(storyPoints: StoryPoints): string {
     return renderStoryPoint(storyPoints);
   }
-
 
   public async logout() {
     localStorage.removeItem('last-session');

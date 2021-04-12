@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class LoginService {
   ) {
   }
 
-  public authState = () => this.afAuth.authState;
+  public authState$ = () => this.afAuth.authState;
+  public currentUserId$ = () => this.authState$().pipe(map(_ => _.uid));
 
   public async login(email: string, pass: string): Promise<string | null> {
     try {

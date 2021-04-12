@@ -1,15 +1,16 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-
-import {VelocityComponent} from './velocity.component';
-import {SprintComponent} from './sprint/sprint.component';
+import {SprintComponent} from './projects/project/sprint/sprint.component';
+import {ProjectsComponent} from './projects/projects.component';
+import {ProjectComponent} from './projects/project/project.component';
 
 const routes: Routes = [
   {
-    path: '', component: VelocityComponent,
+    path: '', component: ProjectsComponent,
     pathMatch: 'full',
   },
-  {path: ':id', component: SprintComponent},
+  {path: ':projectId', component: ProjectComponent},
+  {path: ':projectId/:sprintId', component: SprintComponent},
 ];
 
 @NgModule({

@@ -1,0 +1,9 @@
+<div *ngIf="projects$|async as projects" @fadeTranslate class="projects">
+  <h1>Velocity Planung</h1>
+
+  <div *ngIf="projects.length!==0" class="list">
+    <div *ngFor="let project of projects" [routerLink]="project.id" class="project">{{project.name}}</div>
+  </div>
+
+  <div *ngIf="projects.length===0">Es sind noch keine Projekte vorhanden.</div>
+</div>

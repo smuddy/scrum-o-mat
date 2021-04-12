@@ -1,10 +1,4 @@
-
 <div class="div-scrum-master">
-  <div class="div-planning-id">
-    <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
-    <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
-    &nbsp;
-    {{link()}} </div>
 
   <app-edit-issue [middle]="!(planning && planning.issue)" [planningId]="planningId"
                   class="div-edit-issue"></app-edit-issue>
@@ -23,7 +17,15 @@
     </app-developers>
   </div>
 
+  <div class="div-planning-id">
+    <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
+    <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
+    &nbsp;
+    {{link()}}
+  </div>
 </div>
 
-<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [value]="link()">
+
+<div *ngIf="showQrCode" @fadeBlur class="qrcode-background"></div>
+<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [scale]="10" [value]="link()">
 </ngx-qrcode>

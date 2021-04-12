@@ -2,21 +2,24 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {VelocityRoutingModule} from './velocity-routing.module';
-import {VelocityComponent} from './velocity.component';
-import {SprintComponent} from './sprint/sprint.component';
+import {ProjectComponent} from './projects/project/project.component';
+import {SprintComponent} from './projects/project/sprint/sprint.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {EditDateComponent} from './sprint/edit-date/edit-date.component';
-import {EditNumberComponent} from './sprint/edit-number/edit-number.component';
-import {EditTextComponent} from './sprint/edit-text/edit-text.component';
+import {EditDateComponent} from './projects/project/sprint/edit-date/edit-date.component';
+import {EditNumberComponent} from './projects/project/sprint/edit-number/edit-number.component';
+import {EditTextComponent} from './projects/project/sprint/edit-text/edit-text.component';
+import {ProjectsComponent} from './projects/projects.component';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 
 @NgModule({
-  declarations: [VelocityComponent, SprintComponent, EditDateComponent, EditNumberComponent, EditTextComponent],
+  declarations: [ProjectComponent, SprintComponent, EditDateComponent, EditNumberComponent, EditTextComponent, ProjectsComponent],
   imports: [
     CommonModule,
     VelocityRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    FontAwesomeModule,
 
   ]
 })

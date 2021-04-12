@@ -1,0 +1,41 @@
+<div *ngIf="project$|async as velocity" @fadeTranslate>
+
+
+  <div class="sprints">
+    <h1>
+      <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="velocity.name"></app-edit-text>
+    </h1>
+
+    <div *ngIf="velocity.sprints.length" class="sprint table-head">
+      <div class="head"></div>
+      <div class="head"></div>
+      <div class="head"></div>
+      <div class="head head-points points">Story Points</div>
+      <div class="head head-velocity velocity">Velocity</div>
+
+      <div class="head">Sprint</div>
+      <div class="head">von</div>
+      <div class="head">bis</div>
+      <div class="head head-points">soll</div>
+      <div class="head head-points">ist</div>
+      <div class="head head-velocity">soll</div>
+      <div class="head head-velocity">ist</div>
+    </div>
+
+    <div *ngFor="let sprint of velocity.sprints" [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
+         class="sprint"
+    >
+      <div class="sprint-number">{{sprint.sprintNumber}}</div>
+      <div class="fromDate"><span
+        class="kw">{{sprint.fromDate.toDate()|date:'w'}}</span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</div>
+      <div class="fromDate"><span
+        class="kw">{{sprint.toDate.toDate()|date:'w'}}</span>{{sprint.toDate.toDate()|date:'dd.MM.YYYY'}}</div>
+      <div [class.forecast]="sprint.isForecast" class="pointsPlaned">{{sprint.pointsPlaned|number:'1.0-0'}}</div>
+      <div class="pointsAchieved">{{sprint.pointsAchieved|number:'1.0-0'}}</div>
+      <div class="velocityPlaned">{{sprint.velocityPlaned|number:'1.2-2'}}</div>
+      <div class="velocityAchieved">{{sprint.velocityAchieved|number:'1.2-2'}}</div>
+    </div>
+  </div>
+
+  <div *ngIf="velocity.sprints.length === 0">Es sind noch keine Sprints vorhanden</div>
+</div>

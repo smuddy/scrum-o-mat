@@ -33,13 +33,15 @@ aside {
   }
 }
 
-a, div:not(.version):not(.head) {
+a, div.menu-item {
   color: unset;
   text-decoration: none;
   width: 300px;
   display: flex;
   align-items: center;
   padding: 20px;
+  box-sizing: border-box;
+  justify-content: space-between;
   &:hover {
     background: #fff1;
     cursor: pointer;

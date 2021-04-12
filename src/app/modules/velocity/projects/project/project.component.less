@@ -1,0 +1,69 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sprints {
+  width: 1000px;
+  //border: #fff 1px solid;
+  border-radius: 8px;
+  overflow: hidden;
+
+
+  .sprint {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+    ". . . points points velocity velocity"
+    ". . . . . . .";
+
+    &:not(.table-head):hover {
+      background-color: #fff2;
+      cursor: pointer;
+    }
+
+    &.table-head {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      overflow: hidden;
+    }
+
+    > * {
+      padding: 5px;
+      text-align: center;
+    }
+  }
+
+  .points {
+    grid-area: points;
+  }
+
+  .velocity {
+    grid-area: velocity;
+  }
+
+  .forecast {
+    color: #ff9900;
+  }
+
+  .head {
+    padding: 5px 0;
+    background: #fff3;
+
+    &.head-points {
+      background: #52acf177;
+    }
+
+    &.head-velocity {
+      background: #ff990077;
+    }
+  }
+
+  .kw {
+    font-size: 0.5em;
+    color: #fff5;
+    margin-right: 5px;
+  }
+}

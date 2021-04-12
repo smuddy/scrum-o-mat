@@ -1,11 +1,12 @@
-<div [class.menu-open]="menuVisible" class="main">
+<div [class.menu-open]="menuOpen" class="main">
   <div class="menu-button">
     <fa-icon (click)="onClickMenuButton()" [icon]="faBars" class="button"></fa-icon>
   </div>
   <div class="menu">
-    <app-menu [visible]="menuVisible"></app-menu>
+    <app-menu [visible]="menuOpen"></app-menu>
   </div>
-  <div (click)="onClickOutlet($event)" class="outlet">
+  <div class="outlet">
     <router-outlet></router-outlet>
   </div>
+  <div class="outlet backdrop" *ngIf="menuOpen" (click)="onClickMenuButton()"></div>
 </div>

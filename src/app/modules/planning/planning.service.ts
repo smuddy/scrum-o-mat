@@ -82,13 +82,11 @@ export class PlanningService {
     console.log({userId, partial});
   }
 
-
   public getDevelopers(planningId: string): Observable<DeveloperId[]> {
     const planningRef = this.afs.doc<Planning>('planning/' + planningId);
     const developerCollection = planningRef.collection<DeveloperId>('developer');
     return developerCollection.valueChanges({idField: 'id'});
   }
-
 
   public getDeveloper(planningId: string, userId: string): Observable<Developer> {
     const planningRef = this.getPlanningRef(planningId);

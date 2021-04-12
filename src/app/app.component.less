@@ -4,11 +4,16 @@
   left: 0;
   bottom: 0;
   right: 0;
-  transition: all 320ms ease-in-out;
+  transition: all 300ms ease-in-out;
+}
+
+.backdrop {
+  background: #0000;
+  filter: none;
 }
 
 .main.menu-open .outlet {
-  transform: translateX(-320px);
+  transform: translateX(-300px);
   filter: blur(8px);
   //transition: all 300ms ease-out;
 }
@@ -24,3 +29,4 @@
   right: 20px;
   z-index: 1;
 }
+

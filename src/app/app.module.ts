@@ -22,7 +22,7 @@ import {MenuModule} from './shared/menu/menu.module';
     FormsModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
     AngularFireAuthModule,
     FontAwesomeModule,
     MenuModule,
