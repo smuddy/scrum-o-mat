@@ -1,0 +1,52 @@
+<div class="div-subject">{{subject}}</div>
+<div *ngIf="!issue" [@fade] class="div-waiting">Warte auf neue Schätzung</div>
+
+
+<div *ngIf="issue" [@fade]>
+  <div class="div-issue">{{issue}}</div>
+  <div class="div-issue" *ngIf="estimateRequested" [@fade]>
+    Schätzung wird durchgeführt
+  </div>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStoryPoint()}}</div>
+  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
+  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue">
+    Wir müssen reden ...
+    <div [@listAnimation]="selectedStoryPoints.length" class="div-graph">
+      <div *ngFor="let selectedStoryPoint of selectedStoryPoints|orderBy: 'storyPoint'" class="div-graph-row">
+        <div class="div-story-point">{{renderStoryPoints(selectedStoryPoint.storyPoint)}}</div>
+        <div [ngStyle]="{'width' :  getWidthPercentage(selectedStoryPoint.count)  +'vw'}"
+             class="div-result" title={{selectedStoryPoint.count}}></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="wrapper" *ngIf="issue && estimateRequested" [@fade]>
+  <circle-progress
+    [percent]="chosenPercent"
+    [radius]="100"
+    [outerStrokeWidth]="16"
+    [outerStrokeColor]="'#fff8'"
+    [innerStrokeColor]="'#fff3'"
+    [animation]="true"
+    [animationDuration]="300"
+    [startFromZero]="false"
+    [showSubtitle]="false"
+    unitsColor="#fff5"
+    titleColor="#fff5"
+  ></circle-progress>
+  <ul class="bg-bubbles">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+</div>

@@ -54,7 +54,11 @@ export class InitComponent implements OnInit {
 
   public async goDeveloperLastSession(): Promise<void> {
     const userId = localStorage.getItem('last-session');
-    await this.router.navigateByUrl('/' + this.planningId + '/' + userId);
+    await this.router.navigateByUrl('/planning/' + this.planningId + '/' + userId);
+  }
+
+  public async goGuest(): Promise<void> {
+    await this.router.navigateByUrl('/planning/' + this.planningId + '/guest');
   }
 
   private paramsChanged(params) {
