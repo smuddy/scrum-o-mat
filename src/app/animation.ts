@@ -31,6 +31,21 @@ export const fadeTranslate = trigger('fadeTranslate', [
     animate('300ms ease-in', style({opacity: 0, transform: 'translateY(10px) scale(0.98)'})),
   ])
 ]);
+export const fadeTranslateInstant = trigger('fadeTranslateInstant', [
+
+  // fade in when created. this could also be written as transition('void => *')
+  transition(':enter', [
+    style({opacity: 0, transform: 'translateY(-10px) scale(1.01)'}),
+    animate('300ms ease-out', style({opacity: 1, transform: 'translateY(0px) scale(1)'}))
+  ]),
+
+  // fade out when destroyed. this could also be written as transition('void => *')
+  transition(':leave', [
+    style({opacity: 1, 'max-height': '800px'}),
+    animate('300ms ease-in', style({opacity: 0, transform: 'translateY(10px) scale(0.99)'})),
+  ])
+]);
+
 export const fadeBlur = trigger('fadeBlur', [
 
   // fade in when created. this could also be written as transition('void => *')

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
+   sodipodi:docname="logo_only.svg"
+   id="svg847"
+   version="1.1"
+   height="29"
+   width="29"
+   viewBox="0 0 28.999999 29">
+  <metadata
+     id="metadata853">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs851" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg847"
+     inkscape:window-maximized="1"
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:cy="14.5"
+     inkscape:cx="101.05"
+     inkscape:zoom="3.3102424"
+     showgrid="false"
+     id="namedview849"
+     inkscape:window-height="1067"
+     inkscape:window-width="1792"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     inkscape:document-rotation="0"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <line
+     id="line835"
+     stroke-linecap="round"
+     stroke="#ffffff"
+     y2="28.42"
+     x2="164.064"
+     y1="0.57999998"
+     x1="164.064" />
+  <g
+     id="g845"
+     transform="matrix(0.30851064,0,0,0.30851064,-0.92553191,-0.92553191)"
+     color="#ffffff"
+     fill="#ffffff">
+    <svg
+       id="svg843"
+       version="1.1"
+       viewBox="0 0 100 100"
+       y="0.0"
+       x="0.0"
+       height="100"
+       width="100">
+      <g
+         id="g841">
+        <path
+           inkscape:connector-curvature="0"
+           id="path837"
+           d="m 50,18.8 c -8.3,0 -16.2,3.3 -22.1,9.2 -12.2,12.2 -12.2,32 0,44.2 6.1,6 14.1,9 22.1,9 8,0 16,-3 22.1,-9.1 12.2,-12.2 12.2,-32 0,-44.2 C 66.2,22 58.3,18.8 50,18.8 Z m -15.8,47 C 27.7,59.3 26,49.6 29.3,41.6 l 11.9,6.6 c -0.6,2.9 0.2,6 2.4,8.2 1.8,1.6 4,2.6 6.4,2.6 0.6,0 1.3,-0.1 1.9,-0.2 l 6.6,11.9 C 50.4,74 40.8,72.3 34.2,65.8 Z M 70.7,58.5 58.8,51.9 c 0.6,-2.9 -0.2,-6 -2.4,-8.2 -2.2,-2.2 -5.3,-3 -8.2,-2.4 L 41.6,29.4 c 2.6,-1.1 5.5,-1.7 8.5,-1.7 6,0 11.6,2.3 15.8,6.5 6.4,6.6 8.1,16.2 4.8,24.3 z" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path839"
+           d="M 86.8,3 H 13.2 C 7.6,3 3,7.6 3,13.2 V 86.8 C 3,92.4 7.6,97 13.2,97 H 86.8 C 92.4,97 97,92.4 97,86.8 V 13.2 C 97,7.6 92.4,3 86.8,3 Z m 0.7,83.8 c 0,0.4 -0.3,0.7 -0.7,0.7 H 13.2 c -0.4,0 -0.7,-0.3 -0.7,-0.7 V 13.2 c 0,-0.4 0.3,-0.7 0.7,-0.7 h 73.6 c 0.4,0 0.7,0.3 0.7,0.7 z" />
+      </g>
+    </svg>
+  </g>
+  <g
+     fill="#ffffff"
+     color="#ffffff"
+     transform="matrix(0.29,0,0,0.29,119.93124,39.876683)"
+     id="g845-5">
+    <svg
+       width="100"
+       height="100"
+       x="0.0"
+       y="0.0"
+       viewBox="0 0 100 100"
+       version="1.1"
+       id="svg843-4">
+      <g
+         id="g841-9">
+        <path
+           d="m 50,18.8 c -8.3,0 -16.2,3.3 -22.1,9.2 -12.2,12.2 -12.2,32 0,44.2 6.1,6 14.1,9 22.1,9 8,0 16,-3 22.1,-9.1 12.2,-12.2 12.2,-32 0,-44.2 C 66.2,22 58.3,18.8 50,18.8 Z m -15.8,47 C 27.7,59.3 26,49.6 29.3,41.6 l 11.9,6.6 c -0.6,2.9 0.2,6 2.4,8.2 1.8,1.6 4,2.6 6.4,2.6 0.6,0 1.3,-0.1 1.9,-0.2 l 6.6,11.9 C 50.4,74 40.8,72.3 34.2,65.8 Z M 70.7,58.5 58.8,51.9 c 0.6,-2.9 -0.2,-6 -2.4,-8.2 -2.2,-2.2 -5.3,-3 -8.2,-2.4 L 41.6,29.4 c 2.6,-1.1 5.5,-1.7 8.5,-1.7 6,0 11.6,2.3 15.8,6.5 6.4,6.6 8.1,16.2 4.8,24.3 z"
+           id="path837-4"
+           inkscape:connector-curvature="0" />
+        <path
+           d="M 86.8,3 H 13.2 C 7.6,3 3,7.6 3,13.2 V 86.8 C 3,92.4 7.6,97 13.2,97 H 86.8 C 92.4,97 97,92.4 97,86.8 V 13.2 C 97,7.6 92.4,3 86.8,3 Z m 0.7,83.8 c 0,0.4 -0.3,0.7 -0.7,0.7 H 13.2 c -0.4,0 -0.7,-0.3 -0.7,-0.7 V 13.2 c 0,-0.4 0.3,-0.7 0.7,-0.7 h 73.6 c 0.4,0 0.7,0.3 0.7,0.7 z"
+           id="path839-8"
+           inkscape:connector-curvature="0" />
+      </g>
+    </svg>
+  </g>
+</svg>

@@ -6,13 +6,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {map, mergeMap} from 'rxjs/operators';
 import {ProjectService} from '../project.service';
 import {MenuService} from '../../../../shared/menu/menu.service';
-import {fadeTranslate} from '../../../../animation';
+import {fadeTranslateInstant} from '../../../../animation';
 
 @Component({
   selector: 'app-velocity',
   templateUrl: './project.component.html',
   styleUrls: ['./project.component.less'],
-  animations: [fadeTranslate],
+  animations: [fadeTranslateInstant],
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   public project$: Observable<Project> = this.activatedRoute.params.pipe(

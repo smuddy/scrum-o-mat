@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {fade} from '../../../animation';
+import {fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {Planning} from '../models/planning';
 
@@ -8,7 +8,7 @@ import {Planning} from '../models/planning';
   selector: 'app-init',
   templateUrl: './init.component.html',
   styleUrls: ['./init.component.less'],
-  animations: [fade]
+  animations: [fadeTranslateInstant]
 })
 export class InitComponent implements OnInit {
   public planningId: string;

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {fade} from '../../animation';
+import {fadeTranslateInstant} from '../../animation';
 import {FormControl, Validators} from '@angular/forms';
 import {LoginService} from './login.service';
 
@@ -7,7 +7,7 @@ import {LoginService} from './login.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.less'],
-  animations: [fade]
+  animations: [fadeTranslateInstant]
 })
 export class LoginComponent implements OnInit {
   public email = new FormControl('', [Validators.required, Validators.email]);

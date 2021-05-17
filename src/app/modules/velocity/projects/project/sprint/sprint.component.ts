@@ -6,14 +6,14 @@ import {Project, Staff} from '../../../models/project';
 import {Observable} from 'rxjs';
 import {ProjectService} from '../../project.service';
 import {MenuService} from '../../../../../shared/menu/menu.service';
-import {fadeTranslate} from '../../../../../animation';
+import {fadeTranslateInstant} from '../../../../../animation';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 
 @Component({
   selector: 'app-sprint',
   templateUrl: './sprint.component.html',
   styleUrls: ['./sprint.component.less'],
-  animations: [fadeTranslate],
+  animations: [fadeTranslateInstant],
 })
 export class SprintComponent implements OnInit, OnDestroy {
   public sprint$ = this.activatedRoute.params.pipe(

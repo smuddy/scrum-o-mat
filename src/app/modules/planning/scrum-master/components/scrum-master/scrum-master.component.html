@@ -3,7 +3,7 @@
   <app-edit-issue [middle]="!(planning && planning.issue)" [planningId]="planningId"
                   class="div-edit-issue"></app-edit-issue>
 
-  <div *ngIf="planning && planning.issue" [@fadeTranslate] class="div-results">
+  <div *ngIf="planning && planning.issue" @fadeTranslateInstant class="div-results">
     <app-dashboard
       [estimateFailed]="estimateFailed()"
       [estimateRequested]="estimateRequested()"
@@ -12,12 +12,12 @@
     ></app-dashboard>
     <app-developers [developers]="developers" [showResults]="!estimateRequested()">
       <div class="div-repeat">
-        <button (click)="requestEstimate()" *ngIf="estimateFailed()" [@fadeTranslate]>Schätzung wiederholen</button>
+        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen</button>
       </div>
     </app-developers>
   </div>
 
-  <div class="div-planning-id">
+  <div class="div-planning-id" @fadeTranslateInstant>
     <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
     <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
     &nbsp;
@@ -27,5 +27,5 @@
 
 
 <div *ngIf="showQrCode" @fadeBlur class="qrcode-background"></div>
-<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" [@fadeTranslate] [scale]="10" [value]="link()">
+<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" @fadeTranslateInstant [scale]="10" [value]="link()">
 </ngx-qrcode>

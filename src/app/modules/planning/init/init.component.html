@@ -1,4 +1,4 @@
-<div *ngIf="planningId" @fade class="div-init">
+<div *ngIf="planningId" @fadeTranslateInstant class="div-init">
   <div>Bitte einen Namen eingeben um an der Schätzung teilzunehmen</div>
   <div class="div-estimate-id">
     <input (keyup.enter)="goDeveloper()" [(ngModel)]="user" name="Name" placeholder="Name" type="text">
@@ -9,7 +9,7 @@
 </div>
 
 
-<div *ngIf="!planningId" [@fade] class="div-init">
+<div *ngIf="!planningId" @fadeTranslateInstant class="div-init">
   <div>Bitte eine Sessionbeschreibung eingeben um die Schätzung zu starten</div>
   <div class="div-estimate-id">
     <input (keyup.enter)="goMaster()" [(ngModel)]="subject" placeholder="Beschreibung" type="text">

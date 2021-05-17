@@ -4,13 +4,13 @@ import {Observable} from 'rxjs';
 import {ProjectId} from '../models/project';
 import {LoginService} from '../../login/login.service';
 import {MenuService} from '../../../shared/menu/menu.service';
-import {fadeTranslate} from '../../../animation';
+import {fadeTranslateInstant} from '../../../animation';
 
 @Component({
   selector: 'app-velocity-list',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.less'],
-  animations: [fadeTranslate],
+  animations: [fadeTranslateInstant],
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   public projects$: Observable<ProjectId[]>;
