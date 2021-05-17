@@ -16,22 +16,6 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
-          "allowedCommonJsDependencies": [
-            "qrcode",
-            "lodash",
-            "firebase",
-            "@zxing/library",
-            "@angular/common/locales/fr",
-            "lodash/dropRight",
-            "@firebase/app",
-            "@firebase/auth",
-            "firebase/app",
-            "@firebase/database",
-            "@firebase/firestore",
-            "@firebase/functions",
-            "@firebase/performance",
-            "@firebase/remote-config"
-          ],
           "options": {
             "outputPath": "dist/scrum-o-mat",
             "index": "src/index.html",
@@ -46,7 +30,12 @@
               "src/styles.less"
             ],
             "scripts": [],
-            "aot": true
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -59,7 +48,6 @@
               "optimization": true,
               "outputHashing": "all",
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,

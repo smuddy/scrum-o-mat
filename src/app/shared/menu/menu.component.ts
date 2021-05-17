@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {MenuService} from './menu.service';
 import {Router} from '@angular/router';
-import {version} from '../../../../package.json';
+import version from '../../../../package.json';
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 
@@ -17,7 +17,7 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 })
 export class MenuComponent implements OnInit {
   @Input() visible = false;
-  public version = version;
+  public version = version.version;
   public loggedIn: Observable<boolean> = this.loginService.authState$().pipe(map(_ => !!_));
   public menuEntries$: Observable<{ name: string; action: () => void, confirm?: boolean, open?: boolean }[]>;
   public faCheck = faCheck;
