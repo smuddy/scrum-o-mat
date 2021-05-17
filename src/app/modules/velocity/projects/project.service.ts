@@ -3,6 +3,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {Observable} from 'rxjs';
 import {Project, ProjectId, ProjectOwner} from '../models/project';
 import {LoginService} from '../../login/login.service';
+import {mergeMap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +17,11 @@ export class ProjectService {
     private afs: AngularFirestore,
     private loginService: LoginService,
   ) {
-    this.projectCollection = afs.collection<Project>('project');
-    this.projects = this.projectCollection.valueChanges({idField: 'id'});
+
+    this.projectCollection = afs.collection<Project>('project', _ => _.where('owner', '==', 'x'));
+    this.projects = loginService.currentUserId$().pipe(
+      mergeMap(userId => afs.collection<Project>('project', _ => _.where('owner', '==', userId)).valueChanges({idField: 'id'}))
+    );
   }
 
   public getProjects(): Observable<ProjectId[] | undefined> {
