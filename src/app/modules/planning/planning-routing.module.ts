@@ -5,6 +5,7 @@ import {ScrumMasterComponent} from './scrum-master/components/scrum-master/scrum
 import {DeveloperComponent} from './developer/components/developer/developer.component';
 import {QrcodeComponent} from './qrcode/components/qrcode/qrcode.component';
 import {InitComponent} from './init/init.component';
+import {GuestComponent} from './guest/guest.component';
 
 
 const routes: Routes = [{
@@ -23,6 +24,10 @@ const routes: Routes = [{
   {
     path: ':planningId/master',
     component: ScrumMasterComponent,
+  },
+  {
+    path: ':planningId/guest',
+    component: GuestComponent,
   },
   {
     path: ':planningId/:userId',

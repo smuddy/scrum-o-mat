@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {VelocityService} from './velocity.service';
 import {Observable} from 'rxjs';
-import {Project} from '../../models/project';
+import {Project, Staff} from '../../models/project';
 import {ActivatedRoute, Router} from '@angular/router';
 import {map, mergeMap} from 'rxjs/operators';
 import {ProjectService} from '../project.service';
@@ -47,5 +47,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private deleteProject() {
     this.router.navigateByUrl('/velocity');
     return this.projectService.deleteProject(this.projectId);
+  }
+
+  calcAvailableStaff(availableStaff: Staff[]) {
+    return availableStaff.reduce((count, staff) => count + staff.days * staff.percent / 100, 0) * 0.9;
   }
 }

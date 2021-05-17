@@ -8,6 +8,7 @@ import {ScrumMasterModule} from './scrum-master/scrum-master.module';
 import {AdminModule} from './admin/admin.module';
 import {InitComponent} from './init/init.component';
 import {CommonModule} from '@angular/common';
+import {GuestModule} from './guest/guest.module';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {CommonModule} from '@angular/common';
     ScrumMasterModule,
     DeveloperModule,
     AdminModule,
-    QrcodeModule
+    QrcodeModule,
+    GuestModule,
   ]
 })
 export class PlanningModule {

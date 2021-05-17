@@ -12,6 +12,7 @@
       <div class="head"></div>
       <div class="head head-points points">Story Points</div>
       <div class="head head-velocity velocity">Velocity</div>
+      <div class="head"></div>
 
       <div class="head">Sprint</div>
       <div class="head">von</div>
@@ -20,6 +21,7 @@
       <div class="head head-points">ist</div>
       <div class="head head-velocity">soll</div>
       <div class="head head-velocity">ist</div>
+      <div class="head">PT</div>
     </div>
 
     <div *ngFor="let sprint of velocity.sprints" [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
@@ -34,6 +36,7 @@
       <div class="pointsAchieved">{{sprint.pointsAchieved|number:'1.0-0'}}</div>
       <div class="velocityPlaned">{{sprint.velocityPlaned|number:'1.2-2'}}</div>
       <div class="velocityAchieved">{{sprint.velocityAchieved|number:'1.2-2'}}</div>
+      <div>{{calcAvailableStaff(sprint.availableStaff)|number:'1.0-0'}}</div>
     </div>
   </div>
 
