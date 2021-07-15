@@ -50,14 +50,14 @@ export const fadeBlur = trigger('fadeBlur', [
 
   // fade in when created. this could also be written as transition('void => *')
   transition(':enter', [
-    style({opacity: 0, 'backdrop-filter': 'blur(0)'}),
-    animate('300ms 800ms ease-out', style({opacity: 1, 'backdrop-filter': 'blur(10px)'}))
+    style({opacity: 0}),
+    animate('300ms 800ms ease-out', style({opacity: 1}))
   ]),
 
   // fade out when destroyed. this could also be written as transition('void => *')
   transition(':leave', [
-    style({opacity: 1, 'backdrop-filter': 'blur(10px)'}),
-    animate('300ms ease-in', style({opacity: 0, 'backdrop-filter': 'blur(0)'})),
+    style({opacity: 1}),
+    animate('300ms ease-in', style({opacity: 0})),
   ])
 ]);
 
