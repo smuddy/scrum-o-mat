@@ -8,6 +8,8 @@ import {Router} from '@angular/router';
 import version from '../../../../package.json';
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
+import {faDice} from '@fortawesome/free-solid-svg-icons/faDice';
+import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
 
 @Component({
   selector: 'app-menu',
@@ -22,6 +24,9 @@ export class MenuComponent implements OnInit {
   public menuEntries$: Observable<{ name: string; action: () => void, confirm?: boolean, open?: boolean }[]>;
   public faCheck = faCheck;
   public faTimes = faTimes;
+
+  public faDice = faDice;
+  public faCalendar = faCalendarAlt;
 
 
   constructor(

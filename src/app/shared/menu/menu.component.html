@@ -4,6 +4,10 @@
   <div class="version">v{{version}}</div>
   </div>
 
+  <div routerLink="/planning" (click)="closeMenu()" class="menu-item no-space"><fa-icon [icon]="faDice"></fa-icon>Scrum Poker</div>
+  <div routerLink="/velocity" (click)="closeMenu()" class="menu-item no-space border-bottom"><fa-icon [icon]="faCalendar"></fa-icon>Sprint Planer</div>
+
+
   <div *ngIf="!(loggedIn|async)" (click)="login()" class="menu-item">Anmelden</div>
   <div *ngIf="loggedIn|async" (click)="logout()" class="menu-item">Abmelden</div>
   <ng-container *ngFor="let entry of menuEntries$|async" >

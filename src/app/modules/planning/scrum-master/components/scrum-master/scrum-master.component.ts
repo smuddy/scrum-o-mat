@@ -10,6 +10,7 @@ import {DeveloperId} from '../../../models/delevoper';
 import {Planning} from '../../../models/planning';
 import {environment} from '../../../../../../environments/environment';
 import {MenuService} from '../../../../../shared/menu/menu.service';
+import {HeaderService} from '../../../../../shared/header/header.service';
 
 declare var fireworks;
 
@@ -33,6 +34,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
     private planningService: PlanningService,
     private router: Router,
     private menuService: MenuService,
+    private headerService: HeaderService,
   ) {
     activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
     menuService.menuOpen$.subscribe(_ => {
@@ -89,6 +91,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
       return;
     }
     this.planning = _;
+    this.headerService.setFullscreen(!!_.issue);
     fireworks._particlesPerExplosion = _.estimateSucceeded ? 40 : 0;
   }
 

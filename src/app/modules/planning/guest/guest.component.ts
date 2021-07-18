@@ -6,6 +6,7 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 import {PlanningService, renderStoryPoint} from '../planning.service';
 import {StoryPoints} from '../models/storyPoints';
 import {DeveloperId} from '../models/delevoper';
+import {HeaderService} from '../../../shared/header/header.service';
 
 declare var fireworks;
 
@@ -33,6 +34,7 @@ export class GuestComponent implements OnInit {
     private planningService: PlanningService,
     private router: Router,
     private adminService: AdminService,
+    private headerService: HeaderService,
   ) {
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
@@ -81,6 +83,11 @@ export class GuestComponent implements OnInit {
         fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
       }
     });
+    this.headerService.setFullscreen(true);
+  }
+
+  public ngOnDestroy(): void {
+    this.headerService.setFullscreen(false);
   }
 
   public renderStoryPoint = () => renderStoryPoint(this.storyPoints);

@@ -10,19 +10,24 @@ const routes: Routes = [
     path: '',
     pathMatch: 'full',
     redirectTo: 'planning'
+    // loadChildren: () => import('./modules/init/init.module').then(m => m.InitModule)
   },
-  {path: 'planning', loadChildren: () => import('./modules/planning/planning.module').then(m => m.PlanningModule)},
+  {
+    path: 'planning',
+    loadChildren: () => import('./modules/planning/planning.module').then(m => m.PlanningModule),
+    data: { moduleName: 'Scrum Poker'},
+  },
   {
     path: 'velocity',
     loadChildren: () => import('./modules/velocity/velocity.module').then(m => m.VelocityModule),
     canActivate: [AngularFireAuthGuard],
-    data: {authGuardPipe: redirectUnauthorizedToLogin}
+    data: {authGuardPipe: redirectUnauthorizedToLogin, moduleName: 'Sprint Planer'}
   },
   {
     path: 'login',
     loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule),
     canActivate: [AngularFireAuthGuard],
-    data: {authGuardPipe: redirectLoggedInToRoot}
+    data: {authGuardPipe: redirectLoggedInToRoot, moduleName: 'Login'}
   },
 ];
 

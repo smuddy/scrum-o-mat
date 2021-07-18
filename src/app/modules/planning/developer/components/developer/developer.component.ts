@@ -7,6 +7,7 @@ import {PlanningService, renderStoryPoint} from '../../../planning.service';
 import {StoryPoints} from '../../../models/storyPoints';
 import {DeveloperId} from '../../../models/delevoper';
 import {MenuService} from '../../../../../shared/menu/menu.service';
+import {HeaderService} from '../../../../../shared/header/header.service';
 
 declare var fireworks;
 
@@ -35,6 +36,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
     private router: Router,
     private adminService: AdminService,
     private menuService: MenuService,
+    private headerService: HeaderService,
   ) {
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
@@ -88,9 +90,14 @@ export class DeveloperComponent implements OnInit, OnDestroy {
 
     this.menuService.resetCustomActions();
     this.menuService.addCustomAction('Planung verlassen', () => this.logout());
+
+    this.headerService.setFullscreen(true);
   }
 
-  public ngOnDestroy = () => this.menuService.resetCustomActions();
+  public ngOnDestroy(): void {
+    this.headerService.setFullscreen(false);
+    this.menuService.resetCustomActions();
+  }
 
   public async onCardSelected(storyPoints: StoryPoints) {
     await this.planningService.updateStoryPoints(this.planningId, this.userId, storyPoints);

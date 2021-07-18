@@ -8,11 +8,12 @@ import {InitComponent} from './init/init.component';
 import {GuestComponent} from './guest/guest.component';
 
 
-const routes: Routes = [{
-  path: '',
-  pathMatch: 'full',
-  component: InitComponent
-},
+const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: InitComponent,
+  },
   {
     path: 'scan',
     component: QrcodeComponent,
