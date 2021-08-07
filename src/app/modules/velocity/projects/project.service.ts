@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
-import {Project, ProjectId, ProjectOwner} from '../models/project';
+import {Project, ProjectId} from '../models/project';
 import {LoginService} from '../../login/login.service';
 import {mergeMap} from 'rxjs/operators';
 
@@ -33,7 +33,7 @@ export class ProjectService {
   }
 
   public async addNewProject(userId: string) {
-    const project: ProjectOwner = {
+    const project = {
       name: 'neues Projekt',
       owner: userId,
       sprints: [],

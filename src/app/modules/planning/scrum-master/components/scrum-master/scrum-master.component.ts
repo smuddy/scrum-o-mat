@@ -45,6 +45,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
     this.planningService.getDevelopers(this.planningId).subscribe(_ => this.developersChanged(_));
     this.planningService.getPlanning(this.planningId).subscribe(_ => this.planningChanged(_));
     this.menuService.addCustomAction('Session beenden', () => this.logout());

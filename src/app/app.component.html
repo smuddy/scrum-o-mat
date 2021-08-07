@@ -8,7 +8,7 @@
   <div class="header">
     <app-header></app-header>
   </div>
-  <div class="outlet">
+  <div class="outlet" [class.fullscreen]="fullscreen$|async">
     <router-outlet></router-outlet>
   </div>
   <div class="outlet backdrop" *ngIf="menuOpen" (click)="onClickMenuButton()"></div>

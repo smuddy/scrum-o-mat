@@ -33,7 +33,8 @@ export class VelocityService {
   }
 
 
-  public getSprint$ = (projectId: string, sprintId: string): Observable<Sprint> => this.projectService.getProject(projectId).pipe(map(_ => _.sprints.find(s => s.id === sprintId)));
+  public getSprint$ = (projectId: string, sprintId: string): Observable<Sprint & { projectName: string }> => this.projectService.getProject(projectId)
+    .pipe(map(_ => ({..._.sprints.find(s => s.id === sprintId), projectName: _.name})))
 
   public async addSprint(projectId: string, project: Project): Promise<void> {
     const newVelocity = produce(project, velocity => {
@@ -159,14 +160,6 @@ export class VelocityService {
       });
 
 
-    });
-  }
-
-  private migrateStaff(availableStaff: Staff[]) {
-    availableStaff.forEach(_ => {
-      if (!_.id) {
-        _.id = ID();
-      }
     });
   }
 }

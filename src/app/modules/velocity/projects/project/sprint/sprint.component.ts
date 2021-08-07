@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import {VelocityService} from '../velocity.service';
 import {Project, Staff} from '../../../models/project';
 import {Observable} from 'rxjs';
@@ -8,6 +8,7 @@ import {ProjectService} from '../../project.service';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {fadeTranslateInstant} from '../../../../../animation';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
+import {HeaderService} from '../../../../../shared/header/header.service';
 
 @Component({
   selector: 'app-sprint',
@@ -17,7 +18,13 @@ import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 })
 export class SprintComponent implements OnInit, OnDestroy {
   public sprint$ = this.activatedRoute.params.pipe(
-    mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId))
+    mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(tap(sprint =>
+      this.headerService.setBreadcrumb([
+        {route: '/velocity', name: 'Sprint Planer'},
+        {route: '/velocity/' + params.projectId, name: sprint.projectName},
+        {route: '/velocity/' + params.projectId + '/' + sprint.id, name: 'Sprint ' + sprint.sprintNumber},
+      ])
+    )))
   );
   public project$: Observable<Project> = this.activatedRoute.params.pipe(
     mergeMap(params => this.projectService.getProject(params.projectId))
@@ -33,6 +40,7 @@ export class SprintComponent implements OnInit, OnDestroy {
     private velocityService: VelocityService,
     private projectService: ProjectService,
     private menusService: MenuService,
+    private headerService: HeaderService,
     private router: Router,
   ) {
     this.projectId$.subscribe(_ => this.projectId = _);

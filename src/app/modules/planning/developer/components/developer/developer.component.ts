@@ -45,6 +45,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
     window.scrollTo(0, 0);
 
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
@@ -80,6 +81,8 @@ export class DeveloperComponent implements OnInit, OnDestroy {
         this.estimateSucceeded = planning.estimateSucceeded;
         this.storyPoints = planning.storyPoints;
         fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
+
+        this.headerService.setFullscreen(this.estimateRequested && !!this.issue);
       }
     });
     this.planningService.getDeveloper(this.planningId, this.userId).subscribe(_ => {
@@ -90,8 +93,6 @@ export class DeveloperComponent implements OnInit, OnDestroy {
 
     this.menuService.resetCustomActions();
     this.menuService.addCustomAction('Planung verlassen', () => this.logout());
-
-    this.headerService.setFullscreen(true);
   }
 
   public ngOnDestroy(): void {

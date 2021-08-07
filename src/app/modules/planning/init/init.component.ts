@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {Planning} from '../models/planning';
+import {HeaderService} from '../../../shared/header/header.service';
 
 @Component({
   selector: 'app-init',
@@ -19,11 +20,14 @@ export class InitComponent implements OnInit {
   constructor(
     private planningService: PlanningService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,    private headerService: HeaderService,
+
   ) {
   }
 
   ngOnInit() {
+    this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
+    this.headerService.setFullscreen(false);
     this.activatedRoute.queryParams.subscribe(_ => this.paramsChanged(_));
     this.user = localStorage.getItem('user');
   }

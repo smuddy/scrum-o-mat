@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {fadeTranslateInstant} from '../../animation';
 import {FormControl, Validators} from '@angular/forms';
 import {LoginService} from './login.service';
+import {HeaderService} from '../../shared/header/header.service';
 
 @Component({
   selector: 'app-login',
@@ -16,10 +17,12 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private loginService: LoginService,
+    private headerService: HeaderService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
+    this.headerService.setBreadcrumb([{route: '/login', name: 'Anmelden'}]);
     await this.loginService.logout();
   }
 

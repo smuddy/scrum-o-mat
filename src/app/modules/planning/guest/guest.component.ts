@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {fade, listAnimation} from '../../../animation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../admin/components/admin.service';
@@ -16,7 +16,7 @@ declare var fireworks;
   styleUrls: ['./guest.component.less'],
   animations: [fade, listAnimation]
 })
-export class GuestComponent implements OnInit {
+export class GuestComponent implements OnInit, OnDestroy {
   public issue: string;
   public subject: string;
   public estimateRequested: boolean;
@@ -42,6 +42,7 @@ export class GuestComponent implements OnInit {
   }
 
   public ngOnInit() {
+    this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
     window.scrollTo(0, 0);
 
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
@@ -81,9 +82,10 @@ export class GuestComponent implements OnInit {
         this.estimateSucceeded = planning.estimateSucceeded;
         this.storyPoints = planning.storyPoints;
         fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
+
+        this.headerService.setFullscreen(this.estimateRequested && !!this.issue);
       }
     });
-    this.headerService.setFullscreen(true);
   }
 
   public ngOnDestroy(): void {

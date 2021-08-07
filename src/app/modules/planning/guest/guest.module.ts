@@ -4,6 +4,7 @@ import {GuestComponent} from './guest.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {OrderModule} from 'ngx-order-pipe';
 import {NgCircleProgressModule} from 'ng-circle-progress';
+import {BubblesModule} from '../../../shared/bubbles/bubbles.module';
 
 @NgModule({
   declarations: [GuestComponent],
@@ -12,7 +13,8 @@ import {NgCircleProgressModule} from 'ng-circle-progress';
     CommonModule,
     FontAwesomeModule,
     OrderModule,
-    NgCircleProgressModule.forRoot()
+    NgCircleProgressModule.forRoot(),
+    BubblesModule
   ],
 })
 export class GuestModule {
