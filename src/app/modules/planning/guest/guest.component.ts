@@ -26,8 +26,8 @@ export class GuestComponent implements OnInit, OnDestroy {
   public maxPoints = 1;
   @Input() public developers: DeveloperId[];
   public selectedStoryPoints: { storyPoint: StoryPoints, count: number }[] = [];
-  private planningId: string;
   public chosenPercent: number;
+  private planningId: string;
 
   constructor(
     activatedRoute: ActivatedRoute,

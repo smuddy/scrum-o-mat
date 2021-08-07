@@ -5,7 +5,7 @@
 <div *ngIf="issue" [@fade]>
   <div class="div-issue">{{issue}}</div>
   <app-cards (cardSelected)="onCardSelected($event)" *ngIf="estimateRequested" [@fade]></app-cards>
-  <app-bubbles  *ngIf="estimateRequested"></app-bubbles>
+  <app-bubbles *ngIf="estimateRequested"></app-bubbles>
   <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStoryPoint()}}</div>
   <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
   <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue">

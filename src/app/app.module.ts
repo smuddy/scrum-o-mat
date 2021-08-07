@@ -17,21 +17,21 @@ import {HeaderModule} from './shared/header/header.module';
   declarations: [
     AppComponent,
   ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        FormsModule,
-        AppRoutingModule,
-        AngularFireModule.initializeApp(environment.firebaseConfig),
-        AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
-        AngularFireAuthModule,
-        FontAwesomeModule,
-        MenuModule,
-        HeaderModule,
-        // AngularFirestoreModule.enablePersistence(),
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    AppRoutingModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
+    AngularFireAuthModule,
+    FontAwesomeModule,
+    MenuModule,
+    HeaderModule,
+    // AngularFirestoreModule.enablePersistence(),
 
 
-    ],
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

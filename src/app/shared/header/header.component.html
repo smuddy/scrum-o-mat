@@ -1,4 +1,4 @@
-<div class="header" [class.fullscreen]="fullscreen$|async">
+<div [class.fullscreen]="fullscreen$|async" class="header">
   <ng-container *ngFor="let route of (breadcrumb$|async); let i = index">
     <div *ngIf="i!==0" class="separator element">></div>
     <div [routerLink]="route.route" class="headline element">{{route.name}}</div>

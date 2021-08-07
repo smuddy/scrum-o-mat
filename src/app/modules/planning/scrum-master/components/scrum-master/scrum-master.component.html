@@ -12,12 +12,13 @@
     ></app-dashboard>
     <app-developers [developers]="developers" [showResults]="!estimateRequested()">
       <div class="div-repeat">
-        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen</button>
+        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen
+        </button>
       </div>
     </app-developers>
   </div>
 
-  <div class="div-planning-id" @fadeTranslateInstant>
+  <div @fadeTranslateInstant class="div-planning-id">
     <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
     <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
     &nbsp;

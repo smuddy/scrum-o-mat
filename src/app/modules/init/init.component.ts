@@ -1,6 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {fadeTranslateInstant} from '../../animation';
-import {FormControl, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-init',
@@ -9,7 +8,6 @@ import {FormControl, Validators} from '@angular/forms';
   animations: [fadeTranslateInstant]
 })
 export class InitComponent {
-
 
 
 }

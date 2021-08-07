@@ -63,7 +63,7 @@ export class PlanningService {
     const planningRef = this.afs.doc<Planning>('planning/' + planningId);
     const developerCollection = planningRef.collection<DeveloperId>('developer');
     const developers = await developerCollection.valueChanges({idField: 'id'}).pipe(first()).toPromise();
-    const deleteOperations = developers.map( _ => this.deleteUser(planningId, _.id));
+    const deleteOperations = developers.map(_ => this.deleteUser(planningId, _.id));
     await Promise.all(deleteOperations);
     await this.planningCollection.doc(planningId).delete();
   }

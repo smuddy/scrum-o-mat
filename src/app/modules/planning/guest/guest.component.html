@@ -4,7 +4,7 @@
 
 <div *ngIf="issue" [@fade]>
   <div class="div-issue">{{issue}}</div>
-  <div class="div-issue" *ngIf="estimateRequested" [@fade]>
+  <div *ngIf="estimateRequested" [@fade] class="div-issue">
     Schätzung wird durchgeführt
   </div>
   <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStoryPoint()}}</div>
@@ -23,19 +23,19 @@
 </div>
 
 
-<div class="wrapper" *ngIf="issue && estimateRequested" [@fade]>
+<div *ngIf="issue && estimateRequested" [@fade] class="wrapper">
   <circle-progress
+    [animationDuration]="300"
+    [animation]="true"
+    [innerStrokeColor]="'#fff3'"
+    [outerStrokeColor]="'#fff8'"
+    [outerStrokeWidth]="16"
     [percent]="chosenPercent"
     [radius]="100"
-    [outerStrokeWidth]="16"
-    [outerStrokeColor]="'#fff8'"
-    [innerStrokeColor]="'#fff3'"
-    [animation]="true"
-    [animationDuration]="300"
-    [startFromZero]="false"
     [showSubtitle]="false"
-    unitsColor="#fff5"
+    [startFromZero]="false"
     titleColor="#fff5"
+    unitsColor="#fff5"
   ></circle-progress>
   <app-bubbles></app-bubbles>
 </div>

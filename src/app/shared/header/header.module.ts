@@ -7,10 +7,10 @@ import {RouterModule} from '@angular/router';
 @NgModule({
   declarations: [HeaderComponent],
   exports: [HeaderComponent],
-    imports: [
-        CommonModule,
-        RouterModule
-    ]
+  imports: [
+    CommonModule,
+    RouterModule
+  ]
 })
 export class HeaderModule {
 }

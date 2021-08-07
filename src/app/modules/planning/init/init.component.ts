@@ -20,8 +20,7 @@ export class InitComponent implements OnInit {
   constructor(
     private planningService: PlanningService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,    private headerService: HeaderService,
-
+    private activatedRoute: ActivatedRoute, private headerService: HeaderService,
   ) {
   }
 

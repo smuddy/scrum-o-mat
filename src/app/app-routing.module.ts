@@ -16,7 +16,7 @@ const routes: Routes = [
   {
     path: 'planning',
     loadChildren: () => import('./modules/planning/planning.module').then(m => m.PlanningModule),
-    data: { moduleName: 'Scrum Poker'},
+    data: {moduleName: 'Scrum Poker'},
   },
   {
     path: 'velocity',

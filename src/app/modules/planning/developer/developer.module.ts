@@ -9,12 +9,12 @@ import {BubblesModule} from '../../../shared/bubbles/bubbles.module';
 
 @NgModule({
   declarations: [DeveloperComponent, CardsComponent, CardComponent],
-    imports: [
-        CommonModule,
-        FontAwesomeModule,
-        OrderModule,
-        BubblesModule
-    ],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    OrderModule,
+    BubblesModule
+  ],
   exports: [
     DeveloperComponent
   ]
