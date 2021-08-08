@@ -29,7 +29,7 @@
   </div>
 
 
-  <div (click)="login()" *ngIf="!(loggedIn|async)" class="menu-item">Anmelden</div>
+  <div (click)="login()" *ngIf="(loggedIn|async) !== true" class="menu-item">Anmelden</div>
   <div (click)="logout()" *ngIf="loggedIn|async" class="menu-item">Abmelden</div>
   <ng-container *ngFor="let entry of menuEntries$|async">
     <div (click)="entry.action(); closeMenu()" *ngIf="!entry.confirm" class="menu-item">{{entry.name}}</div>

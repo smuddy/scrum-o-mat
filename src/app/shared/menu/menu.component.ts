@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {listAnimation} from '../../animation';
 import {LoginService} from '../../modules/login/login.service';
 import {map} from 'rxjs/operators';
@@ -17,7 +17,7 @@ import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
   styleUrls: ['./menu.component.less'],
   animations: [listAnimation]
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent {
   @Input() visible = false;
   public version = version.version;
   public loggedIn: Observable<boolean> = this.loginService.authState$().pipe(map(_ => !!_));
@@ -36,10 +36,6 @@ export class MenuComponent implements OnInit {
   ) {
     this.menuEntries$ = menuService.menuEntries$;
 
-  }
-
-
-  ngOnInit(): void {
   }
 
   async logout() {

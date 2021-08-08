@@ -23,7 +23,7 @@ export class DevelopersComponent implements OnInit {
 
   public users: { id: string, data: Developer }[];
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
 
   constructor(
     private activatedRoute: ActivatedRoute,
