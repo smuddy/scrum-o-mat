@@ -12,9 +12,10 @@
   overflow: hidden;
 
 
+
+
   .sprint {
     display: grid;
-    font-family: "Source Code Pro", monospace;
     grid-template-columns: 1fr 2fr 2fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-areas:
     ". . . points points velocity velocity ."
@@ -22,9 +23,15 @@
     transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
     background-color: #fff0;
 
+    &:not(.table-head) {
+      font-family: "Ubuntu Mono", monospace;
+      opacity: 0.8;
+    }
+
     &:not(.table-head):hover {
       background-color: #fff2;
       cursor: pointer;
+      opacity: 1;
     }
 
     &.table-head {
