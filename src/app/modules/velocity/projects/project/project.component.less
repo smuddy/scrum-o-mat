@@ -7,73 +7,84 @@
 
 .sprints {
   width: 1000px;
-  //border: #fff 1px solid;
   border-radius: 8px;
   overflow: hidden;
 
 
-
-
-  .sprint {
-    display: grid;
-    grid-template-columns: 1fr 2fr 2fr 1fr 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-    ". . . points points velocity velocity ."
-    ". . . . . . . .";
-    transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
+  .table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border-style: none;
+    width: 100%;
+    text-align: center;
     background-color: #fff0;
+    margin-bottom: 20px;
 
-    &:not(.table-head) {
+    .tr-1 th {
+      padding-top: 5px
+    }
+
+    .tr-2 th {
+      padding-bottom: 5px
+    }
+
+    thead {
+      background: #fff3;
+      overflow: hidden;
+      word-break: normal;
+      vertical-align: bottom
+    }
+
+    td, th {
+      padding: 2px 5px;
+    }
+
+    tbody tr {
+      transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
+      background-color: #fff0;
+
+      &:hover {
+        background-color: #fff2;
+        cursor: pointer;
+        opacity: 1;
+      }
+    }
+
+
+    td {
+      overflow: hidden;
+      word-break: normal;
       font-family: "Ubuntu Mono", monospace;
       opacity: 0.8;
     }
-
-    &:not(.table-head):hover {
-      background-color: #fff2;
-      cursor: pointer;
-      opacity: 1;
-    }
-
-    &.table-head {
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
-      overflow: hidden;
-    }
-
-    > * {
-      padding: 5px;
-      text-align: center;
-    }
   }
+}
 
-  .points {
-    grid-area: points;
-  }
 
-  .velocity {
-    grid-area: velocity;
-  }
+.forecast {
+  color: #ff9900;
+}
 
-  .forecast {
-    color: #ff9900;
-  }
+th.tr-points {
+  background: #52acf177;
+}
 
-  .head {
-    padding: 5px 0;
-    background: #fff3;
+th.tr-velocity {
+  background: #ff990077;
+}
 
-    &.head-points {
-      background: #52acf177;
-    }
+td.tr-points {
+  background: #52acf133;
+}
 
-    &.head-velocity {
-      background: #ff990077;
-    }
-  }
+td.tr-velocity {
+  background: #ff990033;
+}
 
-  .kw {
-    font-size: 0.5em;
-    color: #fff5;
-    margin-right: 5px;
-  }
+.kw {
+  font-size: 0.5em;
+  color: #fff5;
+  margin-right: 5px;
 }

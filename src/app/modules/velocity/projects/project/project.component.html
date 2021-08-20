@@ -6,39 +6,53 @@
       <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="velocity.name"></app-edit-text>
     </h1>
 
-    <div *ngIf="velocity.sprints.length" class="sprint table-head">
-      <div class="head"></div>
-      <div class="head"></div>
-      <div class="head"></div>
-      <div class="head head-points points">Story Points</div>
-      <div class="head head-velocity velocity">Velocity</div>
-      <div class="head"></div>
+    <ng-container *ngIf="velocity.sprints.length">
+      <table class="table">
+        <thead class="thead">
+        <tr class="tr-1">
+          <th colspan="3">Sprint</th>
+          <th class="tr-points" colspan="2">Story Points</th>
+          <th class="tr-velocity" colspan="2">Velocity</th>
+          <th rowspan="2">PT</th>
+        </tr>
+        <tr class="tr-2">
+          <th>#</th>
+          <th>von</th>
+          <th>bis</th>
+          <th class="tr-points">soll</th>
+          <th class="tr-points">ist</th>
+          <th class="tr-velocity">soll</th>
+          <th class="tr-velocity">ist</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let sprint of velocity.sprints"
+            [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
+            class="sprint">
 
-      <div class="head">Sprint</div>
-      <div class="head">von</div>
-      <div class="head">bis</div>
-      <div class="head head-points">soll</div>
-      <div class="head head-points">ist</div>
-      <div class="head head-velocity">soll</div>
-      <div class="head head-velocity">ist</div>
-      <div class="head">PT</div>
-    </div>
+          <td>{{sprint.sprintNumber}}</td>
+          <td>
+            <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} </span>
+            <span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</span>
+          </td>
+          <td>
+            <span class="kw">{{sprint.toDate.toDate()|date:'w'}} </span>
+            <span>{{sprint.toDate.toDate()|date:'dd.MM.YYYY'}}</span>
+          </td>
+          <td class="tr-points" [class.forecast]="sprint.isForecast">{{sprint.pointsPlaned|number:'1.0-0'}}</td>
+          <td class="tr-points">{{sprint.pointsAchieved|number:'1.0-0'}}</td>
+          <td class="tr-velocity">{{sprint.velocityPlaned|number:'1.2-2'}}</td>
+          <td class="tr-velocity">{{sprint.velocityAchieved|number:'1.2-2'}}</td>
+          <td>{{calcAvailableStaff(sprint.availableStaff)|number:'1.0-0'}}</td>
+        </tr>
+        </tbody>
+      </table>
 
-    <div *ngFor="let sprint of velocity.sprints" [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
-         class="sprint"
-    >
-      <div class="sprint-number">{{sprint.sprintNumber}}</div>
-      <div class="fromDate"><span
-        class="kw">{{sprint.fromDate.toDate()|date:'w'}}</span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</div>
-      <div class="fromDate"><span
-        class="kw">{{sprint.toDate.toDate()|date:'w'}}</span>{{sprint.toDate.toDate()|date:'dd.MM.YYYY'}}</div>
-      <div [class.forecast]="sprint.isForecast" class="pointsPlaned">{{sprint.pointsPlaned|number:'1.0-0'}}</div>
-      <div class="pointsAchieved">{{sprint.pointsAchieved|number:'1.0-0'}}</div>
-      <div class="velocityPlaned">{{sprint.velocityPlaned|number:'1.2-2'}}</div>
-      <div class="velocityAchieved">{{sprint.velocityAchieved|number:'1.2-2'}}</div>
-      <div>{{calcAvailableStaff(sprint.availableStaff)|number:'1.0-0'}}</div>
-    </div>
+    </ng-container>
+
+
   </div>
+
 
   <div *ngIf="velocity.sprints.length === 0">Es sind noch keine Sprints vorhanden</div>
 </div>
