@@ -10,10 +10,11 @@ import {EditNumberComponent} from './projects/project/sprint/edit-number/edit-nu
 import {EditTextComponent} from './projects/project/sprint/edit-text/edit-text.component';
 import {ProjectsComponent} from './projects/projects.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import { EditProjectComponent } from './projects/project/edit-project/edit-project.component';
 
 
 @NgModule({
-  declarations: [ProjectComponent, SprintComponent, EditDateComponent, EditNumberComponent, EditTextComponent, ProjectsComponent],
+  declarations: [ProjectComponent, SprintComponent, EditDateComponent, EditNumberComponent, EditTextComponent, ProjectsComponent, EditProjectComponent],
   imports: [
     CommonModule,
     VelocityRoutingModule,

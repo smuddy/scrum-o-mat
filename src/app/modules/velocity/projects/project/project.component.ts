@@ -44,6 +44,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.headerService.setBreadcrumb([{route: '/velocity', name: 'Sprint Planer'}]);
     this.menuService.addCustomAction('Sprint erstellen', () => this.velocityService.addSprint(this.projectId, this.project));
+    this.menuService.addCustomAction('Projekt bearbeiten', () => this.router.navigateByUrl(`/velocity/${this.projectId}/edit`));
     this.menuService.addCustomAction('Projekt löschen', () => this.deleteProject(), true);
   }
 

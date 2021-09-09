@@ -19,9 +19,9 @@ export class VelocityService {
   ) {
   }
 
-  private static calcVelocityFromHistory(velocityHistory: number[], isForecast: boolean, lastCalculatedVelocity: number): number {
+  private static calcVelocityFromHistory(initialVelocity: number, velocityHistory: number[], isForecast: boolean, lastCalculatedVelocity: number): number {
     if (velocityHistory.length === 0) {
-      return 1;
+      return initialVelocity ?? 1;
     }
     if (isForecast) {
       return lastCalculatedVelocity;
@@ -34,7 +34,7 @@ export class VelocityService {
 
 
   public getSprint$ = (projectId: string, sprintId: string): Observable<Sprint & { projectName: string }> => this.projectService.getProject(projectId)
-    .pipe(map(_ => ({..._.sprints.find(s => s.id === sprintId), projectName: _.name})))
+    .pipe(map(_ => ({..._.sprints.find(s => s.id === sprintId), projectName: _.name})));
 
   public async addSprint(projectId: string, project: Project): Promise<void> {
     const newVelocity = produce(project, velocity => {
@@ -73,6 +73,13 @@ export class VelocityService {
   public updateStaffDays = async (projectId: string, project: Project, sprintId: number, name: string, newDays: number) => this.updateStaff(projectId, project, sprintId, name, s => s.days = newDays);
 
   public updateStaffPercent = async (projectId: string, project: Project, sprintId: number, name: string, newPercent: number) => this.updateStaff(projectId, project, sprintId, name, s => s.percent = newPercent);
+
+  public updateInitialVelocity = async (projectId: string, project: Project, initialVelocity: number) => {
+    const update = produce(project, p => {
+      p.initialVelocity = initialVelocity;
+    });
+    await this.update(projectId, update);
+  };
 
   public async addStaff(projectId: string, project: Project, sprintId: number) {
     await this.updateSprintValue(projectId, project, sprintId, s => {
@@ -138,17 +145,18 @@ export class VelocityService {
   }
 
   private calculate(oldVelocity: Project): Project {
+    const initialVelocity = oldVelocity.initialVelocity ?? 1;
+    const velocityHistory: number[] = [initialVelocity, initialVelocity, initialVelocity, initialVelocity, initialVelocity];
     return produce(oldVelocity, velocity => {
-      const velocityHistory: number[] = [];
       let previousSprint: Sprint = null;
-      let lastCalculatedVelocity = 1;
+      let lastCalculatedVelocity = initialVelocity;
       velocity.sprints.forEach(sprint => {
         const staffCount = sprint.availableStaff.reduce((count, staff) => count + staff.days * staff.percent / 100, 0);
         sprint.velocityAchieved = staffCount ? sprint.pointsAchieved / staffCount : 0;
 
         const isForecast = previousSprint !== null && previousSprint.pointsAchieved === 0;
         sprint.isForecast = isForecast;
-        sprint.velocityPlaned = VelocityService.calcVelocityFromHistory(velocityHistory, isForecast, lastCalculatedVelocity);
+        sprint.velocityPlaned = VelocityService.calcVelocityFromHistory(initialVelocity, velocityHistory, isForecast, lastCalculatedVelocity);
         if (!!sprint.velocityPlaned) {
           lastCalculatedVelocity = sprint.velocityPlaned;
         }

@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {SprintComponent} from './projects/project/sprint/sprint.component';
 import {ProjectsComponent} from './projects/projects.component';
 import {ProjectComponent} from './projects/project/project.component';
+import {EditProjectComponent} from './projects/project/edit-project/edit-project.component';
 
 const routes: Routes = [
   {
@@ -10,6 +11,7 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {path: ':projectId', component: ProjectComponent},
+  {path: ':projectId/edit', component: EditProjectComponent},
   {path: ':projectId/:sprintId', component: SprintComponent},
 ];
 

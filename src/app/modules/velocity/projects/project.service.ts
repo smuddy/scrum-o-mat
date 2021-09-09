@@ -37,6 +37,7 @@ export class ProjectService {
       name: 'neues Projekt',
       owner: userId,
       sprints: [],
+      initialVelocity: 1,
     };
     const newDoc = await this.projectCollection.add(project);
     return newDoc.id;

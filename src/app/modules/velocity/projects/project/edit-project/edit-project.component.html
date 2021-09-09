@@ -1,0 +1,20 @@
+<div *ngIf="project$|async as project" @fadeTranslateInstant class="edit-project">
+  <h1>
+    <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="project.name"></app-edit-text>
+  </h1>
+
+  <div class="split">
+    <div>
+      <p>
+        Initiale Velocity:
+        <app-edit-number (numberChanged)="updateInitialVelocity( $event)"
+                         [number]="project.initialVelocity" class="initialVelocity"></app-edit-number> SP/PT
+      </p>
+    </div>
+    <div>
+
+    </div>
+  </div>
+
+
+</div>

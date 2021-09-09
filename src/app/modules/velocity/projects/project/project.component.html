@@ -1,12 +1,10 @@
-<div *ngIf="project$|async as velocity" @fadeTranslateInstant>
+<div *ngIf="project$|async as project" @fadeTranslateInstant>
 
 
   <div class="sprints">
-    <h1>
-      <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="velocity.name"></app-edit-text>
-    </h1>
+    <h1>{{project.name}}</h1>
 
-    <ng-container *ngIf="velocity.sprints.length">
+    <ng-container *ngIf="project.sprints.length">
       <table class="table">
         <thead class="thead">
         <tr class="tr-1">
@@ -26,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let sprint of velocity.sprints"
+        <tr *ngFor="let sprint of project.sprints"
             [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
             class="sprint">
 
@@ -54,5 +52,5 @@
   </div>
 
 
-  <div *ngIf="velocity.sprints.length === 0">Es sind noch keine Sprints vorhanden</div>
+  <div *ngIf="project.sprints.length === 0">Es sind noch keine Sprints vorhanden</div>
 </div>
