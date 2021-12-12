@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import {first} from 'rxjs/operators';
 import {StoryPoints} from './models/storyPoints';
 import {Developer, DeveloperId} from './models/delevoper';

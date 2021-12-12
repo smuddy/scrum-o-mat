@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators';
 import produce from 'immer';
 import {simpleMovingAverage} from '../../moving-average-helper';
 import {ProjectService} from '../project.service';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {ID} from '../../../../helpers/id';
 import Timestamp = firebase.firestore.Timestamp;
 
