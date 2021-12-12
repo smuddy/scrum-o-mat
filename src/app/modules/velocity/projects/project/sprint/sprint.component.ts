@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import {distinctUntilChanged, map, mergeMap, tap} from 'rxjs/operators';
 import {VelocityService} from '../velocity.service';
 import {Project, Staff} from '../../../models/project';
 import {Observable} from 'rxjs';
@@ -18,7 +18,8 @@ import {HeaderService} from '../../../../../shared/header/header.service';
 })
 export class SprintComponent implements OnInit, OnDestroy {
   public sprint$ = this.activatedRoute.params.pipe(
-    mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(tap(sprint =>
+    mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(
+      tap(sprint =>
       this.headerService.setBreadcrumb([
         {route: '/velocity', name: 'Sprint Planer'},
         {route: '/velocity/' + params.projectId, name: sprint.projectName},
@@ -26,6 +27,13 @@ export class SprintComponent implements OnInit, OnDestroy {
       ])
     )))
   );
+
+  public sprintNumber$ = this.sprint$.pipe(map(_ => _.sprintNumber), distinctUntilChanged());
+  public fromDate$ = this.sprint$.pipe(map(_ => _.fromDate), distinctUntilChanged());
+  public toDate$ = this.sprint$.pipe(map(_ => _.toDate), distinctUntilChanged());
+  public pointsAchieved$ = this.sprint$.pipe(map(_ => _.pointsAchieved), distinctUntilChanged());
+  public availableStaff$ = this.sprint$.pipe(map(_ => _.availableStaff), distinctUntilChanged((x, y) => x.length === y.length));
+
   public project$: Observable<Project> = this.activatedRoute.params.pipe(
     mergeMap(params => this.projectService.getProject(params.projectId))
   );

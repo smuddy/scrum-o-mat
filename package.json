@@ -30,6 +30,7 @@
     "firebase": "^8.9.0",
     "immer": "^9.0.5",
     "ng-circle-progress": "^1.6.0",
+    "ng-let": "^13.0.1",
     "ngx-order-pipe": "^2.1.1",
     "ngx-qrcode2": "^9.0.0",
     "rxjs": "~7.3.0",

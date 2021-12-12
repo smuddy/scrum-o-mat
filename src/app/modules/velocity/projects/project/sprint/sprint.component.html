@@ -1,22 +1,22 @@
-<div *ngIf="sprint$|async as sprint" @fadeTranslateInstant class="sprint">
-  <h1>Sprint {{sprint.sprintNumber}}</h1>
+<div @fadeTranslateInstant class="sprint">
+  <h1>Sprint {{sprintNumber$|async}}</h1>
 
-  <div class="split">
+  <div class="split" *ngLet="sprintNumber$|async as sprintNumber">
     <div>
       <p>
         von
-        <app-edit-date (dateChanged)="updateFromDate(sprint.sprintNumber, $event)"
-                       [date]="sprint.fromDate.toDate()"></app-edit-date>
+        <app-edit-date (dateChanged)="updateFromDate(sprintNumber, $event)"
+                       [date]="(fromDate$|async).toDate()"></app-edit-date>
       </p>
       <p>
         bis
-        <app-edit-date (dateChanged)="updateToDate(sprint.sprintNumber, $event)"
-                       [date]="sprint.toDate.toDate()"></app-edit-date>
+        <app-edit-date (dateChanged)="updateToDate(sprintNumber, $event)"
+                       [date]="(toDate$|async).toDate()"></app-edit-date>
       </p>
       <p>
         Geschaffte Story Points:
-        <app-edit-number (numberChanged)="updatePointsAchieved(sprint.sprintNumber, $event)"
-                         [number]="sprint.pointsAchieved" class="sp"></app-edit-number>
+        <app-edit-number (numberChanged)="updatePointsAchieved(sprintNumber, $event)"
+                         [number]="(pointsAchieved$|async)" class="sp"></app-edit-number>
       </p>
     </div>
     <div>
@@ -26,25 +26,24 @@
         <div class="center">Tage</div>
         <div class="center">%</div>
       </div>
-      <div *ngFor="let staff of sprint.availableStaff" class="staff">
-        <fa-icon (click)="removeStaff(sprint.sprintNumber, staff)" [icon]="faTrash" class="button trash"></fa-icon>
-        <app-edit-text (textChanged)="updateStaffName(sprint.sprintNumber, staff.name, $event)"
+      <div *ngFor="let staff of (availableStaff$|async)" class="staff">
+        <fa-icon (click)="removeStaff(sprintNumber, staff)" [icon]="faTrash" class="button trash"></fa-icon>
+        <app-edit-text (textChanged)="updateStaffName(sprintNumber, staff.name, $event)"
                        [text]="staff.name"></app-edit-text>
-        <app-edit-number (numberChanged)="updateStaffDays(sprint.sprintNumber, staff.name, $event)"
+        <app-edit-number (numberChanged)="updateStaffDays(sprintNumber, staff.name, $event)"
                          [number]="staff.days"></app-edit-number>
-        <app-edit-number (numberChanged)="updateStaffPercent(sprint.sprintNumber, staff.name, $event)"
+        <app-edit-number (numberChanged)="updateStaffPercent(sprintNumber, staff.name, $event)"
                          [number]="staff.percent"></app-edit-number>
       </div>
 
-      <div class="staff">
+      <div class="staff" *ngIf="availableStaff$|async as availableStaff">
         <div></div>
         <div>Gesamt</div>
-        <div class="center">{{sumDays(sprint.availableStaff)}}</div>
+        <div class="center">{{sumDays(availableStaff)}}</div>
         <div class="center"></div>
       </div>
 
-
-      <button (click)="addStaff(sprint.sprintNumber)">+ Personal hinzufügen</button>
+      <button (click)="addStaff(sprintNumber)">+ Personal hinzufügen</button>
     </div>
   </div>
 

@@ -11,6 +11,7 @@ import {EditTextComponent} from './projects/project/sprint/edit-text/edit-text.c
 import {ProjectsComponent} from './projects/projects.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import { EditProjectComponent } from './projects/project/edit-project/edit-project.component';
+import {NgLetModule} from 'ng-let';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { EditProjectComponent } from './projects/project/edit-project/edit-proje
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    NgLetModule,
 
   ]
 })
