@@ -11,6 +11,7 @@ export class EditTextComponent implements OnInit, OnDestroy {
   public textControl = new FormControl('', {updateOn: 'blur'});
   @Output() textChanged = new EventEmitter<string>();
   @Input() public noUnderscore = false;
+  @Input() public placeholder: string;
   private sub: Subscription;
 
   @Input() set text(t: string) {

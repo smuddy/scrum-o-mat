@@ -25,7 +25,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let sprint of project.sprints"
-            [routerLink]="'/velocity/' + projectId + '/' + sprint.id"
+            [routerLink]="isWriter(project) ? '/velocity/' + projectId + '/' + sprint.id : null"
             class="sprint">
 
           <td>{{sprint.sprintNumber}}</td>

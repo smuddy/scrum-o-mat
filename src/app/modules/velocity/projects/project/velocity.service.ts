@@ -75,11 +75,22 @@ export class VelocityService {
   public updateStaffPercent = async (projectId: string, project: Project, sprintId: number, name: string, newPercent: number) => this.updateStaff(projectId, project, sprintId, name, s => s.percent = newPercent);
 
   public updateInitialVelocity = async (projectId: string, project: Project, initialVelocity: number) => {
-    const update = produce(project, p => {
+    await this.update(projectId, produce(project, p => {
       p.initialVelocity = initialVelocity;
-    });
-    await this.update(projectId, update);
+    }));
   };
+
+  public addReader = async (projectId: string, project: Project, readerId: string) => {
+    await this.update(projectId, produce(project, p => {
+      p.coReaders = [...(p.coReaders ?? []), readerId];
+    }));
+  }
+
+  public removeReader = async (projectId: string, project: Project, readerId: string) => {
+    await this.update(projectId, produce(project, p => {
+      p.coReaders = p.coReaders.filter(_ => _ !== readerId);
+    }));
+  }
 
   public async addStaff(projectId: string, project: Project, sprintId: number) {
     await this.updateSprintValue(projectId, project, sprintId, s => {

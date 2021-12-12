@@ -14,7 +14,9 @@ import {HeaderService} from '../../../shared/header/header.service';
   animations: [fadeTranslateInstant],
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
-  public projects$: Observable<ProjectId[]>;
+  public projectsOwner$: Observable<ProjectId[]>;
+  public projectsReader$: Observable<ProjectId[]>;
+  public projectsWriter$: Observable<ProjectId[]>;
   private currentUser: string;
 
   constructor(
@@ -23,7 +25,9 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private menuService: MenuService,
     private headerService: HeaderService,
   ) {
-    this.projects$ = projectService.getProjects();
+    this.projectsOwner$ = projectService.getProjectsOwner();
+    this.projectsReader$ = projectService.getProjectsReader();
+    this.projectsWriter$ = projectService.getProjectsWriter();
     loginService.currentUserId$().subscribe(_ => this.currentUser = _);
   }
 

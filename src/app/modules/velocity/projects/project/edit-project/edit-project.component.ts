@@ -7,6 +7,8 @@ import {VelocityService} from '../velocity.service';
 import {ProjectService} from '../../project.service';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
+import {LoginService} from '../../../../login/login.service';
+import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 
 @Component({
   selector: 'app-edit-project',
@@ -25,6 +27,8 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       )))
   );
   public projectId$ = this.activatedRoute.params.pipe(map(params => params.projectId));
+  public newReaderName = '';
+  public faTrash = faTrash;
   private project: Project;
   private projectId: string;
 
@@ -49,7 +53,23 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
   public updateName = ($event: string) => this.projectService.updateProject(this.projectId, {name: $event});
 
-  updateInitialVelocity(initialVelocity: number) {
+  public updateInitialVelocity(initialVelocity: number): void {
     this.velocityService.updateInitialVelocity(this.projectId, this.project, initialVelocity);
+  }
+
+  public async addReader(): Promise<void> {
+    if (LoginService.userIdRegex.test(this.newReaderName)) {
+      await this.velocityService.addReader(this.projectId, this.project, this.newReaderName);
+      this.newReaderName = '';
+    }
+  }
+
+  public editReaderName($event: string): void {
+    this.newReaderName = $event;
+  }
+
+  public async removeReader(coReader: string): Promise<void> {
+    await this.velocityService.removeReader(this.projectId, this.project, coReader);
+
   }
 }

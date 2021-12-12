@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.headerService.setBreadcrumb([{route: '/login', name: 'Anmelden'}]);
-    await this.loginService.logout();
+    // await this.loginService.logout();
   }
 
   public async login(): Promise<void> {

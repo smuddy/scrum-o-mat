@@ -25,6 +25,9 @@ export interface Project {
   name: string;
   sprints: Sprint[];
   initialVelocity: number;
+
+  coReaders: string[];
+  coWriters: string[];
 }
 
 export interface ProjectId extends Project {

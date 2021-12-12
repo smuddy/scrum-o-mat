@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Observable} from 'rxjs';
-import {Project, ProjectId} from '../models/project';
+import {Project, ProjectId, ProjectOwner} from '../models/project';
 import {LoginService} from '../../login/login.service';
 import {mergeMap} from 'rxjs/operators';
 
@@ -11,7 +11,9 @@ import {mergeMap} from 'rxjs/operators';
 export class ProjectService {
 
   private projectCollection: AngularFirestoreCollection<Project>;
-  private projects: Observable<ProjectId[]>;
+  private projectsAsOwner: Observable<ProjectId[]>;
+  private projectsAsReader: Observable<ProjectId[]>;
+  private projectsAsWriter: Observable<ProjectId[]>;
 
   constructor(
     private afs: AngularFirestore,
@@ -19,13 +21,25 @@ export class ProjectService {
   ) {
 
     this.projectCollection = afs.collection<Project>('project', _ => _.where('owner', '==', 'x'));
-    this.projects = loginService.currentUserId$().pipe(
+    this.projectsAsOwner = loginService.currentUserId$().pipe(
       mergeMap(userId => afs.collection<Project>('project', _ => _.where('owner', '==', userId)).valueChanges({idField: 'id'}))
+    );    this.projectsAsReader = loginService.currentUserId$().pipe(
+      mergeMap(userId => afs.collection<Project>('project', _ => _.where('coReaders', 'array-contains', userId)).valueChanges({idField: 'id'}))
+    );    this.projectsAsWriter = loginService.currentUserId$().pipe(
+      mergeMap(userId => afs.collection<Project>('project', _ => _.where('coWriters', 'array-contains', userId)).valueChanges({idField: 'id'}))
     );
   }
 
-  public getProjects(): Observable<ProjectId[] | undefined> {
-    return this.projects;
+  public getProjectsOwner(): Observable<ProjectId[] | undefined> {
+    return this.projectsAsOwner;
+  }
+
+  public getProjectsReader(): Observable<ProjectId[] | undefined> {
+    return this.projectsAsReader;
+  }
+
+  public getProjectsWriter(): Observable<ProjectId[] | undefined> {
+    return this.projectsAsWriter;
   }
 
   public getProject(projectId: string): Observable<Project | undefined> {
@@ -33,11 +47,13 @@ export class ProjectService {
   }
 
   public async addNewProject(userId: string) {
-    const project = {
+    const project: ProjectOwner = {
       name: 'neues Projekt',
       owner: userId,
       sprints: [],
       initialVelocity: 1,
+      coReaders: [],
+      coWriters: [],
     };
     const newDoc = await this.projectCollection.add(project);
     return newDoc.id;

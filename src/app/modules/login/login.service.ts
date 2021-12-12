@@ -8,6 +8,8 @@ import {map} from 'rxjs/operators';
 })
 export class LoginService {
 
+  public static userIdRegex = /[a-zA-Z0-9-_;]*/gm;
+
   constructor(
     private afAuth: AngularFireAuth,
     private router: Router
@@ -15,6 +17,7 @@ export class LoginService {
   }
 
   public authState$ = () => this.afAuth.authState;
+
   public currentUserId$ = () => this.authState$().pipe(map(_ => _.uid));
 
   public async login(email: string, pass: string): Promise<string | null> {
