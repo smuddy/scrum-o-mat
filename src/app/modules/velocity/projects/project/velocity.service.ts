@@ -41,6 +41,7 @@ export class VelocityService {
       const initialSprint: Sprint = {
         id: ID(),
         sprintNumber: this.getDefaultSprintNumber(velocity),
+        sprintName: 'Sprint ' + this.getDefaultSprintNumber(velocity),
         fromDate: this.getDefaultFromDate(velocity),
         toDate: this.getDefaultToDate(velocity),
         velocityAchieved: 0,
@@ -66,6 +67,8 @@ export class VelocityService {
 
   public updateToDate = async (projectId: string, project: Project, sprintId: number, date: Date) => this.updateSprintValue(projectId, project, sprintId, s => s.toDate = Timestamp.fromDate(date));
 
+  public updateSprintName = async (projectId: string, project: Project, sprintId: number, text: string) => this.updateSprintValue(projectId, project, sprintId, s => s.sprintName = text);
+
   public updatePointsAchieved = async (projectId: string, project: Project, sprintId: number, points: number) => this.updateSprintValue(projectId, project, sprintId, s => s.pointsAchieved = points);
 
   public updateStaffName = async (projectId: string, project: Project, sprintId: number, name: string, newName: string) => this.updateStaff(projectId, project, sprintId, name, s => s.name = newName);
@@ -84,13 +87,13 @@ export class VelocityService {
     await this.update(projectId, produce(project, p => {
       p.coReaders = [...(p.coReaders ?? []), readerId];
     }));
-  }
+  };
 
   public removeReader = async (projectId: string, project: Project, readerId: string) => {
     await this.update(projectId, produce(project, p => {
       p.coReaders = p.coReaders.filter(_ => _ !== readerId);
     }));
-  }
+  };
 
   public async addStaff(projectId: string, project: Project, sprintId: number) {
     await this.updateSprintValue(projectId, project, sprintId, s => {
@@ -102,6 +105,13 @@ export class VelocityService {
     await this.updateSprintValue(projectId, project, sprintId, s => {
       s.availableStaff = s.availableStaff.filter(_ => _.id !== staffId);
     });
+  }
+
+  public async updateProject(projectId: string, project: Project, manipulate: (project: Project) => void) {
+    const newVelocity = produce(project, p => {
+      manipulate(p);
+    });
+    await this.update(projectId, newVelocity);
   }
 
   private async update(projectId: string, project: Project) {
@@ -168,14 +178,14 @@ export class VelocityService {
         const isForecast = previousSprint !== null && previousSprint.pointsAchieved === 0;
         sprint.isForecast = isForecast;
         sprint.velocityPlaned = VelocityService.calcVelocityFromHistory(initialVelocity, velocityHistory, isForecast, lastCalculatedVelocity);
-        if (!!sprint.velocityPlaned) {
-          lastCalculatedVelocity = sprint.velocityPlaned;
-        }
+        if (!!sprint.velocityPlaned) lastCalculatedVelocity = sprint.velocityPlaned;
 
         sprint.pointsPlaned = sprint.velocityPlaned * staffCount;
 
         previousSprint = sprint;
         velocityHistory.push(sprint.velocityAchieved);
+
+        if (!sprint.sprintName) sprint.sprintName = sprint.sprintNumber.toString();
       });
 
 

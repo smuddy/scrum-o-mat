@@ -9,6 +9,8 @@ import {MenuService} from '../../../../../shared/menu/menu.service';
 import {fadeTranslateInstant} from '../../../../../animation';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 import {HeaderService} from '../../../../../shared/header/header.service';
+import {faAngleRight} from '@fortawesome/free-solid-svg-icons/faAngleRight';
+import {faAngleLeft} from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 
 @Component({
   selector: 'app-sprint',
@@ -18,17 +20,24 @@ import {HeaderService} from '../../../../../shared/header/header.service';
 })
 export class SprintComponent implements OnInit, OnDestroy {
   public sprint$ = this.activatedRoute.params.pipe(
+    distinctUntilChanged(),
     mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(
-      tap(sprint =>
-      this.headerService.setBreadcrumb([
-        {route: '/velocity', name: 'Sprint Planer'},
-        {route: '/velocity/' + params.projectId, name: sprint.projectName},
-        {route: '/velocity/' + params.projectId + '/' + sprint.id, name: 'Sprint ' + sprint.sprintNumber},
-      ])
-    )))
+      distinctUntilChanged((x,y)=> x.id === y.id),
+      tap(sprint => {
+          this.headerService.setBreadcrumb([
+            {route: '/velocity', name: 'Sprint Planer'},
+            {route: '/velocity/' + params.projectId, name: sprint.projectName},
+            {route: '/velocity/' + params.projectId + '/' + sprint.id, name: 'Sprint ' + sprint.sprintName},
+          ]);
+        }
+      )))
   );
 
+  public faRight = faAngleRight;
+  public faLeft = faAngleLeft;
+
   public sprintNumber$ = this.sprint$.pipe(map(_ => _.sprintNumber), distinctUntilChanged());
+  public sprintName$ = this.sprint$.pipe(map(_ => _.sprintName), distinctUntilChanged());
   public fromDate$ = this.sprint$.pipe(map(_ => _.fromDate), distinctUntilChanged());
   public toDate$ = this.sprint$.pipe(map(_ => _.toDate), distinctUntilChanged());
   public pointsAchieved$ = this.sprint$.pipe(map(_ => _.pointsAchieved), distinctUntilChanged());
@@ -64,11 +73,13 @@ export class SprintComponent implements OnInit, OnDestroy {
     this.menusService.resetCustomActions();
   }
 
-  updateFromDate = (sprintId: number, $event: Date) => this.velocityService.updateFromDate(this.projectId, this.project, sprintId, $event);
+  public updateFromDate = (sprintId: number, $event: Date) => this.velocityService.updateFromDate(this.projectId, this.project, sprintId, $event);
 
-  updateToDate = (sprintId: number, $event: Date) => this.velocityService.updateToDate(this.projectId, this.project, sprintId, $event);
+  public updateToDate = (sprintId: number, $event: Date) => this.velocityService.updateToDate(this.projectId, this.project, sprintId, $event);
 
-  updatePointsAchieved = (sprintId: number, $event: number) => this.velocityService.updatePointsAchieved(this.projectId, this.project, sprintId, $event);
+  public updateSprintText = (sprintId: number, $event: string) => this.velocityService.updateSprintName(this.projectId, this.project, sprintId, $event);
+
+  public updatePointsAchieved = (sprintId: number, $event: number) => this.velocityService.updatePointsAchieved(this.projectId, this.project, sprintId, $event);
 
   public updateStaffName = (sprintId: number, name: string, newName: string) => this.velocityService.updateStaffName(this.projectId, this.project, sprintId, name, newName);
 
@@ -82,8 +93,23 @@ export class SprintComponent implements OnInit, OnDestroy {
 
   public sumDays = (availableStaff: Staff[]) => availableStaff.reduce((pv, cv) => pv + cv.days * cv.percent / 100, 0);
 
-  private async removeSprint() {
-    this.velocityService.removeSprint(this.projectId, this.project, this.sprintId);
-    this.router.navigateByUrl('/velocity/' + this.projectId);
+  public onClickRight(): void {
+    const sprint = this.project.sprints.find(_ => _.id === this.sprintId);
+    const index = this.project.sprints.indexOf(sprint);
+    const max = this.project.sprints.length - 1;
+    if (index < max) this.router.navigateByUrl('/velocity/' + this.projectId + '/' + this.project.sprints[index + 1].id);
   }
+
+  public onClickLeft(): void {
+    const sprint = this.project.sprints.find(_ => _.id === this.sprintId);
+    const index = this.project.sprints.indexOf(sprint);
+    if (index > 0) this.router.navigateByUrl('/velocity/' + this.projectId + '/' + this.project.sprints[index - 1].id);
+  }
+
+  private async removeSprint() {
+    await this.velocityService.removeSprint(this.projectId, this.project, this.sprintId);
+    await this.router.navigateByUrl('/velocity/' + this.projectId);
+  }
+
+
 }

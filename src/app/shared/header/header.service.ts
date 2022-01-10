@@ -16,6 +16,7 @@ export class HeaderService {
   }
 
   setBreadcrumb(breadcrumb: { name: string, route: string }[]): void {
+    console.log(breadcrumb)
     this.breadcrumb.next(breadcrumb);
   }
 

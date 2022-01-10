@@ -10,6 +10,16 @@ import {fadeTranslateInstant} from '../../../../animation';
 import {HeaderService} from '../../../../shared/header/header.service';
 import {LoginService} from '../../../login/login.service';
 
+export interface Anwesenheit {
+  Name: string,
+  Sprint: number;
+  Einsatztage: number;
+}
+export interface Anwesenheiten {
+  Anwesenheiten: Anwesenheit[]
+}
+declare var setStaff: (staff: Anwesenheiten) => void;
+
 @Component({
   selector: 'app-velocity',
   templateUrl: './project.component.html',
@@ -50,6 +60,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.menuService.addCustomAction('Sprint erstellen', () => this.velocityService.addSprint(this.projectId, this.project));
     this.menuService.addCustomAction('Projekt bearbeiten', () => this.router.navigateByUrl(`/velocity/${this.projectId}/edit`));
     this.menuService.addCustomAction('Projekt löschen', () => this.deleteProject(), true);
+    setStaff = (staff: Anwesenheiten) => this.setStaff(staff, this.velocityService, this.projectId, this.project);
   }
 
   public ngOnDestroy() {
@@ -67,5 +78,19 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private deleteProject() {
     this.router.navigateByUrl('/velocity');
     return this.projectService.deleteProject(this.projectId);
+  }
+
+  private setStaff(staff: Anwesenheiten, velocityService: VelocityService, projectId: string, project: Project): void {
+    velocityService.updateProject(projectId,project, p => {
+      staff.Anwesenheiten.forEach(ext => {
+        const sprint = p.sprints.find(_ => _.sprintNumber === ext.Sprint);
+        if (sprint) {
+          const staff = sprint.availableStaff.find(_ => _.name === ext.Name);
+          if (staff) {
+            staff.days = ext.Einsatztage;
+          }
+        }
+      });
+    })
   }
 }

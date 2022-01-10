@@ -11,6 +11,7 @@ export interface Staff {
 export interface Sprint {
   id: string;
   sprintNumber: number;
+  sprintName: string;
   fromDate: Timestamp;
   toDate: Timestamp;
   pointsPlaned: number;

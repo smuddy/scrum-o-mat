@@ -12,6 +12,7 @@ export class EditTextComponent implements OnInit, OnDestroy {
   @Output() textChanged = new EventEmitter<string>();
   @Input() public noUnderscore = false;
   @Input() public placeholder: string;
+  @Input() public width: string = '100%';
   private sub: Subscription;
 
   @Input() set text(t: string) {

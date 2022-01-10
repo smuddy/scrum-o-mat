@@ -18,7 +18,7 @@ export class LoginService {
 
   public authState$ = () => this.afAuth.authState;
 
-  public currentUserId$ = () => this.authState$().pipe(map(_ => _.uid));
+  public currentUserId$ = () => this.authState$().pipe(map(_ => _?.uid));
 
   public async login(email: string, pass: string): Promise<string | null> {
     try {
@@ -26,7 +26,7 @@ export class LoginService {
       await this.router.navigateByUrl('/');
       return null;
     } catch (e) {
-      return this.errorMessage(e);
+      return LoginService.errorMessage(e);
     }
   }
 
@@ -36,7 +36,7 @@ export class LoginService {
       await this.router.navigateByUrl('/');
       return null;
     } catch (e) {
-      return this.errorMessage(e);
+      return LoginService.errorMessage(e);
     }
   }
 
@@ -44,7 +44,7 @@ export class LoginService {
     await this.afAuth.signOut();
   }
 
-  private errorMessage(e) {
+  private static errorMessage(e) {
     switch (e.code) {
       case 'auth/user-not-found':
       case 'auth/wrong-password':

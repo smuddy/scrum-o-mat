@@ -8,13 +8,13 @@
       <table class="table">
         <thead class="thead">
         <tr class="tr-1">
-          <th colspan="3">Sprint</th>
+          <th colspan="3"></th>
           <th class="tr-points" colspan="2">Story Points</th>
           <th class="tr-velocity" colspan="2">Velocity</th>
           <th rowspan="2">PT</th>
         </tr>
         <tr class="tr-2">
-          <th>#</th>
+          <th class="tr-name">Sprint</th>
           <th>von</th>
           <th>bis</th>
           <th class="tr-points">soll</th>
@@ -28,7 +28,7 @@
             [routerLink]="isWriter(project) ? '/velocity/' + projectId + '/' + sprint.id : null"
             class="sprint">
 
-          <td>{{sprint.sprintNumber}}</td>
+          <td class="tr-name">{{sprint.sprintName}}</td>
           <td>
             <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} </span>
             <span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</span>

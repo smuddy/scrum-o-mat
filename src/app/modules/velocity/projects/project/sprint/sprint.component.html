@@ -1,17 +1,27 @@
 <div @fadeTranslateInstant class="sprint">
-  <h1>Sprint {{sprintNumber$|async}}</h1>
+  <div class="spread">
+    <h1>Sprint
+      <app-edit-text *ngLet="sprintNumber$|async as sprintNumber"
+                     (textChanged)="updateSprintText(sprintNumber, $event)"
+                     [text]="(sprintName$|async)"
+                     [width]="'200px'"></app-edit-text></h1>
+    <div>
+      <button class="step" (click)="onClickLeft()"><fa-icon [icon]="faLeft"></fa-icon></button>
+      <button class="step" (click)="onClickRight()"><fa-icon [icon]="faRight"></fa-icon></button>
+    </div>
+  </div>
 
   <div class="split" *ngLet="sprintNumber$|async as sprintNumber">
     <div>
       <p>
         von
         <app-edit-date (dateChanged)="updateFromDate(sprintNumber, $event)"
-                       [date]="(fromDate$|async).toDate()"></app-edit-date>
+                       [date]="(fromDate$|async)?.toDate()"></app-edit-date>
       </p>
       <p>
         bis
         <app-edit-date (dateChanged)="updateToDate(sprintNumber, $event)"
-                       [date]="(toDate$|async).toDate()"></app-edit-date>
+                       [date]="(toDate$|async)?.toDate()"></app-edit-date>
       </p>
       <p>
         Geschaffte Story Points:
@@ -46,6 +56,8 @@
       <button (click)="addStaff(sprintNumber)">+ Personal hinzufügen</button>
     </div>
   </div>
+
+
 
 
 </div>
