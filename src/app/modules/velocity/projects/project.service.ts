@@ -42,8 +42,8 @@ export class ProjectService {
     return this.projectsAsWriter;
   }
 
-  public getProject(projectId: string): Observable<Project | undefined> {
-    return this.afs.doc<Project>('project/' + projectId).valueChanges();
+  public getProject(projectId: string): Observable<ProjectId | undefined> {
+    return this.afs.doc<Project>('project/' + projectId).valueChanges({idField: 'id'});
   }
 
   public async addNewProject(userId: string) {

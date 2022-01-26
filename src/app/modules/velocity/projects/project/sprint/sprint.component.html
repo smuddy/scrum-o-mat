@@ -36,7 +36,7 @@
         <div class="center">Tage</div>
         <div class="center">%</div>
       </div>
-      <div *ngFor="let staff of (availableStaff$|async)" class="staff">
+      <div *ngFor="let staff of (availableStaff$|async), trackBy:trackBy" class="staff">
         <fa-icon (click)="removeStaff(sprintNumber, staff)" [icon]="faTrash" class="button trash"></fa-icon>
         <app-edit-text (textChanged)="updateStaffName(sprintNumber, staff.name, $event)"
                        [text]="staff.name"></app-edit-text>

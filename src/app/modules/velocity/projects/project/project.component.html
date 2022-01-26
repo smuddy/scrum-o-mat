@@ -30,11 +30,11 @@
 
           <td class="tr-name">{{sprint.sprintName}}</td>
           <td>
-            <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} </span>
+            <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} &nbsp;</span>
             <span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</span>
           </td>
           <td>
-            <span class="kw">{{sprint.toDate.toDate()|date:'w'}} </span>
+            <span class="kw">{{sprint.toDate.toDate()|date:'w'}} &nbsp;</span>
             <span>{{sprint.toDate.toDate()|date:'dd.MM.YYYY'}}</span>
           </td>
           <td class="tr-points" [class.forecast]="sprint.isForecast">{{sprint.pointsPlaned|number:'1.0-0'}}</td>

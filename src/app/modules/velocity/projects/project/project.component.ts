@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {VelocityService} from './velocity.service';
-import {Observable} from 'rxjs';
-import {Project, ProjectOwner, Staff} from '../../models/project';
+import {Observable, Subscription} from 'rxjs';
+import {Project, ProjectId, ProjectOwner, Staff} from '../../models/project';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {ProjectService} from '../project.service';
 import {MenuService} from '../../../../shared/menu/menu.service';
 import {fadeTranslateInstant} from '../../../../animation';
@@ -15,9 +15,11 @@ export interface Anwesenheit {
   Sprint: number;
   Einsatztage: number;
 }
+
 export interface Anwesenheiten {
-  Anwesenheiten: Anwesenheit[]
+  Anwesenheiten: Anwesenheit[];
 }
+
 declare var setStaff: (staff: Anwesenheiten) => void;
 
 @Component({
@@ -27,18 +29,16 @@ declare var setStaff: (staff: Anwesenheiten) => void;
   animations: [fadeTranslateInstant],
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-  public project$: Observable<Project> = this.activatedRoute.params.pipe(
+
+
+  public project$: Observable<ProjectId> = this.activatedRoute.params.pipe(
     mergeMap(params =>
-      this.projectService.getProject(params.projectId).pipe(tap(project =>
-        this.headerService.setBreadcrumb([
-          {route: '/velocity', name: 'Sprint Planer'},
-          {route: '/velocity/' + params.projectId, name: project.name},
-        ])
-      )))
+      this.projectService.getProject(params.projectId))
   );
   public projectId$ = this.activatedRoute.params.pipe(map(params => params.projectId));
   public projectId: string;
   public currentUserId: string;
+  public subs: Subscription[] = [];
   private project: Project;
 
   constructor(
@@ -55,22 +55,30 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.loginService.currentUserId$().subscribe(_ => this.currentUserId = _);
   }
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.headerService.setBreadcrumb([{route: '/velocity', name: 'Sprint Planer'}]);
     this.menuService.addCustomAction('Sprint erstellen', () => this.velocityService.addSprint(this.projectId, this.project));
     this.menuService.addCustomAction('Projekt bearbeiten', () => this.router.navigateByUrl(`/velocity/${this.projectId}/edit`));
     this.menuService.addCustomAction('Projekt löschen', () => this.deleteProject(), true);
     setStaff = (staff: Anwesenheiten) => this.setStaff(staff, this.velocityService, this.projectId, this.project);
+
+    this.subs.push(this.project$.subscribe(project =>
+      this.headerService.setBreadcrumb([
+        {route: '/velocity', name: 'Sprint Planer'},
+        {route: '/velocity/' + project.id, name: project.name},
+      ])
+    ));
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.menuService.resetCustomActions();
+    this.subs.forEach(_ => _.unsubscribe());
   }
 
   public updateName = ($event: string) => this.projectService.updateProject(this.projectId, {name: $event});
 
   calcAvailableStaff(availableStaff: Staff[]) {
-    return availableStaff.reduce((count, staff) => count + staff.days * staff.percent / 100, 0) * 0.9;
+    return availableStaff.reduce((count, staff) => count + staff.days * staff.percent / 100, 0);
   }
 
   public isWriter = (project: Project) => this.currentUserId === ((project as ProjectOwner).owner) || (project.coWriters ?? []).includes(this.currentUserId);
@@ -81,7 +89,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   private setStaff(staff: Anwesenheiten, velocityService: VelocityService, projectId: string, project: Project): void {
-    velocityService.updateProject(projectId,project, p => {
+    velocityService.updateProject(projectId, project, p => {
       staff.Anwesenheiten.forEach(ext => {
         const sprint = p.sprints.find(_ => _.sprintNumber === ext.Sprint);
         if (sprint) {
@@ -91,6 +99,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
           }
         }
       });
-    })
+    });
   }
 }

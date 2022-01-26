@@ -20,9 +20,9 @@ import {faAngleLeft} from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 })
 export class SprintComponent implements OnInit, OnDestroy {
   public sprint$ = this.activatedRoute.params.pipe(
-    distinctUntilChanged(),
+    distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)),
     mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(
-      distinctUntilChanged((x,y)=> x.id === y.id),
+      distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)),
       tap(sprint => {
           this.headerService.setBreadcrumb([
             {route: '/velocity', name: 'Sprint Planer'},
@@ -41,7 +41,7 @@ export class SprintComponent implements OnInit, OnDestroy {
   public fromDate$ = this.sprint$.pipe(map(_ => _.fromDate), distinctUntilChanged());
   public toDate$ = this.sprint$.pipe(map(_ => _.toDate), distinctUntilChanged());
   public pointsAchieved$ = this.sprint$.pipe(map(_ => _.pointsAchieved), distinctUntilChanged());
-  public availableStaff$ = this.sprint$.pipe(map(_ => _.availableStaff), distinctUntilChanged((x, y) => x.length === y.length));
+  public availableStaff$ = this.sprint$.pipe(map(_ => _.availableStaff), distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)));
 
   public project$: Observable<Project> = this.activatedRoute.params.pipe(
     mergeMap(params => this.projectService.getProject(params.projectId))
@@ -92,6 +92,10 @@ export class SprintComponent implements OnInit, OnDestroy {
   public removeStaff = (sprintId: number, staff: Staff) => this.velocityService.removeStaff(this.projectId, this.project, sprintId, staff.id);
 
   public sumDays = (availableStaff: Staff[]) => availableStaff.reduce((pv, cv) => pv + cv.days * cv.percent / 100, 0);
+
+  public trackBy(index, item) {
+    return item.id;
+  }
 
   public onClickRight(): void {
     const sprint = this.project.sprints.find(_ => _.id === this.sprintId);

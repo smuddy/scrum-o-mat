@@ -84,7 +84,6 @@ export class PlanningService {
     const developerCollection = planningRef.collection('developer');
     const developer = developerCollection.doc(userId);
     await developer.update(partial);
-    console.log({userId, partial});
   }
 
   public getDevelopers(planningId: string): Observable<DeveloperId[]> {
