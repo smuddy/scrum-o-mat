@@ -14,12 +14,12 @@
   <div class="split" *ngLet="sprintNumber$|async as sprintNumber">
     <div>
       <p>
-        von
+        von KW {{(fromDate$|async)?.toDate()|date:'w'}}
         <app-edit-date (dateChanged)="updateFromDate(sprintNumber, $event)"
                        [date]="(fromDate$|async)?.toDate()"></app-edit-date>
       </p>
       <p>
-        bis
+        bis KW {{(toDate$|async)?.toDate()|date:'w'}}
         <app-edit-date (dateChanged)="updateToDate(sprintNumber, $event)"
                        [date]="(toDate$|async)?.toDate()"></app-edit-date>
       </p>
