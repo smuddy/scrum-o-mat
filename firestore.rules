@@ -4,6 +4,10 @@ service cloud.firestore {
     match /planning/{document=**} {
       allow read, write;
     }
+    match /user/{document=**} {
+      allow read, write;
+      allow list: if false;
+    }
     match /project/{project} {
       allow create: if request.auth != null;
       allow list: if request.auth != null && (

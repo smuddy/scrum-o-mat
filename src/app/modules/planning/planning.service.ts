@@ -17,7 +17,7 @@ export class PlanningService {
   private planningCollection: AngularFirestoreCollection<Planning>;
   private plannings: Observable<Planning[]>;
 
-  public listMyPLannings$ = this.loginService.authStateAllowAnonymous$.pipe(
+  public listMyPlannings$ = this.loginService.authStateAllowAnonymous$.pipe(
     mergeMap(user => this.afs.collection<PlanningId>('planning/', ref => ref.where('userId', '==', user.uid)).valueChanges({idField: 'id'})),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
   );
