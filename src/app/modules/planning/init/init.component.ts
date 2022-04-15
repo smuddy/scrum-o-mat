@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {fadeTranslateInstant} from '../../../animation';
+import {fade, fadeTranslate, fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {Planning} from '../models/planning';
 import {HeaderService} from '../../../shared/header/header.service';
@@ -10,13 +10,14 @@ import {LoginService} from '../../login/login.service';
   selector: 'app-init',
   templateUrl: './init.component.html',
   styleUrls: ['./init.component.less'],
-  animations: [fadeTranslateInstant]
+  animations: [fadeTranslateInstant, fade, fadeTranslate]
 })
 export class InitComponent implements OnInit {
   public planningId: string;
   public user: string;
   public subject: string;
-
+  public showMySessions = false;
+  public myPlannings$ = this.planningService.listMyPLannings$;
 
   constructor(
     private planningService: PlanningService,

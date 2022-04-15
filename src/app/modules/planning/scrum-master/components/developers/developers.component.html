@@ -4,7 +4,7 @@
     <div (click)="delete(developer.id)" class="deleteButton">
       <fa-icon [icon]="faTrash" class="button"></fa-icon>
     </div>
-    <div *ngIf="developer" [class.is-ready]="devIsReady(developer.storyPoints)" class="div-developer"
+    <div *ngIf="developer" [class.is-ready]="devIsReady(developer.storyPoints) && showIndicators" class="div-developer"
     >{{developer.name}}</div>
     <div *ngIf="developer" [class.show]="showResults"
          class="div-results">{{renderStoryPoints(developer.storyPoints)}}</div>

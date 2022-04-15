@@ -15,7 +15,8 @@ import {Developer, DeveloperId} from '../../../models/delevoper';
 })
 export class DevelopersComponent implements OnInit {
   @Input() public developers: DeveloperId[];
-  @Input() public showResults: boolean;
+  @Input() public showResults: boolean = false;
+  @Input() public showIndicators: boolean = false;
   public faTimes = faTimes;
   public faTrash = faTrash;
   public planningId: string;

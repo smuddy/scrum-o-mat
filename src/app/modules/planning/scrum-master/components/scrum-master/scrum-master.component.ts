@@ -56,14 +56,17 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
     this.menuService.resetCustomActions();
   }
 
-  public estimateSucceeded = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded;
-
+  public estimateSucceeded = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded && this.planning.storyPoints !== StoryPoints.coffee;
+  public coffeeBreak = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded && this.planning.storyPoints === StoryPoints.coffee;
   public estimateFailed = () => this.planning && !this.planning.estimateRequested && !this.planning.estimateSucceeded;
-
   public estimateRequested = () => this.planning && this.planning.estimateRequested;
 
   public async requestEstimate() {
     await this.planningService.resetEstimate(this.planningId, this.planning.count + 1);
+  }
+
+  public async resumeAfterCoffeeBreak() {
+    await this.planningService.resetEstimate(this.planningId, this.planning.count);
   }
 
   public link = (): string => environment.url + this.planningId;
@@ -95,8 +98,11 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
     this.planning = _;
     this.count = _.count;
     this.headerService.setFullscreen(!!_.issue);
-    fireworks._particlesPerExplosion = _.estimateSucceeded ? 50 : 0;
-    fireworks._interval = [200 * _.count, 1500 * _.count];
+
+    if (_.storyPoints !== StoryPoints.coffee) {
+      fireworks._particlesPerExplosion = _.estimateSucceeded ? 50 : 0;
+      fireworks._interval = [200 * _.count, 1500 * _.count];
+    }
   }
 
   private async developersChanged(developers: DeveloperId[]) {

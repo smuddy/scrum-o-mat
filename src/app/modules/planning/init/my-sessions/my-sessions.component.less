@@ -1,0 +1,40 @@
+:host {
+  text-align: left;
+}
+
+.head {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.planning {
+  margin-top: 10px;
+
+  display: grid;
+  grid-template-columns: auto 36px;
+}
+
+.date {
+  opacity: 0.5;
+  font-size: 0.5em;
+}
+
+.link {
+  opacity: 0.5;
+  transition: 150ms all ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.planning .delete {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: 150ms all ease-in-out;
+}
+
+.planning:hover .delete {
+  opacity: 1;
+}

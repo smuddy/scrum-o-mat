@@ -16,5 +16,12 @@
   </div>
   <button (click)="goMaster()">Schätzung starten</button>
   <button routerLink="scan">QR Code Scannen</button>
-<!--  #<span *ngIf="loginService.authStateAllowAnonymous$()|async as user"> User{{user.uid}}</span>-->
+  <ng-container *ngIf="myPlannings$|async as plannings">
+    <button (click)="showMySessions=true" *ngIf="!showMySessions && plannings.length > 0" @fade>Meine Schätzungen
+    </button>
+    <div *ngIf="showMySessions  && plannings.length > 0" @fade>
+      <app-my-sessions [plannings]="plannings"></app-my-sessions>
+    </div>
+  </ng-container>
+
 </div>

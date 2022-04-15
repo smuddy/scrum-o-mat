@@ -7,19 +7,28 @@
     <app-dashboard
       [estimateFailed]="estimateFailed()"
       [estimateRequested]="estimateRequested()"
-      [estimateSucceeded]="estimateSucceeded()"
+      [estimateSucceeded]="estimateSucceeded() || coffeeBreak()"
       [storyPoints]="planning.storyPoints"
     ></app-dashboard>
-    <app-developers [developers]="developers" [showResults]="!estimateRequested()">
+    <app-developers [developers]="developers" [showIndicators]="!coffeeBreak()"
+                    [showResults]="!estimateRequested() && !coffeeBreak()">
       <div class="div-repeat">
-        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen</button>
-        <ng-container  *ngIf="estimateSucceeded()"  [ngSwitch]="count">
+        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant class="comment">Schätzung
+          wiederholen
+        </button>
+        <div *ngIf="estimateSucceeded()" [ngSwitch]="count" class="comment">
           <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
           <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
           <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>
           <ng-container *ngSwitchDefault>Was lange währt wird endlich gut!</ng-container>
-        </ng-container>
-        <button (click)="edit.resetIssue()" *ngIf="estimateSucceeded()" @fadeTranslateInstant>Schätzung beenden</button>
+        </div>
+        <button (click)="edit.resetIssue()" *ngIf="estimateSucceeded()" @fadeTranslateInstant class="comment">Schätzung
+          beenden
+        </button>
+        <div *ngIf="coffeeBreak()" class="comment">Wir brauchen mal eine Pause!</div>
+        <button (click)="resumeAfterCoffeeBreak()" *ngIf="coffeeBreak()" @fadeTranslateInstant class="comment">
+          Kaffepause beendet
+        </button>
       </div>
     </app-developers>
   </div>

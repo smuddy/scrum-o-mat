@@ -8,8 +8,12 @@
     Schätzung wird durchgeführt
   </div>
   <div *ngIf="!estimateRequested && estimateSucceeded" @fade class="div-issue large">{{renderStoryPoint()}}</div>
-  <div *ngIf="!estimateRequested && estimateSucceeded" @fade class="div-issue">
-    <ng-container  [ngSwitch]="count">
+  <div *ngIf="!estimateRequested && estimateSucceeded && coffeeBreak" @fade class="div-issue">Wir brauchen mal eine
+    Pause!
+  </div>
+  <div *ngIf="!estimateRequested && estimateSucceeded && !coffeeBreak" @fade class="div-issue">
+
+    <ng-container [ngSwitch]="count">
       <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
       <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
       <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>

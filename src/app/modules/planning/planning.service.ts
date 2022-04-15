@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
-import {first} from 'rxjs/operators';
+import {distinctUntilChanged, first, mergeMap} from 'rxjs/operators';
 import {StoryPoints} from './models/storyPoints';
 import {Developer, DeveloperId} from './models/delevoper';
 import {PlanningEstimatePartial} from './models/planningEstimatePartial';
-import {Planning} from './models/planning';
+import {Planning, PlanningId} from './models/planning';
 import {StoryPointsPartial} from './models/storyPointsPartial';
-import {Observable} from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
+import {LoginService} from '../login/login.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,10 @@ export class PlanningService {
   private planningCollection: AngularFirestoreCollection<Planning>;
   private plannings: Observable<Planning[]>;
 
-  constructor(private afs: AngularFirestore) {
-    this.planningCollection = afs.collection<Planning>('planning');
-    this.plannings = this.planningCollection.valueChanges();
-  }
+  public listMyPLannings$ = this.loginService.authStateAllowAnonymous$.pipe(
+    mergeMap(user => this.afs.collection<PlanningId>('planning/', ref => ref.where('userId', '==', user.uid)).valueChanges({idField: 'id'})),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+  );
 
   private static newDeveloper(name: string): Developer {
     return {
@@ -28,18 +29,12 @@ export class PlanningService {
     };
   }
 
-  public async createNewSession(subject: string): Promise<string> {
-    const planning: Planning = {
-      issue: null,
-      subject,
-      modified: new Date(),
-      estimateRequested: true,
-      estimateSucceeded: false,
-      storyPoints: null,
-      count: 0,
-    };
-    const newDoc = await this.planningCollection.add(planning);
-    return newDoc.id;
+  constructor(
+    private afs: AngularFirestore,
+    private loginService: LoginService,
+  ) {
+    this.planningCollection = afs.collection<Planning>('planning');
+    this.plannings = this.planningCollection.valueChanges();
   }
 
   public async updateIssue(planningId: string, issue: string) {
@@ -55,6 +50,22 @@ export class PlanningService {
     const planningRef = this.getPlanningRef(planningId);
     await planningRef.update(planning);
     this.resetStoryPoints(planningId);
+  }
+
+  public async createNewSession(subject: string): Promise<string> {
+    const user = await firstValueFrom(this.loginService.authStateAllowAnonymous$);
+    const planning: Planning = {
+      issue: null,
+      subject,
+      modified: new Date(),
+      estimateRequested: true,
+      estimateSucceeded: false,
+      storyPoints: null,
+      count: 0,
+      userId: user.uid,
+    };
+    const newDoc = await this.planningCollection.add(planning);
+    return newDoc.id;
   }
 
   public getPlanning(planningId: string): Observable<Planning | undefined> {
@@ -116,7 +127,7 @@ export class PlanningService {
   }
 
   public async resetEstimate(planningId: string, count: number) {
-    this.resetStoryPoints(planningId);
+    await this.resetStoryPoints(planningId);
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: true,
       estimateSucceeded: false,
@@ -128,12 +139,13 @@ export class PlanningService {
     await planningRef.update(estimateResult);
   }
 
-  private resetStoryPoints(planningId: string) {
-    this.getDevelopers(planningId).pipe(first()).subscribe(developers => {
-      for (const developer of developers) {
-        this.updateStoryPoints(planningId, developer.id, null);
-      }
-    });
+  private async resetStoryPoints(planningId: string) {
+    const developers = await firstValueFrom(this.getDevelopers(planningId));
+
+    for (const developer of developers) {
+      await this.updateStoryPoints(planningId, developer.id, null);
+    }
+
   }
 
 

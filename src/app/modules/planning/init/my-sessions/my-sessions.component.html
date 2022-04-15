@@ -1,0 +1,11 @@
+<div class="head">Meine Schätzungen</div>
+
+<div *ngFor="let planning of plannings" class="planning">
+  <div [routerLink]="'/planning/' + planning.id + '/master'" class="link">
+    <div>{{planning.subject}}</div>
+    <div class="date">{{planning.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>
+  </div>
+  <div class="delete">
+    <fa-icon (click)="delete(planning.id)" [icon]="faTrash" class="button"></fa-icon>
+  </div>
+</div>

@@ -23,6 +23,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   public subject: string;
   public estimateRequested: boolean;
   public estimateSucceeded: boolean;
+  public coffeeBreak: boolean;
   public storyPoints: StoryPoints;
   public faTimes = faTimes;
   public maxPoints = 1;
@@ -81,8 +82,10 @@ export class DeveloperComponent implements OnInit, OnDestroy {
         this.subject = planning.subject;
         this.estimateRequested = planning.estimateRequested;
         this.estimateSucceeded = planning.estimateSucceeded;
+        this.coffeeBreak = planning.estimateSucceeded && planning.storyPoints === StoryPoints.coffee;
         this.storyPoints = planning.storyPoints;
-        fireworks._particlesPerExplosion = planning.estimateSucceeded ? 50 : 0;
+
+        fireworks._particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
         fireworks._interval = [200 * planning.count, 1500 * planning.count];
 
         this.headerService.setFullscreen(this.estimateRequested && !!this.issue);

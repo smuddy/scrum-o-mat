@@ -9,10 +9,12 @@ import {AdminModule} from './admin/admin.module';
 import {InitComponent} from './init/init.component';
 import {CommonModule} from '@angular/common';
 import {GuestModule} from './guest/guest.module';
+import {MySessionsComponent} from './init/my-sessions/my-sessions.component';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 
 @NgModule({
-  declarations: [InitComponent],
+  declarations: [InitComponent, MySessionsComponent],
   imports: [
     CommonModule,
     PlanningRoutingModule,
@@ -23,6 +25,7 @@ import {GuestModule} from './guest/guest.module';
     AdminModule,
     QrcodeModule,
     GuestModule,
+    FontAwesomeModule,
   ]
 })
 export class PlanningModule {
