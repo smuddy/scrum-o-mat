@@ -36,7 +36,7 @@
       // zIndex of particles
       _zIndex: 20000,
       // maximal age of particles (in msec)
-      _maxAge: 2000,
+      _maxAge: 4000,
       // interval of appearing explosions (in msec)
       _interval: [200, 1500],
       // amount of particles per explosion
@@ -168,18 +168,20 @@
 
           el.className = 'particle';
           el.style.position = 'absolute';
-          el.style.fontSize = this._maxSize + 'px';
+          el.style.fontSize = '2px';
           el.style.zIndex = this._zIndex;
-          el.style.width = this._maxSize + 'px';
+          el.style.width = '3px';
+          el.style.height = '3px';
+          el.style.borderRadius = '50%';
           el.style.textAlign = 'center';
           el.style.overflow = 'hidden';
-          el.innerHTML = '&#x25cf;';
         }
 
         if (!el) return;
         el.style.left = x + 'px';
         el.style.top = y + 'px';
-        el.style.color = color;
+        el.style.backgroundColor = color;
+        el.style.boxShadow = '0 0 10px 1px ' + color;
         el.data = {
           x: x,
           y: y,
@@ -246,6 +248,8 @@
 
           el.style.left = d.x + 'px';
           el.style.top = d.y + 'px';
+
+          el.style.opacity = (1 - d.age).toString();
           el.style.color = (Math.random() * .5 + d.age >= 1) ? 'transparent' : d.color;
           el.style.fontSize = Math.max(this._minSize, (1 - d.age) * this._maxSize) + 'px';
         }

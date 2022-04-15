@@ -18,6 +18,7 @@ declare var fireworks;
   animations: [fade, listAnimation]
 })
 export class DeveloperComponent implements OnInit, OnDestroy {
+  public count: number;
   public issue: string;
   public subject: string;
   public estimateRequested: boolean;
@@ -75,18 +76,21 @@ export class DeveloperComponent implements OnInit, OnDestroy {
       if (!planning) {
         this.router.navigateByUrl(this.router.createUrlTree(['/'], {queryParams: {session: this.planningId}}));
       } else {
+        this.count = planning.count;
         this.issue = planning.issue;
         this.subject = planning.subject;
         this.estimateRequested = planning.estimateRequested;
         this.estimateSucceeded = planning.estimateSucceeded;
         this.storyPoints = planning.storyPoints;
-        fireworks._particlesPerExplosion = planning.estimateSucceeded ? 40 : 0;
+        fireworks._particlesPerExplosion = planning.estimateSucceeded ? 50 : 0;
+        fireworks._interval = [200 * planning.count, 1500 * planning.count];
 
         this.headerService.setFullscreen(this.estimateRequested && !!this.issue);
       }
     });
     this.planningService.getDeveloper(this.planningId, this.userId).subscribe(_ => {
       if (!_) {
+        fireworks._particlesPerExplosion = 0;
         this.router.navigateByUrl(this.router.createUrlTree(['/planning/'], {queryParams: {session: this.planningId}}));
       }
     });
@@ -111,6 +115,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   }
 
   public async logout() {
+    fireworks._particlesPerExplosion = 0;
     localStorage.removeItem('last-session');
     await this.planningService.deleteUser(this.planningId, this.userId);
     await this.router.navigateByUrl(this.router.createUrlTree(['/planning/'], {queryParams: {session: this.planningId}}));

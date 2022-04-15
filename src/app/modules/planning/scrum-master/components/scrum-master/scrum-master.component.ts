@@ -21,6 +21,7 @@ declare var fireworks;
   animations: [fadeTranslateInstant, fadeBlur]
 })
 export class ScrumMasterComponent implements OnInit, OnDestroy {
+  public count: number;
   public planningId: string;
   public developers: DeveloperId[];
   public planning: Planning;
@@ -62,7 +63,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   public estimateRequested = () => this.planning && this.planning.estimateRequested;
 
   public async requestEstimate() {
-    await this.planningService.resetEstimate(this.planningId);
+    await this.planningService.resetEstimate(this.planningId, this.planning.count + 1);
   }
 
   public link = (): string => environment.url + this.planningId;
@@ -92,8 +93,10 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
       return;
     }
     this.planning = _;
+    this.count = _.count;
     this.headerService.setFullscreen(!!_.issue);
-    fireworks._particlesPerExplosion = _.estimateSucceeded ? 40 : 0;
+    fireworks._particlesPerExplosion = _.estimateSucceeded ? 50 : 0;
+    fireworks._interval = [200 * _.count, 1500 * _.count];
   }
 
   private async developersChanged(developers: DeveloperId[]) {

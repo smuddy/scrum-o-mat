@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {distinctUntilChanged, map, mergeMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map, mergeMap, tap} from 'rxjs/operators';
 import {VelocityService} from '../velocity.service';
 import {Project, Staff} from '../../../models/project';
 import {Observable} from 'rxjs';
@@ -23,6 +23,7 @@ export class SprintComponent implements OnInit, OnDestroy {
     distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)),
     mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(
       distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)),
+      debounceTime(10),
       tap(sprint => {
           this.headerService.setBreadcrumb([
             {route: '/velocity', name: 'Sprint Planer'},
@@ -36,12 +37,12 @@ export class SprintComponent implements OnInit, OnDestroy {
   public faRight = faAngleRight;
   public faLeft = faAngleLeft;
 
-  public sprintNumber$ = this.sprint$.pipe(map(_ => _.sprintNumber), distinctUntilChanged());
-  public sprintName$ = this.sprint$.pipe(map(_ => _.sprintName), distinctUntilChanged());
-  public fromDate$ = this.sprint$.pipe(map(_ => _.fromDate), distinctUntilChanged());
-  public toDate$ = this.sprint$.pipe(map(_ => _.toDate), distinctUntilChanged());
-  public pointsAchieved$ = this.sprint$.pipe(map(_ => _.pointsAchieved), distinctUntilChanged());
-  public availableStaff$ = this.sprint$.pipe(map(_ => _.availableStaff), distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)));
+  public sprintNumber$ = this.sprint$.pipe(map(_ => _.sprintNumber), distinctUntilChanged(), debounceTime(10));
+  public sprintName$ = this.sprint$.pipe(map(_ => _.sprintName), distinctUntilChanged(), debounceTime(10));
+  public fromDate$ = this.sprint$.pipe(map(_ => _.fromDate), distinctUntilChanged(), debounceTime(10));
+  public toDate$ = this.sprint$.pipe(map(_ => _.toDate), distinctUntilChanged(), debounceTime(10));
+  public pointsAchieved$ = this.sprint$.pipe(map(_ => _.pointsAchieved), distinctUntilChanged(), debounceTime(10));
+  public availableStaff$ = this.sprint$.pipe(map(_ => _.availableStaff), distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)), debounceTime(10));
 
   public project$: Observable<Project> = this.activatedRoute.params.pipe(
     mergeMap(params => this.projectService.getProject(params.projectId))

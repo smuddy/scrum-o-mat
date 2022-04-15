@@ -1,15 +1,22 @@
 <div class="div-subject">{{subject}}</div>
-<div *ngIf="!issue" [@fade] class="div-waiting">Warte auf neue Schätzung</div>
+<div *ngIf="!issue" @fade class="div-waiting">Warte auf neue Schätzung</div>
 
 
-<div *ngIf="issue" [@fade]>
+<div *ngIf="issue" @fade>
   <div class="div-issue">{{issue}}</div>
-  <div *ngIf="estimateRequested" [@fade] class="div-issue">
+  <div *ngIf="estimateRequested" @fade class="div-issue">
     Schätzung wird durchgeführt
   </div>
-  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue large">{{renderStoryPoint()}}</div>
-  <div *ngIf="!estimateRequested && estimateSucceeded" [@fade] class="div-issue">Punktlandung!</div>
-  <div *ngIf="!estimateRequested && !estimateSucceeded" [@fade] class="div-issue">
+  <div *ngIf="!estimateRequested && estimateSucceeded" @fade class="div-issue large">{{renderStoryPoint()}}</div>
+  <div *ngIf="!estimateRequested && estimateSucceeded" @fade class="div-issue">
+    <ng-container  [ngSwitch]="count">
+      <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
+      <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
+      <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>
+      <ng-container *ngSwitchDefault>Was lange währt wird endlich gut!</ng-container>
+    </ng-container>
+  </div>
+  <div *ngIf="!estimateRequested && !estimateSucceeded" @fade class="div-issue">
     Wir müssen reden ...
     <div [@listAnimation]="selectedStoryPoints.length" class="div-graph">
       <div *ngFor="let selectedStoryPoint of selectedStoryPoints|orderBy: 'storyPoint'" class="div-graph-row">
@@ -23,7 +30,7 @@
 </div>
 
 
-<div *ngIf="issue && estimateRequested" [@fade] class="wrapper">
+<div *ngIf="issue && estimateRequested" @fade class="wrapper">
   <circle-progress
     [animationDuration]="300"
     [animation]="true"

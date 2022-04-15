@@ -1,7 +1,7 @@
 <div class="div-scrum-master">
 
   <app-edit-issue [middle]="!(planning && planning.issue)" [planningId]="planningId"
-                  class="div-edit-issue"></app-edit-issue>
+                  class="div-edit-issue" #edit></app-edit-issue>
 
   <div *ngIf="planning && planning.issue" @fadeTranslateInstant class="div-results">
     <app-dashboard
@@ -12,8 +12,14 @@
     ></app-dashboard>
     <app-developers [developers]="developers" [showResults]="!estimateRequested()">
       <div class="div-repeat">
-        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen
-        </button>
+        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant>Schätzung wiederholen</button>
+        <ng-container  *ngIf="estimateSucceeded()"  [ngSwitch]="count">
+          <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
+          <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
+          <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>
+          <ng-container *ngSwitchDefault>Was lange währt wird endlich gut!</ng-container>
+        </ng-container>
+        <button (click)="edit.resetIssue()" *ngIf="estimateSucceeded()" @fadeTranslateInstant>Schätzung beenden</button>
       </div>
     </app-developers>
   </div>

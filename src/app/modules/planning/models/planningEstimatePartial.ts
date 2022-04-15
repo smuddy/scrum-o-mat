@@ -4,4 +4,5 @@ export interface PlanningEstimatePartial {
   estimateRequested: boolean;
   estimateSucceeded: boolean;
   storyPoints: StoryPoints;
+  count?: number;
 }

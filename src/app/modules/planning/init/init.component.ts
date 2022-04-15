@@ -4,6 +4,7 @@ import {fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {Planning} from '../models/planning';
 import {HeaderService} from '../../../shared/header/header.service';
+import {LoginService} from '../../login/login.service';
 
 @Component({
   selector: 'app-init',
@@ -21,6 +22,7 @@ export class InitComponent implements OnInit {
     private planningService: PlanningService,
     private router: Router,
     private activatedRoute: ActivatedRoute, private headerService: HeaderService,
+    public loginService: LoginService,
   ) {
   }
 

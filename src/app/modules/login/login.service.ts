@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {Router} from '@angular/router';
-import {map} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
+import {from, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,16 @@ export class LoginService {
   }
 
   public authState$ = () => this.afAuth.authState;
+
+  public authStateAllowAnonymous$ = () => this.afAuth.authState.pipe(
+    mergeMap( _ => {
+      if (_) return of(_);
+
+      localStorage.getItem('annonymUser')
+
+      return from(this.afAuth.signInAnonymously()).pipe(map(x=>x.user))
+    })
+  )
 
   public currentUserId$ = () => this.authState$().pipe(map(_ => _?.uid));
 

@@ -6,6 +6,7 @@ import {DeveloperComponent} from './developer/components/developer/developer.com
 import {QrcodeComponent} from './qrcode/components/qrcode/qrcode.component';
 import {InitComponent} from './init/init.component';
 import {GuestComponent} from './guest/guest.component';
+import {LeavePlanningGuard} from './guards/leave-planning.guard';
 
 
 const routes: Routes = [
@@ -25,6 +26,7 @@ const routes: Routes = [
   {
     path: ':planningId/master',
     component: ScrumMasterComponent,
+    canDeactivate: [LeavePlanningGuard]
   },
   {
     path: ':planningId/guest',

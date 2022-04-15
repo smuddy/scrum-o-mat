@@ -35,7 +35,8 @@ export class PlanningService {
       modified: new Date(),
       estimateRequested: true,
       estimateSucceeded: false,
-      storyPoints: null
+      storyPoints: null,
+      count: 0,
     };
     const newDoc = await this.planningCollection.add(planning);
     return newDoc.id;
@@ -47,7 +48,8 @@ export class PlanningService {
       modified: new Date(),
       estimateRequested: true,
       estimateSucceeded: false,
-      storyPoints: null
+      storyPoints: null,
+      count: 1,
     };
 
     const planningRef = this.getPlanningRef(planningId);
@@ -106,19 +108,20 @@ export class PlanningService {
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: false,
       estimateSucceeded: allValidStoryPointsAreEqual,
-      storyPoints
+      storyPoints,
     };
 
     const planningRef = this.getPlanningRef(planningId);
     await planningRef.update(estimateResult);
   }
 
-  public async resetEstimate(planningId: string) {
+  public async resetEstimate(planningId: string, count: number) {
     this.resetStoryPoints(planningId);
     const estimateResult: PlanningEstimatePartial = {
       estimateRequested: true,
       estimateSucceeded: false,
-      storyPoints: 0
+      storyPoints: 0,
+      count: count,
     };
 
     const planningRef = this.getPlanningRef(planningId);
