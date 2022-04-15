@@ -101,7 +101,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
 
     if (_.storyPoints !== StoryPoints.coffee) {
       fireworks._particlesPerExplosion = _.estimateSucceeded ? 50 : 0;
-      fireworks._interval = [200 * _.count, 1500 * _.count];
+      fireworks._interval = [200 * _.count * _.count, 1500 * _.count * _.count];
     }
   }
 

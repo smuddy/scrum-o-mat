@@ -86,7 +86,7 @@ export class GuestComponent implements OnInit, OnDestroy {
         this.coffeeBreak = planning.estimateSucceeded && planning.storyPoints === StoryPoints.coffee;
         this.storyPoints = planning.storyPoints;
         fireworks._particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
-        fireworks._interval = [200 * planning.count, 1500 * planning.count];
+        fireworks._interval = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
 
         this.headerService.setFullscreen(this.estimateRequested && !!this.issue);
       }
