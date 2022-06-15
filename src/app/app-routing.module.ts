@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AngularFireAuthGuard, AngularFireAuthGuardModule, redirectLoggedInTo, redirectUnauthorizedTo} from '@angular/fire/compat/auth-guard';
 import {LoginGuard} from './modules/login/login.guard';
+import {SessionRedirectGuard} from './shared/session-redirect.guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const redirectLoggedInToRoot = () => redirectLoggedInTo([]);
@@ -10,7 +11,8 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./modules/init/init.module').then(m => m.InitModule)
+    loadChildren: () => import('./modules/init/init.module').then(m => m.InitModule),
+    canActivate: [SessionRedirectGuard],
   },
   {
     path: 'planning',

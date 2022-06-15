@@ -1,7 +1,7 @@
 <div *ngIf="projectsOwner$|async as projects" @fadeTranslateInstant class="projects">
   <h1>Sprint Planer</h1>
 
-  <div *ngIf="projects.length!==0" class="list">
+  <div *ngIf="projects.length!==0" class="list" >
     <div *ngFor="let project of projects" [routerLink]="project.id" class="project">{{project.name}}</div>
   </div>
 

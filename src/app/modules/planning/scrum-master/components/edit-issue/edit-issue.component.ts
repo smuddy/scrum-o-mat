@@ -2,11 +2,13 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {filter} from 'rxjs/operators';
 import {PlanningService} from '../../../planning.service';
+import {fade} from '../../../../../animation';
 
 @Component({
   selector: 'app-edit-issue',
   templateUrl: './edit-issue.component.html',
-  styleUrls: ['./edit-issue.component.less']
+  styleUrls: ['./edit-issue.component.less'],
+  animations: [fade],
 })
 export class EditIssueComponent implements OnInit {
   @ViewChild('input', {static: true}) inputRef;

@@ -44,6 +44,7 @@ export class GuestComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    this.headerService.setFullscreen(true);
     this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
     window.scrollTo(0, 0);
 
@@ -88,7 +89,6 @@ export class GuestComponent implements OnInit, OnDestroy {
         fireworks._particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
         fireworks._interval = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
 
-        this.headerService.setFullscreen(this.estimateRequested && !!this.issue);
       }
     });
   }

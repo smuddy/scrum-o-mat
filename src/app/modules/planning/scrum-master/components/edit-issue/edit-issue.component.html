@@ -1,4 +1,4 @@
-<div [class.middle]="middle" class="div-issue">
+<div [class.middle]="middle" class="div-issue" @fade>
   <div class="div-subject">{{subject}}</div>
   <input #input
          (keyup.enter)="setIssue()"

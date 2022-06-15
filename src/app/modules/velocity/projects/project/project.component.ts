@@ -3,7 +3,7 @@ import {VelocityService} from './velocity.service';
 import {Observable, Subscription} from 'rxjs';
 import {Project, ProjectId, ProjectOwner, Staff} from '../../models/project';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, mergeMap} from 'rxjs/operators';
+import {debounceTime, map, mergeMap} from 'rxjs/operators';
 import {ProjectService} from '../project.service';
 import {MenuService} from '../../../../shared/menu/menu.service';
 import {fadeTranslateInstant} from '../../../../animation';
@@ -32,6 +32,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
 
   public project$: Observable<ProjectId> = this.activatedRoute.params.pipe(
+    debounceTime(500),
     mergeMap(params =>
       this.projectService.getProject(params.projectId))
   );

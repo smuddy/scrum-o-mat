@@ -54,6 +54,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.menuService.resetCustomActions();
+    this.headerService.setFullscreen(false);
   }
 
   public estimateSucceeded = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded && this.planning.storyPoints !== StoryPoints.coffee;
@@ -77,17 +78,33 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   }
 
   public copyLink(link: string) {
-    const selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = link;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
+    // const selBox = document.createElement('textarea');
+    // selBox.style.position = 'fixed';
+    // selBox.style.left = '0';
+    // selBox.style.top = '0';
+    // selBox.style.opacity = '0';
+    // selBox.value = link;
+    // document.body.appendChild(selBox);
+    // selBox.focus();
+    // selBox.select();
+    // document.execCommand('copy');
+    // document.body.removeChild(selBox);
+
+    void navigator.clipboard.writeText(link);
+    // const blobInput = this.convertBase64ToBlob(base64Data, 'image/png');
+    // const clipboardItemInput = new ClipboardItem({ 'image/png': blobInput });
+    // navigator.clipboard.write([clipboardItemInput]);
+
+  }
+
+  convertBase64ToBlob(base64, type) {
+    var bytes = window.atob(base64);
+    var ab = new ArrayBuffer(bytes.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < bytes.length; i++) {
+      ia[i] = bytes.charCodeAt(i);
+    }
+    return new Blob([ab], { type: type });
   }
 
   private planningChanged(_: Planning) {

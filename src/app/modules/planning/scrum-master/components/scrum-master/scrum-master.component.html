@@ -43,5 +43,5 @@
 
 
 <div *ngIf="showQrCode" @fadeBlur class="qrcode-background"></div>
-<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" @fadeTranslateInstant [scale]="10" [value]="link()">
+<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" @fadeBlur [scale]="10" [value]="link()">
 </ngx-qrcode>

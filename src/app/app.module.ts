@@ -12,27 +12,38 @@ import {AngularFireAuthModule} from '@angular/fire/compat/auth';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {MenuModule} from './shared/menu/menu.module';
 import {HeaderModule} from './shared/header/header.module';
+import {PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+
+};
 
 @NgModule({
   declarations: [
     AppComponent,
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
-    AngularFireAuthModule,
-    FontAwesomeModule,
-    MenuModule,
-    HeaderModule,
-    // AngularFirestoreModule.enablePersistence(),
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        AppRoutingModule,
+        AngularFireModule.initializeApp(environment.firebaseConfig),
+        AngularFirestoreModule.enablePersistence({synchronizeTabs: true}),
+        AngularFireAuthModule,
+        FontAwesomeModule,
+        MenuModule,
+        HeaderModule,
+        PerfectScrollbarModule,
+        // AngularFirestoreModule.enablePersistence(),
 
 
+    ],
+  providers: [
+    {
+      provide: PERFECT_SCROLLBAR_CONFIG,
+      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+    }
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {
