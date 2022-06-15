@@ -10,8 +10,7 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'planning'
-    // loadChildren: () => import('./modules/init/init.module').then(m => m.InitModule)
+    loadChildren: () => import('./modules/init/init.module').then(m => m.InitModule)
   },
   {
     path: 'planning',

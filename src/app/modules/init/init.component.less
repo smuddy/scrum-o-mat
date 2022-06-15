@@ -1,0 +1,53 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main {
+  margin-top: 50px;
+  width: 1000px;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "planning velocity"
+    "changelog changelog";
+}
+
+.changelog {
+  grid-area: changelog;
+  font-size: 0.8em;
+  color: #fffa;
+}
+
+.planning {
+  grid-area: planning;
+}
+
+.velocity {
+  grid-area: velocity;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+
+  &:hover {
+    background: #fff1;
+    cursor: pointer;
+  }
+}
+
+.icon {
+  font-size: 8em;
+}
+
+.caption {
+  font-size: 2em;
+}

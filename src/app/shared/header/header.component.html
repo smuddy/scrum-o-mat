@@ -1,7 +1,8 @@
-<div [class.fullscreen]="fullscreen$|async" class="header">
-  <ng-container *ngFor="let route of (breadcrumb$|async); let i = index">
-    <div *ngIf="i!==0" class="separator element">></div>
-    <div [routerLink]="route.route" class="headline element">{{route.name}}</div>
+<div [class.fullscreen]="fullscreen$|async" class="header" @fadefast>
+  <div routerLink="/" class="headline element"><fa-icon [icon]="faHome"></fa-icon></div>
+  <ng-container *ngFor="let route of (breadcrumb$|async); let i = index; trackBy: trackBy">
+    <div class="separator element" @fadefast>></div>
+    <div [routerLink]="route.route" class="headline element" @fadefast>{{route.name}}</div>
   </ng-container>
 
 </div>

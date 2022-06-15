@@ -1,0 +1,70 @@
+<div class="main" @card>
+  <div class="item planning card-child" routerLink="/planning">
+    <fa-icon [icon]="faDice" class="icon"></fa-icon>
+    <div class="caption">Scrum Poker</div>
+  </div>
+  <div class="item velocity card-child" routerLink="/velocity">
+    <fa-icon [icon]="faCalendar" class="icon"></fa-icon>
+    <div class="caption">Sprint Planer</div>
+  </div>
+  <div class="changelog card-child">
+    <div>Changelog</div>
+    <table>
+      <tr>
+        <td>1.1.4</td>
+        <td>
+          <ul>
+            <li>Startseite und Changelog wurden hinzugefügt.</li>
+            <li>Es wurde ein Codefragment entfernt, das vermutlich für das gelegentliche Routing aus einer aktiven Session heraus verantwortlich ist.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>1.1.3</td>
+        <td>
+          <ul>
+            <li>Auf der Startseite Scrum Poker werden für den Organisator offene eigene Schätzungssessions angezeigt, falls der Link zur aktuellen Session verloren gegangen ist.</li>
+            <li>Als Schätzungsteilnehmer wird der eigene Name gespeichert. Als Identifizierung dient entweder die Benutzer ID des angemeldeten Benutzers oder ein annonymer Token im Local Storage des Browsers.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>1.1.2</td>
+        <td>
+          <ul>
+            <li>Je nach Anzahl der Versuche werden andere Texte nach einer erfolgreichen Schätzungsrunde angezeigt. </li>
+            <li>Die Feuerwerksintensität skaliert ebenfalls mit der Anzahl der Versuche.</li>
+            <li>beim Pausenworkflow - es muss keine neue Schätzung gestartet werden, sondern die vorherige kann fortgesetzt werden.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>1.1.1</td>
+        <td>
+          <ul>
+            <li>Allgemeine Paketupdates</li>
+            <li>Überarbeitung von Header und Seitenmenü</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>1.1.0</td>
+        <td>
+          <ul>
+            <li>Benutzeranmeldung wurde hinzugefügt</li>
+            <li>Sprintplaner wurde hinzugefügt</li>
+            <li>Gästeansicht für Schätzungen wurde hinzugefügt um Fortschritt und Ergebnis der Schätzungen präsentieren zu können ohne selbst als Organisator oder Entwickler teilzunehmen</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>1.0.0</td>
+        <td>
+          <ul>
+            <li>Release</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

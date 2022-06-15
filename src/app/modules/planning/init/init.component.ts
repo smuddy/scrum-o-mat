@@ -2,9 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {fade, fadeTranslate, fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
-import {Planning} from '../models/planning';
 import {HeaderService} from '../../../shared/header/header.service';
-import {LoginService} from '../../login/login.service';
 import {UserService} from '../../login/user.service';
 import {firstValueFrom} from 'rxjs';
 
@@ -27,7 +25,6 @@ export class InitComponent implements OnInit {
     private planningService: PlanningService,
     private router: Router,
     private activatedRoute: ActivatedRoute, private headerService: HeaderService,
-    public loginService: LoginService,
     private userService: UserService,
   ) {
   }
@@ -74,12 +71,6 @@ export class InitComponent implements OnInit {
 
   private paramsChanged(params) {
     this.planningId = params.session;
-    this.planningService.getPlanning(params.session).subscribe(_ => this.planningChanged(_));
   }
 
-  private planningChanged(_: Planning) {
-    if (!_) {
-      this.router.navigateByUrl('/');
-    }
-  }
 }

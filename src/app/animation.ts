@@ -17,12 +17,29 @@ export const fade = trigger('fade', [
   ])
 ]);
 
+export const fadefast = trigger('fadefast', [
+
+  // fade in when created. this could also be written as transition('void => *')
+  transition(':enter', [
+    style({opacity: 0, 'max-height': 0}),
+    animate('150ms 150ms', style({opacity: 0, 'max-height': '800px'})),
+    animate('150ms', style({opacity: 1, 'max-height': '800px'})),
+    query('@listAnimation', [animateChild()], {optional: true}),
+  ]),
+
+  // fade out when destroyed. this could also be written as transition('void => *')
+  transition(':leave', [
+    style({opacity: 1, 'max-height': '800px'}),
+    animate('150ms', style({opacity: 0, 'max-height': '0px'})),
+  ])
+]);
+
 export const fadeTranslate = trigger('fadeTranslate', [
 
   // fade in when created. this could also be written as transition('void => *')
   transition(':enter', [
     style({opacity: 0, transform: 'translateY(-10px) scale(1.02)'}),
-    animate('300ms 300ms ease-out', style({opacity: 1, transform: 'translateY(0px) scale(1)'}))
+    animate('100ms 500ms ease-out', style({opacity: 1, transform: 'translateY(0px) scale(1)'}))
   ]),
 
   // fade out when destroyed. this could also be written as transition('void => *')
@@ -73,3 +90,19 @@ export const listAnimation = trigger('listAnimation', [
     )
   ])
 ]);
+
+export const cardTransition = trigger('card', [
+  transition(':enter', [
+    query('.card-child', style({opacity: 0, transform: 'translateY(-10px) scale(1.02)'}), {optional: true}),
+
+    query('.card-child', stagger('100ms', [
+      animate('100ms ease-out', style({opacity: 0, transform: 'translateY(-10px) scale(1.02)'})),
+      animate('500ms ease-out', style({opacity: 1, transform: 'translateY(0) scale(1)'})),
+    ]), {optional: true}),
+
+    query('.card-child', [
+      animate(100, style('*'))
+    ], {optional: true})
+
+  ])
+ ]);
