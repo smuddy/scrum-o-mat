@@ -78,18 +78,6 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   }
 
   public copyLink(link: string) {
-    // const selBox = document.createElement('textarea');
-    // selBox.style.position = 'fixed';
-    // selBox.style.left = '0';
-    // selBox.style.top = '0';
-    // selBox.style.opacity = '0';
-    // selBox.value = link;
-    // document.body.appendChild(selBox);
-    // selBox.focus();
-    // selBox.select();
-    // document.execCommand('copy');
-    // document.body.removeChild(selBox);
-
     void navigator.clipboard.writeText(link);
     // const blobInput = this.convertBase64ToBlob(base64Data, 'image/png');
     // const clipboardItemInput = new ClipboardItem({ 'image/png': blobInput });
