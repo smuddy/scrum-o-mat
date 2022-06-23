@@ -7,8 +7,10 @@
 
 .main {
   margin-top: 50px;
-  width: 1000px;
+  max-width: 1000px;
+
   display: grid;
+  padding: 20px;
   grid-gap: 20px;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
@@ -46,8 +48,15 @@
 
 .icon {
   font-size: 8em;
+  @media only screen and (max-width: 900px) {
+    font-size: 4em;
+  }
 }
 
 .caption {
   font-size: 2em;
+
+  @media only screen and (max-width: 900px) {
+    font-size: 1.1em;
+  }
 }
