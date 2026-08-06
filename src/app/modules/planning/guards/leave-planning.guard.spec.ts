@@ -13,4 +13,9 @@ describe('LeavePlanningGuard', () => {
   it('should be created', () => {
     expect(guard).toBeTruthy();
   });
+
+  it('always allows deactivation', () => {
+    const result = guard.canDeactivate(null, null, null);
+    expect(result).toBe(true);
+  });
 });

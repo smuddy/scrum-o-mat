@@ -1,4 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {ReactiveFormsModule} from '@angular/forms';
 
 import {EditTextComponent} from './edit-text.component';
 
@@ -8,7 +10,9 @@ describe('EditTextComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditTextComponent]
+      declarations: [EditTextComponent],
+      imports: [ReactiveFormsModule],
+      schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
   });
@@ -22,4 +26,31 @@ describe('EditTextComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('patches the incoming text into the control without emitting', () => {
+    const emitSpy = spyOn(component.textChanged, 'emit');
+
+    component.text = 'hello';
+
+    expect(component.textControl.value).toBe('hello');
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('emits the changed text once initialised', () => {
+    const emitSpy = spyOn(component.textChanged, 'emit');
+
+    component.textControl.setValue('changed');
+
+    expect(emitSpy).toHaveBeenCalledWith('changed');
+  });
+
+  it('unsubscribes from the control on destroy', () => {
+    const emitSpy = spyOn(component.textChanged, 'emit');
+
+    component.ngOnDestroy();
+    component.textControl.setValue('after destroy');
+
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
 });
