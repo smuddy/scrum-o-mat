@@ -1,27 +1,39 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {TestBed} from '@angular/core/testing';
-import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {Router} from '@angular/router';
 import {of} from 'rxjs';
+import {firstValueFrom} from 'rxjs';
+import {
+  Auth,
+  authState,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from '@angular/fire/auth';
 
 import {LoginService} from './login.service';
 
 describe('LoginService', () => {
-  let router: jasmine.SpyObj<Router>;
+  let router: {navigateByUrl: ReturnType<typeof vi.fn>};
 
-  function createAfAuthMock(authState: any = of(null)): any {
-    return {
-      authState,
-      signInWithEmailAndPassword: jasmine.createSpy().and.resolveTo(),
-      createUserWithEmailAndPassword: jasmine.createSpy().and.resolveTo(),
-      signOut: jasmine.createSpy().and.resolveTo(),
-    };
-  }
-
-  function createService(afAuth: any): LoginService {
+  function createService(): LoginService {
     TestBed.configureTestingModule({
       providers: [
         LoginService,
-        {provide: AngularFireAuth, useValue: afAuth},
+        {provide: Auth, useValue: {}},
         {provide: Router, useValue: router},
       ],
     });
@@ -29,30 +41,34 @@ describe('LoginService', () => {
   }
 
   beforeEach(() => {
-    router = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.resolveTo(true);
+    vi.clearAllMocks();
+    // authStateAllowAnonymous$ wird bereits im Feld-Initializer ausgewertet -> Default vor Konstruktion setzen.
+    vi.mocked(authState).mockReturnValue(of(null) as any);
+    vi.mocked(signInWithEmailAndPassword).mockResolvedValue(undefined as any);
+    vi.mocked(createUserWithEmailAndPassword).mockResolvedValue(undefined as any);
+    vi.mocked(signOut).mockResolvedValue(undefined as any);
+
+    router = {navigateByUrl: vi.fn().mockResolvedValue(true)};
   });
 
   it('should be created', () => {
-    const service = createService(createAfAuthMock());
+    const service = createService();
     expect(service).toBeTruthy();
   });
 
   it('logs in successfully and navigates to the root route', async () => {
-    const afAuth = createAfAuthMock();
-    const service = createService(afAuth);
+    const service = createService();
 
     const result = await service.login('user@example.com', 'secret');
 
     expect(result).toBeNull();
-    expect(afAuth.signInWithEmailAndPassword).toHaveBeenCalledWith('user@example.com', 'secret');
+    expect(vi.mocked(signInWithEmailAndPassword)).toHaveBeenCalledWith(expect.anything(), 'user@example.com', 'secret');
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   });
 
   it('returns an error message when login fails with a wrong password', async () => {
-    const afAuth = createAfAuthMock();
-    afAuth.signInWithEmailAndPassword = jasmine.createSpy().and.rejectWith({code: 'auth/wrong-password'});
-    const service = createService(afAuth);
+    vi.mocked(signInWithEmailAndPassword).mockRejectedValue({code: 'auth/wrong-password'});
+    const service = createService();
 
     const result = await service.login('user@example.com', 'wrong');
 
@@ -60,69 +76,84 @@ describe('LoginService', () => {
   });
 
   it('registers successfully and navigates to the root route', async () => {
-    const afAuth = createAfAuthMock();
-    const service = createService(afAuth);
+    const service = createService();
 
     const result = await service.register('user@example.com', 'secret');
 
     expect(result).toBeNull();
-    expect(afAuth.createUserWithEmailAndPassword).toHaveBeenCalledWith('user@example.com', 'secret');
+    expect(vi.mocked(createUserWithEmailAndPassword)).toHaveBeenCalledWith(expect.anything(), 'user@example.com', 'secret');
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   });
 
   it('returns an error message when registration fails because the e-mail is already in use', async () => {
-    const afAuth = createAfAuthMock();
-    afAuth.createUserWithEmailAndPassword = jasmine.createSpy().and.rejectWith({code: 'auth/email-already-in-use'});
-    const service = createService(afAuth);
+    vi.mocked(createUserWithEmailAndPassword).mockRejectedValue({code: 'auth/email-already-in-use'});
+    const service = createService();
 
     const result = await service.register('user@example.com', 'secret');
 
     expect(result).toBe('E-Mail Adresse ist bereits registriert!');
   });
 
-  it('logs out via afAuth.signOut', async () => {
-    const afAuth = createAfAuthMock();
-    const service = createService(afAuth);
+  it('logs out via signOut', async () => {
+    const service = createService();
 
     await service.logout();
 
-    expect(afAuth.signOut).toHaveBeenCalled();
+    expect(vi.mocked(signOut)).toHaveBeenCalled();
   });
 
-  it('maps the current user id from the auth state', () => {
-    const afAuth = createAfAuthMock(of({uid: 'u1'}));
-    const service = createService(afAuth);
+  it('maps the current user id from the auth state', async () => {
+    vi.mocked(authState).mockReturnValue(of({uid: 'u1'}) as any);
+    const service = createService();
 
-    let userId: string;
-    service.currentUserId$().subscribe(_ => userId = _);
+    const userId = await firstValueFrom(service.currentUserId$());
 
     expect(userId).toBe('u1');
   });
 
-  it('creates and stores a new anonymous user id when none exists yet', () => {
-    spyOn(localStorage, 'getItem').and.returnValue(null);
-    spyOn(localStorage, 'setItem');
-    const afAuth = createAfAuthMock(of(null));
-    const service = createService(afAuth);
+  it('creates and stores a new anonymous user id when none exists yet', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => undefined);
+    vi.mocked(authState).mockReturnValue(of(null) as any);
+    const service = createService();
 
-    let result: any;
-    service.authStateAllowAnonymous$.subscribe(_ => result = _);
+    const result: any = await firstValueFrom(service.authStateAllowAnonymous$);
 
     expect(result.uid).toBeTruthy();
-    expect(localStorage.setItem).toHaveBeenCalledWith('annonymUser', result.uid);
+    expect(setItemSpy).toHaveBeenCalledWith('annonymUser', result.uid);
   });
 
-  it('reuses the stored anonymous user id when one already exists', () => {
-    spyOn(localStorage, 'getItem').and.returnValue('existing-id');
-    spyOn(localStorage, 'setItem');
-    const afAuth = createAfAuthMock(of(null));
-    const service = createService(afAuth);
+  it('reuses the stored anonymous user id when one already exists', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('existing-id');
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => undefined);
+    vi.mocked(authState).mockReturnValue(of(null) as any);
+    const service = createService();
 
-    let result: any;
-    service.authStateAllowAnonymous$.subscribe(_ => result = _);
+    const result: any = await firstValueFrom(service.authStateAllowAnonymous$);
 
     expect(result).toEqual({uid: 'existing-id'});
-    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect(setItemSpy).not.toHaveBeenCalled();
+  });
+
+  describe('userIdRegex', () => {
+    it('accepts a valid reader id', () => {
+      expect(LoginService.userIdRegex.test('valid-User_1;2')).toBe(true);
+    });
+
+    it('rejects an id containing spaces or punctuation', () => {
+      // Alt-Bug: ungeankerte Regex /[...]*/gm matchte jeden String (Zero-Length) -> alles akzeptiert.
+      expect(LoginService.userIdRegex.test('foo bar!')).toBe(false);
+    });
+
+    it('rejects an empty id', () => {
+      expect(LoginService.userIdRegex.test('')).toBe(false);
+    });
+
+    it('is not stateful across repeated calls (no global lastIndex trap)', () => {
+      // Mit dem alten g-Flag verschob sich lastIndex zwischen Aufrufen -> alternierende Ergebnisse.
+      expect(LoginService.userIdRegex.test('validId')).toBe(true);
+      expect(LoginService.userIdRegex.test('validId')).toBe(true);
+    });
   });
 
 });

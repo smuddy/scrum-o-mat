@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
@@ -9,7 +10,7 @@ describe('EditDateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditDateComponent],
+      imports: [EditDateComponent],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
@@ -26,7 +27,7 @@ describe('EditDateComponent', () => {
   });
 
   it('sets the bound date from the incoming date without emitting', () => {
-    const emitSpy = spyOn(component.dateChanged, 'emit');
+    const emitSpy = vi.spyOn(component.dateChanged, 'emit');
     const date = new Date('2024-01-15');
 
     component.date = date;
@@ -36,7 +37,7 @@ describe('EditDateComponent', () => {
   });
 
   it('emits the changed date when the native change event fires', () => {
-    const emitSpy = spyOn(component.dateChanged, 'emit');
+    const emitSpy = vi.spyOn(component.dateChanged, 'emit');
     const changedDate = new Date('2024-02-20');
 
     component.onDateChange({target: {valueAsDate: changedDate}});

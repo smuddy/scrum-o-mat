@@ -4,6 +4,8 @@ import {renderStoryPoint} from '../../../planning.service';
 
 @Component({
   selector: 'app-card',
+  standalone: true,
+  imports: [],
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.less']
 })

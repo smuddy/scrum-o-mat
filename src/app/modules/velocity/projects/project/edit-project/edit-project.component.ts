@@ -1,4 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {Project} from '../../../models/project';
@@ -9,13 +10,26 @@ import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
 import {LoginService} from '../../../../login/login.service';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {fadeTranslateInstant} from '../../../../../animation';
+import {EditTextComponent} from '../sprint/edit-text/edit-text.component';
+import {EditNumberComponent} from '../sprint/edit-number/edit-number.component';
 
 @Component({
   selector: 'app-edit-project',
+  standalone: true,
+  imports: [CommonModule, FaIconComponent, EditTextComponent, EditNumberComponent],
   templateUrl: './edit-project.component.html',
-  styleUrls: ['./edit-project.component.less']
+  styleUrls: ['./edit-project.component.less'],
+  animations: [fadeTranslateInstant],
 })
 export class EditProjectComponent implements OnInit, OnDestroy {
+  private activatedRoute = inject(ActivatedRoute);
+  private velocityService = inject(VelocityService);
+  private projectService = inject(ProjectService);
+  private menusService = inject(MenuService);
+  private headerService = inject(HeaderService);
+
   public project$: Observable<Project> = this.activatedRoute.params.pipe(
     mergeMap(params =>
       this.projectService.getProject(params.projectId).pipe(tap(project =>
@@ -32,13 +46,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   private project: Project;
   private projectId: string;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private velocityService: VelocityService,
-    private projectService: ProjectService,
-    private menusService: MenuService,
-    private headerService: HeaderService,
-  ) {
+  constructor() {
     this.projectId$.subscribe(_ => this.projectId = _);
     this.project$.subscribe(_ => this.project = _);
   }

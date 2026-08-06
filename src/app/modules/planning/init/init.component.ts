@@ -1,13 +1,18 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {fade, fadeTranslate, fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {HeaderService} from '../../../shared/header/header.service';
 import {UserService} from '../../login/user.service';
 import {firstValueFrom} from 'rxjs';
+import {MySessionsComponent} from './my-sessions/my-sessions.component';
 
 @Component({
   selector: 'app-init',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink, MySessionsComponent],
   templateUrl: './init.component.html',
   styleUrls: ['./init.component.less'],
   animations: [fadeTranslateInstant, fade, fadeTranslate]
@@ -18,16 +23,15 @@ export class InitComponent implements OnInit {
 
   public subject: string;
   public showMySessions = false;
+
+  private planningService = inject(PlanningService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private headerService = inject(HeaderService);
+  private userService = inject(UserService);
+
   public myPlannings$ = this.planningService.listMyPlannings$;
   public user$ = this.userService.user$;
-
-  constructor(
-    private planningService: PlanningService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute, private headerService: HeaderService,
-    private userService: UserService,
-  ) {
-  }
 
   ngOnInit() {
     this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);

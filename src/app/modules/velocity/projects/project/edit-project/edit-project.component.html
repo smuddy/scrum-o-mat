@@ -1,33 +1,33 @@
-<div *ngIf="project$|async as project" @fadeTranslateInstant class="edit-project">
-  <h1>
-    <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="project.name"></app-edit-text>
-  </h1>
-
-  <div class="split">
-    <div>
-      <p>
-        Initiale Velocity:
-        <app-edit-number (numberChanged)="updateInitialVelocity( $event)"
-                         [number]="project.initialVelocity" class="initialVelocity"></app-edit-number>
-        SP/PT
-      </p>
-    </div>
-    <div>
-      <h1>Mitarbeiter</h1>
-      <h2>Lesend</h2>
-      <div class="staff" *ngFor="let coReader of project.coReaders">
-        <fa-icon (click)="removeReader(coReader)" [icon]="faTrash" class="button trash"></fa-icon>
-        <div >{{coReader}}</div>
+@if (project$|async; as project) {
+  <div @fadeTranslateInstant class="edit-project">
+    <h1>
+      <app-edit-text (textChanged)="updateName($event)" [noUnderscore]="true" [text]="project.name"></app-edit-text>
+    </h1>
+    <div class="split">
+      <div>
+        <p>
+          Initiale Velocity:
+          <app-edit-number (numberChanged)="updateInitialVelocity( $event)"
+          [number]="project.initialVelocity" class="initialVelocity"></app-edit-number>
+          SP/PT
+        </p>
       </div>
-      <div class="split">
-        <app-edit-text (textChanged)="editReaderName($event)"
-                       [text]="newReaderName" placeholder="Benutzer ID"></app-edit-text>
-        <button (click)="addReader()">+ Mitarbeiter hinzufügen</button>
+      <div>
+        <h1>Mitarbeiter</h1>
+        <h2>Lesend</h2>
+        @for (coReader of project.coReaders; track coReader) {
+          <div class="staff">
+            <fa-icon (click)="removeReader(coReader)" [icon]="faTrash" class="button trash"></fa-icon>
+            <div >{{coReader}}</div>
+          </div>
+        }
+        <div class="split">
+          <app-edit-text (textChanged)="editReaderName($event)"
+          [text]="newReaderName" placeholder="Benutzer ID"></app-edit-text>
+          <button (click)="addReader()">+ Mitarbeiter hinzufügen</button>
+        </div>
+        <h2>Schreibend</h2>
       </div>
-      <h2>Schreibend</h2>
-
     </div>
   </div>
-
-
-</div>
+}

@@ -1,56 +1,53 @@
-<div *ngIf="project$|async as project" @fadeTranslateInstant>
-
-
-  <div class="sprints">
-    <h1>{{project.name}}</h1>
-
-    <ng-container *ngIf="project.sprints.length">
-      <table class="table">
-        <thead class="thead">
-        <tr class="tr-1">
-          <th colspan="3"></th>
-          <th class="tr-points" colspan="2">Story Points</th>
-          <th class="tr-velocity" colspan="2">Velocity</th>
-          <th rowspan="2">PT</th>
-        </tr>
-        <tr class="tr-2">
-          <th class="tr-name">Sprint</th>
-          <th>von</th>
-          <th>bis</th>
-          <th class="tr-points">soll</th>
-          <th class="tr-points">ist</th>
-          <th class="tr-velocity">soll</th>
-          <th class="tr-velocity">ist</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let sprint of project.sprints"
-            [routerLink]="isWriter(project) ? '/velocity/' + projectId + '/' + sprint.id : null"
-            class="sprint">
-
-          <td class="tr-name">{{sprint.sprintName}}</td>
-          <td>
-            <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} &nbsp;</span>
-            <span>{{sprint.fromDate.toDate()|date:'dd.MM.YYYY'}}</span>
-          </td>
-          <td>
-            <span class="kw">{{sprint.toDate.toDate()|date:'w'}} &nbsp;</span>
-            <span>{{sprint.toDate.toDate()|date:'dd.MM.YYYY'}}</span>
-          </td>
-          <td class="tr-points" [class.forecast]="sprint.isForecast">{{sprint.pointsPlaned|number:'1.0-0'}}</td>
-          <td class="tr-points">{{sprint.pointsAchieved|number:'1.0-0'}}</td>
-          <td class="tr-velocity">{{sprint.velocityPlaned|number:'1.2-2'}}</td>
-          <td class="tr-velocity">{{sprint.velocityAchieved|number:'1.2-2'}}</td>
-          <td>{{calcAvailableStaff(sprint.availableStaff)|number:'1.0-0'}}</td>
-        </tr>
-        </tbody>
-      </table>
-
-    </ng-container>
-
-
+@if (project$|async; as project) {
+  <div @fadeTranslateInstant>
+    <div class="sprints">
+      <h1>{{project.name}}</h1>
+      @if (project.sprints.length) {
+        <table class="table">
+          <thead class="thead">
+            <tr class="tr-1">
+              <th colspan="3"></th>
+              <th class="tr-points" colspan="2">Story Points</th>
+              <th class="tr-velocity" colspan="2">Velocity</th>
+              <th rowspan="2">PT</th>
+            </tr>
+            <tr class="tr-2">
+              <th class="tr-name">Sprint</th>
+              <th>von</th>
+              <th>bis</th>
+              <th class="tr-points">soll</th>
+              <th class="tr-points">ist</th>
+              <th class="tr-velocity">soll</th>
+              <th class="tr-velocity">ist</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sprint of project.sprints; track sprint.id) {
+              <tr
+                [routerLink]="isWriter(project) ? '/velocity/' + projectId + '/' + sprint.id : null"
+                class="sprint">
+                <td class="tr-name">{{sprint.sprintName}}</td>
+                <td>
+                  <span class="kw">{{sprint.fromDate.toDate()|date:'w'}} &nbsp;</span>
+                  <span>{{sprint.fromDate.toDate()|date:'dd.MM.yyyy'}}</span>
+                </td>
+                <td>
+                  <span class="kw">{{sprint.toDate.toDate()|date:'w'}} &nbsp;</span>
+                  <span>{{sprint.toDate.toDate()|date:'dd.MM.yyyy'}}</span>
+                </td>
+                <td class="tr-points" [class.forecast]="sprint.isForecast">{{sprint.pointsPlaned|number:'1.0-0'}}</td>
+                <td class="tr-points">{{sprint.pointsAchieved|number:'1.0-0'}}</td>
+                <td class="tr-velocity">{{sprint.velocityPlaned|number:'1.2-2'}}</td>
+                <td class="tr-velocity">{{sprint.velocityAchieved|number:'1.2-2'}}</td>
+                <td>{{calcAvailableStaff(sprint.availableStaff)|number:'1.0-0'}}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+    @if (project.sprints.length === 0) {
+      <div>Es sind noch keine Sprints vorhanden</div>
+    }
   </div>
-
-
-  <div *ngIf="project.sprints.length === 0">Es sind noch keine Sprints vorhanden</div>
-</div>
+}

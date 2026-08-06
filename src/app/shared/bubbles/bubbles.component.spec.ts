@@ -1,5 +1,5 @@
+import {describe, it, expect, beforeEach} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
 
 import {BubblesComponent} from './bubbles.component';
 
@@ -9,8 +9,7 @@ describe('BubblesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BubblesComponent],
-      schemas: [NO_ERRORS_SCHEMA],
+      imports: [BubblesComponent],
     })
       .compileComponents();
   });
@@ -23,5 +22,9 @@ describe('BubblesComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('renders ten bubbles', () => {
+    expect(fixture.nativeElement.querySelectorAll('ul.bg-bubbles li').length).toBe(10);
   });
 });

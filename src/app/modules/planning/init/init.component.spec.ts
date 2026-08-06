@@ -1,7 +1,32 @@
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of} from 'rxjs';
@@ -16,27 +41,30 @@ describe('InitComponent', () => {
   let fixture: ComponentFixture<InitComponent>;
   let planningService: any;
   let userService: any;
-  let router: jasmine.SpyObj<Router>;
-  let headerService: jasmine.SpyObj<HeaderService>;
+  let router: {navigateByUrl: ReturnType<typeof vi.fn>; createUrlTree: ReturnType<typeof vi.fn>};
+  let headerService: {setBreadcrumb: ReturnType<typeof vi.fn>; setFullscreen: ReturnType<typeof vi.fn>};
 
   beforeEach(async () => {
     planningService = {
       listMyPlannings$: of([]),
-      createNewSession: jasmine.createSpy('createNewSession').and.resolveTo('planning-1'),
-      addUser: jasmine.createSpy('addUser').and.resolveTo('user-1'),
+      createNewSession: vi.fn().mockResolvedValue('planning-1'),
+      addUser: vi.fn().mockResolvedValue('user-1'),
     };
     userService = {
       user$: of({name: 'Alice'} as any),
-      setUserNameAsync: jasmine.createSpy('setUserNameAsync').and.resolveTo(),
+      setUserNameAsync: vi.fn().mockResolvedValue(undefined),
     };
-    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'createUrlTree']);
-    router.navigateByUrl.and.resolveTo(true);
-    router.createUrlTree.and.returnValue({} as any);
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb', 'setFullscreen']);
+    router = {
+      navigateByUrl: vi.fn().mockResolvedValue(true),
+      createUrlTree: vi.fn().mockReturnValue({} as any),
+    };
+    headerService = {
+      setBreadcrumb: vi.fn(),
+      setFullscreen: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
-      declarations: [InitComponent],
-      imports: [CommonModule, FormsModule, NoopAnimationsModule],
+      imports: [InitComponent, NoopAnimationsModule],
       providers: [
         {provide: PlanningService, useValue: planningService},
         {provide: Router, useValue: router},
@@ -115,7 +143,7 @@ describe('InitComponent', () => {
   });
 
   it('does not navigate when no user id is returned', async () => {
-    planningService.addUser.and.resolveTo(null);
+    planningService.addUser.mockResolvedValue(null);
     component.planningId = 'p1';
     component.username = 'Bob';
 
@@ -126,11 +154,11 @@ describe('InitComponent', () => {
   });
 
   it('reports whether a last session exists', () => {
-    expect(component.hasLastSession()).toBeFalse();
+    expect(component.hasLastSession()).toBe(false);
 
     localStorage.setItem('last-session', 'user-1');
 
-    expect(component.hasLastSession()).toBeTrue();
+    expect(component.hasLastSession()).toBe(true);
   });
 
   it('navigates to the last session as developer', async () => {

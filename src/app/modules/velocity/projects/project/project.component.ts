@@ -1,8 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {VelocityService} from './velocity.service';
 import {Observable, Subscription} from 'rxjs';
 import {Project, ProjectId, ProjectOwner, Staff} from '../../models/project';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {debounceTime, map, mergeMap} from 'rxjs/operators';
 import {ProjectService} from '../project.service';
 import {MenuService} from '../../../../shared/menu/menu.service';
@@ -10,26 +11,22 @@ import {fadeTranslateInstant} from '../../../../animation';
 import {HeaderService} from '../../../../shared/header/header.service';
 import {LoginService} from '../../../login/login.service';
 
-export interface Anwesenheit {
-  Name: string,
-  Sprint: number;
-  Einsatztage: number;
-}
-
-export interface Anwesenheiten {
-  Anwesenheiten: Anwesenheit[];
-}
-
-declare var setStaff: (staff: Anwesenheiten) => void;
-
 @Component({
   selector: 'app-velocity',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './project.component.html',
   styleUrls: ['./project.component.less'],
   animations: [fadeTranslateInstant],
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-
+  private velocityService = inject(VelocityService);
+  private activatedRoute = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+  private menuService = inject(MenuService);
+  private headerService = inject(HeaderService);
+  private router = inject(Router);
+  private loginService = inject(LoginService);
 
   public project$: Observable<ProjectId> = this.activatedRoute.params.pipe(
     debounceTime(500),
@@ -42,15 +39,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public subs: Subscription[] = [];
   private project: Project;
 
-  constructor(
-    private velocityService: VelocityService,
-    private activatedRoute: ActivatedRoute,
-    private projectService: ProjectService,
-    private menuService: MenuService,
-    private headerService: HeaderService,
-    private router: Router,
-    private loginService: LoginService,
-  ) {
+  constructor() {
     this.projectId$.subscribe(_ => this.projectId = _);
     this.project$.subscribe(_ => this.project = _);
     this.loginService.currentUserId$().subscribe(_ => this.currentUserId = _);
@@ -61,7 +50,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.menuService.addCustomAction('Sprint erstellen', () => this.velocityService.addSprint(this.projectId, this.project));
     this.menuService.addCustomAction('Projekt bearbeiten', () => this.router.navigateByUrl(`/velocity/${this.projectId}/edit`));
     this.menuService.addCustomAction('Projekt löschen', () => this.deleteProject(), true);
-    setStaff = (staff: Anwesenheiten) => this.setStaff(staff, this.velocityService, this.projectId, this.project);
 
     this.subs.push(this.project$.subscribe(project =>
       this.headerService.setBreadcrumb([
@@ -87,19 +75,5 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private deleteProject() {
     this.router.navigateByUrl('/velocity');
     return this.projectService.deleteProject(this.projectId);
-  }
-
-  private setStaff(staff: Anwesenheiten, velocityService: VelocityService, projectId: string, project: Project): void {
-    velocityService.updateProject(projectId, project, p => {
-      staff.Anwesenheiten.forEach(ext => {
-        const sprint = p.sprints.find(_ => _.sprintNumber === ext.Sprint);
-        if (sprint) {
-          const staff = sprint.availableStaff.find(_ => _.name === ext.Name);
-          if (staff) {
-            staff.days = ext.Einsatztage;
-          }
-        }
-      });
-    });
   }
 }

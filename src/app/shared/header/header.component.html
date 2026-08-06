@@ -1,8 +1,8 @@
 <div [class.fullscreen]="fullscreen$|async" class="header" @fadefast>
   <div routerLink="/" class="headline element"><fa-icon [icon]="faHome"></fa-icon></div>
-  <ng-container *ngFor="let route of (breadcrumb$|async); let i = index; trackBy: trackBy">
+  @for (route of (breadcrumb$|async); track trackBy(i, route); let i = $index) {
     <div class="separator element" @fadefast>></div>
     <div [routerLink]="route.route" class="headline element" @fadefast>{{route.name}}</div>
-  </ng-container>
+  }
 
 </div>

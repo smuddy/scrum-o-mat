@@ -1,4 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {fade, listAnimation} from '../../../../../animation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
@@ -8,11 +9,14 @@ import {StoryPoints} from '../../../models/storyPoints';
 import {DeveloperId} from '../../../models/delevoper';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
-
-declare var fireworks;
+import {BubblesComponent} from '../../../../../shared/bubbles/bubbles.component';
+import {CardsComponent} from '../cards/cards.component';
+import {FireworksService} from '../../../../../shared/fireworks/fireworks.service';
 
 @Component({
   selector: 'app-developer',
+  standalone: true,
+  imports: [CommonModule, CardsComponent, BubblesComponent],
   templateUrl: './developer.component.html',
   styleUrls: ['./developer.component.less'],
   animations: [fade, listAnimation]
@@ -32,14 +36,15 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   private planningId: string;
   private userId: string;
 
-  constructor(
-    activatedRoute: ActivatedRoute,
-    private planningService: PlanningService,
-    private router: Router,
-    private adminService: AdminService,
-    private menuService: MenuService,
-    private headerService: HeaderService,
-  ) {
+  private planningService = inject(PlanningService);
+  private router = inject(Router);
+  private adminService = inject(AdminService);
+  private menuService = inject(MenuService);
+  private headerService = inject(HeaderService);
+  private fireworksService = inject(FireworksService);
+
+  constructor() {
+    const activatedRoute = inject(ActivatedRoute);
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
       this.userId = _.userId;
@@ -51,6 +56,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
     this.headerService.setFullscreen(true);
 
     window.scrollTo(0, 0);
+    this.fireworksService.start();
 
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
       this.developers = _;
@@ -72,6 +78,8 @@ export class DeveloperComponent implements OnInit, OnDestroy {
 
         });
 
+        // Ersetzt den frueheren |orderBy:'storyPoint'-Pipe im Template.
+        this.selectedStoryPoints.sort((a, b) => a.storyPoint - b.storyPoint);
       }
     });
 
@@ -87,14 +95,14 @@ export class DeveloperComponent implements OnInit, OnDestroy {
         this.coffeeBreak = planning.estimateSucceeded && planning.storyPoints === StoryPoints.coffee;
         this.storyPoints = planning.storyPoints;
 
-        fireworks._particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
-        fireworks._interval = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
-
+        const particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
+        const interval: [number, number] = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
+        this.fireworksService.configure(particlesPerExplosion, interval);
       }
     });
     this.planningService.getDeveloper(this.planningId, this.userId).subscribe(_ => {
       if (!_) {
-        fireworks._particlesPerExplosion = 0;
+        this.fireworksService.stop();
         this.router.navigateByUrl(this.router.createUrlTree(['/planning/'], {queryParams: {session: this.planningId}}));
       }
     });
@@ -106,6 +114,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.headerService.setFullscreen(false);
     this.menuService.resetCustomActions();
+    this.fireworksService.stop();
   }
 
   public async onCardSelected(storyPoints: StoryPoints) {
@@ -119,7 +128,7 @@ export class DeveloperComponent implements OnInit, OnDestroy {
   }
 
   public async logout() {
-    fireworks._particlesPerExplosion = 0;
+    this.fireworksService.stop();
     localStorage.removeItem('last-session');
     await this.planningService.deleteUser(this.planningId, this.userId);
     await this.router.navigateByUrl(this.router.createUrlTree(['/planning/'], {queryParams: {session: this.planningId}}));

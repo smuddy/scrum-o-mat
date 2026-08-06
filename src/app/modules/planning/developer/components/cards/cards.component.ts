@@ -1,8 +1,12 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+
 import {StoryPoints} from '../../../models/storyPoints';
+import {CardComponent} from '../card/card.component';
 
 @Component({
   selector: 'app-cards',
+  standalone: true,
+  imports: [CardComponent],
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.less'],
 })

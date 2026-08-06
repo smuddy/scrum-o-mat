@@ -1,10 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
+
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {AdminService} from '../admin.service';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
 import {DeveloperId} from '../../../models/delevoper';
 
 @Component({
   selector: 'app-users',
+  standalone: true,
+  imports: [FaIconComponent],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.less']
 })
@@ -13,8 +17,7 @@ export class UsersComponent implements OnInit {
   public users: DeveloperId[];
   public faTrash = faTrash;
 
-  constructor(private adminService: AdminService) {
-  }
+  private adminService = inject(AdminService);
 
   ngOnInit() {
     if (this.planningId) {

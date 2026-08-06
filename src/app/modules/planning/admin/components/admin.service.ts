@@ -1,7 +1,9 @@
-import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
-import {Observable} from 'rxjs';
-import {Planning, PlanningId} from '../../models/planning';
+import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
+import {collection, collectionData, deleteDoc, doc, Firestore} from '@angular/fire/firestore';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {firstValueFrom, Observable} from 'rxjs';
+import {first} from 'rxjs/operators';
+import {PlanningId} from '../../models/planning';
 import {DeveloperId} from '../../models/delevoper';
 
 @Injectable({
@@ -9,26 +11,34 @@ import {DeveloperId} from '../../models/delevoper';
 })
 export class AdminService {
 
-  public plannings: Observable<PlanningId[]>;
-  private planningCollection: AngularFirestoreCollection<PlanningId>;
+  private afs = inject(Firestore);
+  private injector = inject(Injector);
 
-  constructor(private afs: AngularFirestore) {
-    this.planningCollection = afs.collection<PlanningId>('planning');
-    this.plannings = this.planningCollection.valueChanges({idField: 'id'});
+  // AngularFire-Aufrufe muessen im Injection-Kontext laufen (sonst Warnung + instabile CD/Hydration).
+  private inCtx<T>(op: () => T): T {
+    return runInInjectionContext(this.injector, op);
   }
 
+  public plannings: Observable<PlanningId[]> =
+    this.inCtx(() => collectionData(collection(this.afs, 'planning'), {idField: 'id'})) as Observable<PlanningId[]>;
+
+  // Signal-Variante additiv (Observable plannings bleibt bestehen)
+  public planningsSignal = toSignal(this.plannings, {initialValue: [] as PlanningId[]});
+
   public async deletePlanning(planningId: string) {
-    await this.planningCollection.doc(planningId).delete();
+    // Firestore loescht Subcollections nicht kaskadierend -> erst alle developer-Docs
+    // entfernen, damit keine verwaisten Eintraege (Datenmuell) zurueckbleiben.
+    const developers = await firstValueFrom(this.getDevelopers(planningId).pipe(first()));
+    await Promise.all(developers.map(_ => this.deleteUser(planningId, _.id)));
+    await this.inCtx(() => deleteDoc(doc(this.afs, 'planning/' + planningId)));
   }
 
   public async deleteUser(planningId: string, userId: string) {
-    await this.planningCollection.doc(planningId).collection('developer').doc(userId).delete();
+    await this.inCtx(() => deleteDoc(doc(this.afs, 'planning/' + planningId + '/developer/' + userId)));
   }
 
   public getDevelopers(planningId: string): Observable<DeveloperId[]> {
-    const planningRef = this.afs.doc<Planning>('planning/' + planningId);
-    const developerCollection = planningRef.collection<DeveloperId>('developer');
-    return developerCollection.valueChanges({idField: 'id'});
+    return this.inCtx(() => collectionData(collection(this.afs, 'planning/' + planningId + '/developer'), {idField: 'id'})) as Observable<DeveloperId[]>;
   }
 
 }

@@ -1,4 +1,6 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {CommonModule} from '@angular/common';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {of} from 'rxjs';
 
@@ -15,21 +17,23 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     menuServiceMock = {
       menuOpen$: of(false),
-      toggleMenu: jasmine.createSpy(),
-      closeMenu: jasmine.createSpy(),
+      toggleMenu: vi.fn(),
+      closeMenu: vi.fn(),
     };
     headerServiceMock = {
       fullscreen$: of(false),
     };
 
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      imports: [AppComponent],
       providers: [
         {provide: MenuService, useValue: menuServiceMock},
         {provide: HeaderService, useValue: headerServiceMock},
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
+      .overrideComponent(AppComponent, {
+        set: {imports: [CommonModule], schemas: [NO_ERRORS_SCHEMA]},
+      })
       .compileComponents();
   });
 

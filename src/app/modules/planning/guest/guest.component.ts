@@ -1,4 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {fade, listAnimation} from '../../../animation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../admin/components/admin.service';
@@ -7,11 +8,14 @@ import {PlanningService, renderStoryPoint} from '../planning.service';
 import {StoryPoints} from '../models/storyPoints';
 import {DeveloperId} from '../models/delevoper';
 import {HeaderService} from '../../../shared/header/header.service';
-
-declare var fireworks;
+import {BubblesComponent} from '../../../shared/bubbles/bubbles.component';
+import {ProgressCircleComponent} from './progress-circle.component';
+import {FireworksService} from '../../../shared/fireworks/fireworks.service';
 
 @Component({
   selector: 'app-developer',
+  standalone: true,
+  imports: [CommonModule, BubblesComponent, ProgressCircleComponent],
   templateUrl: './guest.component.html',
   styleUrls: ['./guest.component.less'],
   animations: [fade, listAnimation]
@@ -31,13 +35,14 @@ export class GuestComponent implements OnInit, OnDestroy {
   public chosenPercent: number;
   private planningId: string;
 
-  constructor(
-    activatedRoute: ActivatedRoute,
-    private planningService: PlanningService,
-    private router: Router,
-    private adminService: AdminService,
-    private headerService: HeaderService,
-  ) {
+  private planningService = inject(PlanningService);
+  private router = inject(Router);
+  private adminService = inject(AdminService);
+  private headerService = inject(HeaderService);
+  private fireworksService = inject(FireworksService);
+
+  constructor() {
+    const activatedRoute = inject(ActivatedRoute);
     activatedRoute.params.subscribe(_ => {
       this.planningId = _.planningId;
     });
@@ -47,11 +52,14 @@ export class GuestComponent implements OnInit, OnDestroy {
     this.headerService.setFullscreen(true);
     this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
     window.scrollTo(0, 0);
+    this.fireworksService.start();
 
     this.adminService.getDevelopers(this.planningId).subscribe(_ => {
       this.developers = _;
       const developersCount = _.length;
-      const chosenCount = _.filter(d => d.storyPoints).length;
+      // storyPoints != null statt truthy: StoryPoints.sHalf ist der Enum-Wert 0 (falsy) -
+      // wer "1/2" schaetzt, wurde sonst faelschlich als "noch nicht geschaetzt" gezaehlt.
+      const chosenCount = _.filter(d => d.storyPoints != null).length;
       const percent = developersCount > 0 ? chosenCount / developersCount * 100 : this.chosenPercent;
       if (percent !== this.chosenPercent) this.chosenPercent = percent;
 
@@ -72,6 +80,8 @@ export class GuestComponent implements OnInit, OnDestroy {
 
         });
 
+        // Ersetzt den frueheren |orderBy:'storyPoint'-Pipe im Template.
+        this.selectedStoryPoints.sort((a, b) => a.storyPoint - b.storyPoint);
       }
     });
 
@@ -86,15 +96,16 @@ export class GuestComponent implements OnInit, OnDestroy {
         this.estimateSucceeded = planning.estimateSucceeded;
         this.coffeeBreak = planning.estimateSucceeded && planning.storyPoints === StoryPoints.coffee;
         this.storyPoints = planning.storyPoints;
-        fireworks._particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
-        fireworks._interval = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
-
+        const particlesPerExplosion = planning.estimateSucceeded && planning.storyPoints !== StoryPoints.coffee ? 50 : 0;
+        const interval: [number, number] = [200 * planning.count * planning.count, 1500 * planning.count * planning.count];
+        this.fireworksService.configure(particlesPerExplosion, interval);
       }
     });
   }
 
   public ngOnDestroy(): void {
     this.headerService.setFullscreen(false);
+    this.fireworksService.stop();
   }
 
   public renderStoryPoint = () => renderStoryPoint(this.storyPoints);

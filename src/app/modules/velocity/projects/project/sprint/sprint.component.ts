@@ -1,4 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {debounceTime, distinctUntilChanged, map, mergeMap, tap} from 'rxjs/operators';
 import {VelocityService} from '../velocity.service';
@@ -11,14 +12,27 @@ import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
 import {HeaderService} from '../../../../../shared/header/header.service';
 import {faAngleRight} from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import {faAngleLeft} from '@fortawesome/free-solid-svg-icons/faAngleLeft';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {EditTextComponent} from './edit-text/edit-text.component';
+import {EditDateComponent} from './edit-date/edit-date.component';
+import {EditNumberComponent} from './edit-number/edit-number.component';
 
 @Component({
   selector: 'app-sprint',
+  standalone: true,
+  imports: [CommonModule, FaIconComponent, EditTextComponent, EditDateComponent, EditNumberComponent],
   templateUrl: './sprint.component.html',
   styleUrls: ['./sprint.component.less'],
   animations: [fadeTranslateInstant],
 })
 export class SprintComponent implements OnInit, OnDestroy {
+  private activatedRoute = inject(ActivatedRoute);
+  private velocityService = inject(VelocityService);
+  private projectService = inject(ProjectService);
+  private menusService = inject(MenuService);
+  private headerService = inject(HeaderService);
+  private router = inject(Router);
+
   public sprint$ = this.activatedRoute.params.pipe(
     distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)),
     mergeMap(params => this.velocityService.getSprint$(params.projectId, params.sprintId).pipe(
@@ -53,14 +67,7 @@ export class SprintComponent implements OnInit, OnDestroy {
   private projectId: string;
   private sprintId: string;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private velocityService: VelocityService,
-    private projectService: ProjectService,
-    private menusService: MenuService,
-    private headerService: HeaderService,
-    private router: Router,
-  ) {
+  constructor() {
     this.projectId$.subscribe(_ => this.projectId = _);
     this.project$.subscribe(_ => this.project = _);
     this.sprint$.subscribe(_ => this.sprintId = _.id);

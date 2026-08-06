@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
@@ -10,7 +11,7 @@ describe('CardsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CardsComponent],
+      imports: [CardsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
@@ -37,7 +38,7 @@ describe('CardsComponent', () => {
   });
 
   it('selects a card and emits it', () => {
-    const emitSpy = spyOn(component.cardSelected, 'emit');
+    const emitSpy = vi.spyOn(component.cardSelected, 'emit');
 
     component.selectCard(StoryPoints.s5);
 
@@ -46,7 +47,7 @@ describe('CardsComponent', () => {
   });
 
   it('deselects a card when the same card is selected again', () => {
-    const emitSpy = spyOn(component.cardSelected, 'emit');
+    const emitSpy = vi.spyOn(component.cardSelected, 'emit');
     component.selectCard(StoryPoints.s5);
 
     component.selectCard(StoryPoints.s5);
@@ -56,7 +57,7 @@ describe('CardsComponent', () => {
   });
 
   it('switches the selection when a different card is selected', () => {
-    const emitSpy = spyOn(component.cardSelected, 'emit');
+    const emitSpy = vi.spyOn(component.cardSelected, 'emit');
     component.selectCard(StoryPoints.s5);
 
     component.selectCard(StoryPoints.s8);

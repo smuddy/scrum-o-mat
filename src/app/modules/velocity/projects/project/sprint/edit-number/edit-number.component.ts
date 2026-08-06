@@ -1,9 +1,11 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-edit-number',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './edit-number.component.html',
   styleUrls: ['./edit-number.component.less']
 })

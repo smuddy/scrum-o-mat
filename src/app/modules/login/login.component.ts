@@ -1,11 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
+
 import {fadeTranslateInstant} from '../../animation';
-import {FormControl, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {LoginService} from './login.service';
 import {HeaderService} from '../../shared/header/header.service';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.less'],
   animations: [fadeTranslateInstant]
@@ -15,11 +18,8 @@ export class LoginComponent implements OnInit {
   public pass = new FormControl('', [Validators.required, Validators.minLength(6)]);
   public errorMessage = '';
 
-  constructor(
-    private loginService: LoginService,
-    private headerService: HeaderService,
-  ) {
-  }
+  private loginService = inject(LoginService);
+  private headerService = inject(HeaderService);
 
   public async ngOnInit(): Promise<void> {
     this.headerService.setBreadcrumb([{route: '/login', name: 'Anmelden'}]);
@@ -30,14 +30,14 @@ export class LoginComponent implements OnInit {
     if (!this.email.valid || !this.pass.valid) {
       return;
     }
-    this.errorMessage = await this.loginService.login(this.email.value, this.pass.value);
+    this.errorMessage = await this.loginService.login(this.email.value ?? '', this.pass.value ?? '') ?? '';
   }
 
   public async register(): Promise<void> {
     if (!this.email.valid || !this.pass.valid) {
       return;
     }
-    this.errorMessage = await this.loginService.register(this.email.value, this.pass.value);
+    this.errorMessage = await this.loginService.register(this.email.value ?? '', this.pass.value ?? '') ?? '';
   }
 
 }

@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -15,35 +42,35 @@ describe('MenuComponent', () => {
   let authState$: BehaviorSubject<any>;
   let loginService: any;
   let menuService: any;
-  let router: jasmine.SpyObj<Router>;
+  let router: { navigateByUrl: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     authState$ = new BehaviorSubject<any>(null);
     loginService = {
       authState$: () => authState$,
-      logout: jasmine.createSpy('logout').and.resolveTo(undefined),
+      logout: vi.fn().mockResolvedValue(undefined),
     };
     menuService = {
       menuEntries$: of([]),
       menuOpen$: of(false),
-      openMenu: jasmine.createSpy(),
-      closeMenu: jasmine.createSpy(),
-      toggleMenu: jasmine.createSpy(),
-      resetCustomActions: jasmine.createSpy(),
+      openMenu: vi.fn(),
+      closeMenu: vi.fn(),
+      toggleMenu: vi.fn(),
+      resetCustomActions: vi.fn(),
     };
-    router = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.resolveTo(true);
+    router = {navigateByUrl: vi.fn().mockResolvedValue(true)};
 
     await TestBed.configureTestingModule({
-      declarations: [MenuComponent],
-      imports: [CommonModule, NoopAnimationsModule],
+      imports: [MenuComponent, NoopAnimationsModule],
       providers: [
         {provide: LoginService, useValue: loginService},
         {provide: MenuService, useValue: menuService},
         {provide: Router, useValue: router},
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
+      .overrideComponent(MenuComponent, {
+        set: {imports: [CommonModule], schemas: [NO_ERRORS_SCHEMA]},
+      })
       .compileComponents();
   });
 
@@ -61,18 +88,22 @@ describe('MenuComponent', () => {
     let loggedIn: boolean;
     component.loggedIn.subscribe(_ => loggedIn = _);
 
-    expect(loggedIn).toBeFalse();
+    expect(loggedIn).toBe(false);
 
     authState$.next({uid: '1'});
 
-    expect(loggedIn).toBeTrue();
+    expect(loggedIn).toBe(true);
   });
 
   it('exposes the menu entries from MenuService', () => {
-    let entries: any[];
-    component.menuEntries$.subscribe(_ => entries = _);
+    const menuEntries = [{name: 'Neu würfeln', action: () => {}}];
+    menuService.menuEntries$ = of(menuEntries);
+    const entriesComponent = TestBed.createComponent(MenuComponent).componentInstance;
 
-    expect(entries).toEqual([]);
+    let entries: any[];
+    entriesComponent.menuEntries$.subscribe(_ => entries = _);
+
+    expect(entries).toBe(menuEntries);
   });
 
   it('delegates closeMenu to the MenuService', () => {

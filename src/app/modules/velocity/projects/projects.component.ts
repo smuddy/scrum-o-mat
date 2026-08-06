@@ -1,4 +1,6 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
 import {ProjectService} from './project.service';
 import {Observable} from 'rxjs';
 import {ProjectId} from '../models/project';
@@ -9,26 +11,25 @@ import {HeaderService} from '../../../shared/header/header.service';
 
 @Component({
   selector: 'app-velocity-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.less'],
   animations: [fadeTranslateInstant],
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
-  public projectsOwner$: Observable<ProjectId[]>;
-  public projectsReader$: Observable<ProjectId[]>;
-  public projectsWriter$: Observable<ProjectId[]>;
+  private projectService = inject(ProjectService);
+  private loginService = inject(LoginService);
+  private menuService = inject(MenuService);
+  private headerService = inject(HeaderService);
+
+  public projectsOwner$: Observable<ProjectId[]> = this.projectService.getProjectsOwner();
+  public projectsReader$: Observable<ProjectId[]> = this.projectService.getProjectsReader();
+  public projectsWriter$: Observable<ProjectId[]> = this.projectService.getProjectsWriter();
   private currentUser: string;
 
-  constructor(
-    private projectService: ProjectService,
-    private loginService: LoginService,
-    private menuService: MenuService,
-    private headerService: HeaderService,
-  ) {
-    this.projectsOwner$ = projectService.getProjectsOwner();
-    this.projectsReader$ = projectService.getProjectsReader();
-    this.projectsWriter$ = projectService.getProjectsWriter();
-    loginService.currentUserId$().subscribe(_ => this.currentUser = _);
+  constructor() {
+    this.loginService.currentUserId$().subscribe(_ => this.currentUser = _);
   }
 
   public ngOnInit() {

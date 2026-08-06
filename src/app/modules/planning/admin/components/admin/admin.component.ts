@@ -1,11 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {AdminService} from '../admin.service';
 import {faExternalLinkAlt, faTrash, faUserCog} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import {PlanningId} from '../../../models/planning';
+import {UsersComponent} from '../users/users.component';
 
 @Component({
   selector: 'app-admin',
+  standalone: true,
+  imports: [CommonModule, FaIconComponent, UsersComponent],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.less']
 })
@@ -16,8 +21,8 @@ export class AdminComponent implements OnInit {
   public faLink = faExternalLinkAlt;
   public openUser: string;
 
-  constructor(private adminService: AdminService, private router: Router) {
-  }
+  private adminService = inject(AdminService);
+  private router = inject(Router);
 
   ngOnInit() {
     this.adminService.plannings.subscribe(_ => this.plannings = _);

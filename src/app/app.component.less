@@ -8,9 +8,33 @@
   height: calc(100vh - 75px);
 }
 
+.outlet-scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.outlet-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.outlet-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+.outlet-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.outlet-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .backdrop {
   background: #0000;
   filter: none;
+  overflow: hidden;
 }
 
 .main.menu-open .outlet {

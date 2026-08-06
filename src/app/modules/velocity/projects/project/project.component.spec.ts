@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -16,39 +43,37 @@ import {ProjectId} from '../../models/project';
 describe('ProjectComponent', () => {
   let component: ProjectComponent;
   let fixture: ComponentFixture<ProjectComponent>;
-  let velocityService: jasmine.SpyObj<VelocityService>;
-  let projectService: jasmine.SpyObj<ProjectService>;
-  let menuService: jasmine.SpyObj<MenuService>;
-  let headerService: jasmine.SpyObj<HeaderService>;
-  let router: jasmine.SpyObj<Router>;
+  let velocityService: any;
+  let projectService: any;
+  let menuService: any;
+  let headerService: any;
+  let router: any;
   let project: ProjectId;
 
   beforeEach(async () => {
-    // ProjectComponent.ngOnInit assigns to the global `setStaff` (declared via `declare var`,
-    // provided by an inline script in index.html at runtime). Stub it so ngOnInit does not throw.
-    (window as any).setStaff = () => undefined;
-
     project = {id: 'pr1', name: 'Testprojekt', sprints: [], initialVelocity: 1, coReaders: [], coWriters: []};
 
-    velocityService = jasmine.createSpyObj('VelocityService', ['addSprint', 'updateProject']);
-    velocityService.addSprint.and.resolveTo();
-    velocityService.updateProject.and.resolveTo();
+    velocityService = {
+      addSprint: vi.fn().mockResolvedValue(undefined),
+      updateProject: vi.fn().mockResolvedValue(undefined),
+    };
 
-    projectService = jasmine.createSpyObj('ProjectService', ['getProject', 'updateProject', 'deleteProject']);
-    projectService.getProject.and.returnValue(of(project));
-    projectService.updateProject.and.resolveTo();
-    projectService.deleteProject.and.resolveTo();
+    projectService = {
+      getProject: vi.fn().mockReturnValue(of(project)),
+      updateProject: vi.fn().mockResolvedValue(undefined),
+      deleteProject: vi.fn().mockResolvedValue(undefined),
+    };
 
-    menuService = jasmine.createSpyObj('MenuService', ['addCustomAction', 'resetCustomActions']);
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb']);
+    menuService = {addCustomAction: vi.fn(), resetCustomActions: vi.fn()};
+    headerService = {setBreadcrumb: vi.fn()};
 
-    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'createUrlTree']);
-    router.navigateByUrl.and.resolveTo(true);
-    router.createUrlTree.and.returnValue({} as any);
+    router = {
+      navigateByUrl: vi.fn().mockResolvedValue(true),
+      createUrlTree: vi.fn().mockReturnValue({} as any),
+    };
 
     await TestBed.configureTestingModule({
-      declarations: [ProjectComponent],
-      imports: [CommonModule, NoopAnimationsModule],
+      imports: [ProjectComponent, CommonModule, NoopAnimationsModule],
       providers: [
         {provide: VelocityService, useValue: velocityService},
         {provide: ActivatedRoute, useValue: {params: of({projectId: 'pr1'})} as any},
@@ -63,9 +88,14 @@ describe('ProjectComponent', () => {
       .compileComponents();
   });
 
-  beforeEach(() => {
+  // project$ is debounced by 500ms in the ported component, so `this.project` and the refined
+  // breadcrumb are only available after the timer elapses. We await a real timer since the
+  // Vitest/zone environment does not provide a ProxyZone for fakeAsync.
+  beforeEach(async () => {
     fixture = TestBed.createComponent(ProjectComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
+    await new Promise(resolve => setTimeout(resolve, 600));
     fixture.detectChanges();
   });
 
@@ -82,14 +112,14 @@ describe('ProjectComponent', () => {
   });
 
   it('registers the sprint, edit and delete custom actions', () => {
-    const names = menuService.addCustomAction.calls.allArgs().map(args => args[0]);
+    const names = menuService.addCustomAction.mock.calls.map((args: any[]) => args[0]);
 
     expect(names).toEqual(['Sprint erstellen', 'Projekt bearbeiten', 'Projekt löschen']);
-    expect(menuService.addCustomAction.calls.argsFor(2)[2]).toBe(true);
+    expect(menuService.addCustomAction.mock.calls[2][2]).toBe(true);
   });
 
   it('delegates sprint creation to the velocity service', () => {
-    const createSprint = menuService.addCustomAction.calls.argsFor(0)[1];
+    const createSprint = menuService.addCustomAction.mock.calls[0][1];
 
     createSprint();
 
@@ -97,7 +127,7 @@ describe('ProjectComponent', () => {
   });
 
   it('navigates to the edit page when the edit action is triggered', () => {
-    const editProject = menuService.addCustomAction.calls.argsFor(1)[1];
+    const editProject = menuService.addCustomAction.mock.calls[1][1];
 
     editProject();
 
@@ -105,7 +135,7 @@ describe('ProjectComponent', () => {
   });
 
   it('deletes the project and navigates back when the delete action is triggered', () => {
-    const deleteProject = menuService.addCustomAction.calls.argsFor(2)[1];
+    const deleteProject = menuService.addCustomAction.mock.calls[2][1];
 
     deleteProject();
 
@@ -129,15 +159,15 @@ describe('ProjectComponent', () => {
   });
 
   it('treats the owner as a writer', () => {
-    expect(component.isWriter({...project, owner: 'u1'} as any)).toBeTrue();
+    expect(component.isWriter({...project, owner: 'u1'} as any)).toBe(true);
   });
 
   it('treats a co-writer as a writer', () => {
-    expect(component.isWriter({...project, owner: 'other', coWriters: ['u1']} as any)).toBeTrue();
+    expect(component.isWriter({...project, owner: 'other', coWriters: ['u1']} as any)).toBe(true);
   });
 
   it('does not treat an unrelated user as a writer', () => {
-    expect(component.isWriter({...project, owner: 'other', coWriters: []} as any)).toBeFalse();
+    expect(component.isWriter({...project, owner: 'other', coWriters: []} as any)).toBe(false);
   });
 
   it('resets the custom actions on destroy', () => {

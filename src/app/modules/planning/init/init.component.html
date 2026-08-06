@@ -1,27 +1,36 @@
-<div *ngIf="planningId" @fadeTranslateInstant class="div-init">
-  <div>Gib Deinen Namen ein um an der Schätzung teilzunehmen</div>
-  <div class="div-estimate-id">
-    <input (keyup.enter)="goDeveloper()" [(ngModel)]="username" name="Name" placeholder="Name" type="text">
-  </div>
-  <button (click)="goDeveloper()">Teilnehmen</button>
-  <button (click)="goDeveloperLastSession()" *ngIf="hasLastSession()">letzter Session beitreten</button>
-  <button (click)="goGuest()">als Gast beitreten</button>
-</div>
-
-
-<div *ngIf="!planningId" @fadeTranslateInstant class="div-init">
-  <div>Gib eine Sessionbeschreibung ein um die Schätzung zu starten</div>
-  <div class="div-estimate-id">
-    <input (keyup.enter)="goMaster()" [(ngModel)]="subject" placeholder="Beschreibung" type="text">
-  </div>
-  <button (click)="goMaster()">Schätzung starten</button>
-  <button routerLink="scan">QR Code Scannen</button>
-  <ng-container *ngIf="myPlannings$|async as plannings">
-    <button (click)="showMySessions=true" *ngIf="!showMySessions && plannings.length > 0" @fade>Meine Schätzungen
-    </button>
-    <div *ngIf="showMySessions  && plannings.length > 0" @fade>
-      <app-my-sessions [plannings]="plannings"></app-my-sessions>
+@if (planningId) {
+  <div @fadeTranslateInstant class="div-init">
+    <div>Gib Deinen Namen ein um an der Schätzung teilzunehmen</div>
+    <div class="div-estimate-id">
+      <input (keyup.enter)="goDeveloper()" [(ngModel)]="username" name="Name" placeholder="Name" type="text">
     </div>
-  </ng-container>
+    <button (click)="goDeveloper()">Teilnehmen</button>
+    @if (hasLastSession()) {
+      <button (click)="goDeveloperLastSession()">letzter Session beitreten</button>
+    }
+    <button (click)="goGuest()">als Gast beitreten</button>
+  </div>
+}
 
-</div>
+
+@if (!planningId) {
+  <div @fadeTranslateInstant class="div-init">
+    <div>Gib eine Sessionbeschreibung ein um die Schätzung zu starten</div>
+    <div class="div-estimate-id">
+      <input (keyup.enter)="goMaster()" [(ngModel)]="subject" placeholder="Beschreibung" type="text">
+    </div>
+    <button (click)="goMaster()">Schätzung starten</button>
+    <button routerLink="scan">QR Code Scannen</button>
+    @if (myPlannings$|async; as plannings) {
+      @if (!showMySessions && plannings.length > 0) {
+        <button (click)="showMySessions=true" @fade>Meine Schätzungen
+        </button>
+      }
+      @if (showMySessions  && plannings.length > 0) {
+        <div @fade>
+          <app-my-sessions [plannings]="plannings"></app-my-sessions>
+        </div>
+      }
+    }
+  </div>
+}

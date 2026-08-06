@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -10,8 +11,7 @@ describe('EditTextComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditTextComponent],
-      imports: [ReactiveFormsModule],
+      imports: [EditTextComponent, ReactiveFormsModule],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
@@ -28,7 +28,7 @@ describe('EditTextComponent', () => {
   });
 
   it('patches the incoming text into the control without emitting', () => {
-    const emitSpy = spyOn(component.textChanged, 'emit');
+    const emitSpy = vi.spyOn(component.textChanged, 'emit');
 
     component.text = 'hello';
 
@@ -37,7 +37,7 @@ describe('EditTextComponent', () => {
   });
 
   it('emits the changed text once initialised', () => {
-    const emitSpy = spyOn(component.textChanged, 'emit');
+    const emitSpy = vi.spyOn(component.textChanged, 'emit');
 
     component.textControl.setValue('changed');
 
@@ -45,7 +45,7 @@ describe('EditTextComponent', () => {
   });
 
   it('unsubscribes from the control on destroy', () => {
-    const emitSpy = spyOn(component.textChanged, 'emit');
+    const emitSpy = vi.spyOn(component.textChanged, 'emit');
 
     component.ngOnDestroy();
     component.textControl.setValue('after destroy');

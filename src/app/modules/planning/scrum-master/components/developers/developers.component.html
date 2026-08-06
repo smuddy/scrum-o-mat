@@ -1,15 +1,21 @@
-<div *ngIf="developers" [@listAnimation]="developers.length" class="div-developers">
-  <div *ngFor="let developer of developers|orderBy:'name'; trackBy:trackById" class="div-developer-row">
-
-    <div (click)="delete(developer.id)" class="deleteButton">
-      <fa-icon [icon]="faTrash" class="button"></fa-icon>
-    </div>
-    <div *ngIf="developer" [class.is-ready]="devIsReady(developer.storyPoints) && showIndicators" class="div-developer"
-    >{{developer.name}}</div>
-    <div *ngIf="developer" [class.show]="showResults"
-         class="div-results">{{renderStoryPoints(developer.storyPoints)}}</div>
-
+@if (developers) {
+  <div [@listAnimation]="developers.length" class="div-developers">
+    @for (developer of sortedDevelopers; track trackById($index, developer)) {
+      <div class="div-developer-row">
+        <div (click)="delete(developer.id)" class="deleteButton">
+          <fa-icon [icon]="faTrash" class="button"></fa-icon>
+        </div>
+        @if (developer) {
+          <div [class.is-ready]="devIsReady(developer.storyPoints) && showIndicators" class="div-developer"
+          >{{developer.name}}</div>
+        }
+        @if (developer) {
+          <div [class.show]="showResults"
+          class="div-results">{{renderStoryPoints(developer.storyPoints)}}</div>
+        }
+      </div>
+    }
+    <ng-content></ng-content>
   </div>
-  <ng-content></ng-content>
-</div>
+}
 

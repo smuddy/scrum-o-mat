@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -12,27 +13,27 @@ describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let headerService: any;
-  let router: jasmine.SpyObj<Router>;
+  let router: { navigateByUrl: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     headerService = {
       breadcrumb$: of([{name: 'Foo', route: '/foo'}]),
       fullscreen$: of(false),
-      setBreadcrumb: jasmine.createSpy(),
-      setFullscreen: jasmine.createSpy(),
+      setBreadcrumb: vi.fn(),
+      setFullscreen: vi.fn(),
     };
-    router = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.resolveTo(true);
+    router = {navigateByUrl: vi.fn().mockResolvedValue(true)};
 
     await TestBed.configureTestingModule({
-      declarations: [HeaderComponent],
-      imports: [CommonModule, NoopAnimationsModule],
+      imports: [HeaderComponent, NoopAnimationsModule],
       providers: [
         {provide: HeaderService, useValue: headerService},
         {provide: Router, useValue: router},
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
+      .overrideComponent(HeaderComponent, {
+        set: {imports: [CommonModule], schemas: [NO_ERRORS_SCHEMA]},
+      })
       .compileComponents();
   });
 
@@ -50,7 +51,7 @@ describe('HeaderComponent', () => {
     let fullscreen: boolean;
     component.fullscreen$.subscribe(_ => fullscreen = _);
 
-    expect(fullscreen).toBeFalse();
+    expect(fullscreen).toBe(false);
   });
 
   it('exposes the breadcrumb from HeaderService', () => {

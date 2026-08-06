@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
@@ -10,7 +11,7 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DashboardComponent],
+      imports: [DashboardComponent],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();

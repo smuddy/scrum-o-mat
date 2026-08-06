@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -9,41 +36,49 @@ import {PlanningService} from '../../../planning.service';
 import {AdminService} from '../../../admin/components/admin.service';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
+import {FireworksService} from '../../../../../shared/fireworks/fireworks.service';
 import {StoryPoints} from '../../../models/storyPoints';
-
-declare var fireworks;
 
 describe('DeveloperComponent', () => {
   let component: DeveloperComponent;
   let fixture: ComponentFixture<DeveloperComponent>;
-  let planningService: jasmine.SpyObj<PlanningService>;
-  let adminService: jasmine.SpyObj<AdminService>;
-  let menuService: jasmine.SpyObj<MenuService>;
-  let headerService: jasmine.SpyObj<HeaderService>;
-  let router: jasmine.SpyObj<Router>;
+  let planningService: any;
+  let adminService: any;
+  let menuService: any;
+  let headerService: any;
+  let fireworksService: any;
+  let router: any;
 
   beforeEach(async () => {
-    (window as any).fireworks = {_particlesPerExplosion: 0, _interval: []};
+    fireworksService = {start: vi.fn(), stop: vi.fn(), configure: vi.fn()};
 
-    planningService = jasmine.createSpyObj('PlanningService', ['getPlanning', 'getDeveloper', 'updateStoryPoints', 'deleteUser']);
-    planningService.getPlanning.and.returnValue(of(null));
-    planningService.getDeveloper.and.returnValue(of({name: 'Ada', storyPoints: 1} as any));
-    planningService.updateStoryPoints.and.resolveTo();
-    planningService.deleteUser.and.resolveTo();
+    planningService = {
+      getPlanning: vi.fn().mockReturnValue(of(null)),
+      getDeveloper: vi.fn().mockReturnValue(of({name: 'Ada', storyPoints: 1} as any)),
+      updateStoryPoints: vi.fn().mockResolvedValue(undefined),
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+    };
 
-    adminService = jasmine.createSpyObj('AdminService', ['getDevelopers']);
-    adminService.getDevelopers.and.returnValue(of([]));
+    adminService = {
+      getDevelopers: vi.fn().mockReturnValue(of([])),
+    };
 
-    menuService = jasmine.createSpyObj('MenuService', ['addCustomAction', 'resetCustomActions']);
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb', 'setFullscreen']);
+    menuService = {
+      addCustomAction: vi.fn(),
+      resetCustomActions: vi.fn(),
+    };
+    headerService = {
+      setBreadcrumb: vi.fn(),
+      setFullscreen: vi.fn(),
+    };
 
-    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'createUrlTree']);
-    router.navigateByUrl.and.resolveTo(true);
-    router.createUrlTree.and.returnValue({} as any);
+    router = {
+      navigateByUrl: vi.fn().mockResolvedValue(true),
+      createUrlTree: vi.fn().mockReturnValue({} as any),
+    };
 
     await TestBed.configureTestingModule({
-      declarations: [DeveloperComponent],
-      imports: [NoopAnimationsModule],
+      imports: [DeveloperComponent, NoopAnimationsModule],
       providers: [
         {provide: ActivatedRoute, useValue: {params: of({planningId: 'p1', userId: 'u1'})} as any},
         {provide: PlanningService, useValue: planningService},
@@ -51,6 +86,7 @@ describe('DeveloperComponent', () => {
         {provide: MenuService, useValue: menuService},
         {provide: HeaderService, useValue: headerService},
         {provide: Router, useValue: router},
+        {provide: FireworksService, useValue: fireworksService},
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -70,6 +106,7 @@ describe('DeveloperComponent', () => {
   it('sets the breadcrumb and enables fullscreen on init', () => {
     expect(headerService.setBreadcrumb).toHaveBeenCalledWith([{route: '/planning', name: 'Scrum Poker'}]);
     expect(headerService.setFullscreen).toHaveBeenCalledWith(true);
+    expect(fireworksService.start).toHaveBeenCalled();
   });
 
   it('navigates away when there is no active planning', () => {
@@ -99,6 +136,23 @@ describe('DeveloperComponent', () => {
     expect(planningService.deleteUser).toHaveBeenCalledWith('p1', 'u1');
     expect(router.createUrlTree).toHaveBeenCalledWith(['/planning/'], {queryParams: {session: 'p1'}});
     expect(router.navigateByUrl).toHaveBeenCalled();
+  });
+
+  it('renders the current story points via the parameterless renderer', () => {
+    component.storyPoints = StoryPoints.s8;
+
+    expect(component.renderStoryPoint()).toBe('8');
+  });
+
+  it('disables fullscreen and resets the custom actions on destroy', () => {
+    headerService.setFullscreen.mockClear();
+    menuService.resetCustomActions.mockClear();
+
+    fixture.destroy();
+
+    expect(headerService.setFullscreen).toHaveBeenCalledWith(false);
+    expect(menuService.resetCustomActions).toHaveBeenCalled();
+    expect(fireworksService.stop).toHaveBeenCalled();
   });
 
 });

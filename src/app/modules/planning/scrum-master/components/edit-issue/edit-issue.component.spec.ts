@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -12,7 +39,7 @@ import {StoryPoints} from '../../../models/storyPoints';
 describe('EditIssueComponent', () => {
   let component: EditIssueComponent;
   let fixture: ComponentFixture<EditIssueComponent>;
-  let planningService: jasmine.SpyObj<PlanningService>;
+  let planningService: any;
 
   function createComponent(): void {
     fixture = TestBed.createComponent(EditIssueComponent);
@@ -22,13 +49,13 @@ describe('EditIssueComponent', () => {
   }
 
   beforeEach(async () => {
-    planningService = jasmine.createSpyObj('PlanningService', ['getPlanning', 'updateIssue']);
-    planningService.getPlanning.and.returnValue(of(undefined));
-    planningService.updateIssue.and.resolveTo();
+    planningService = {
+      getPlanning: vi.fn().mockReturnValue(of(undefined)),
+      updateIssue: vi.fn().mockResolvedValue(undefined),
+    };
 
     await TestBed.configureTestingModule({
-      declarations: [EditIssueComponent],
-      imports: [FormsModule, NoopAnimationsModule],
+      imports: [EditIssueComponent, FormsModule, NoopAnimationsModule],
       providers: [
         {provide: PlanningService, useValue: planningService},
       ],
@@ -45,7 +72,7 @@ describe('EditIssueComponent', () => {
   it('stays in edit mode and ignores planning updates without an issue', () => {
     createComponent();
 
-    expect(component.edit).toBeTrue();
+    expect(component.edit).toBe(true);
     expect(component.issue).toBeUndefined();
   });
 
@@ -60,50 +87,50 @@ describe('EditIssueComponent', () => {
       estimateSucceeded: false,
       storyPoints: StoryPoints.s5,
     };
-    planningService.getPlanning.and.returnValue(of(planning));
+    planningService.getPlanning.mockReturnValue(of(planning));
 
     createComponent();
 
     expect(component.subject).toBe('Sprint 1');
     expect(component.issue).toBe('ISSUE-1');
-    expect(component.edit).toBeFalse();
+    expect(component.edit).toBe(false);
   });
 
   it('focuses the input and does not save when trying to set an empty issue', async () => {
     createComponent();
     component.issue = null;
-    const focusSpy = jasmine.createSpy('focus');
+    const focusSpy = vi.fn();
     component.inputRef = {nativeElement: {focus: focusSpy}};
 
     await component.setIssue();
 
     expect(focusSpy).toHaveBeenCalled();
     expect(planningService.updateIssue).not.toHaveBeenCalled();
-    expect(component.edit).toBeTrue();
+    expect(component.edit).toBe(true);
   });
 
   it('saves the issue and leaves edit mode when set with a value', async () => {
     createComponent();
     component.issue = 'ISSUE-2';
-    component.inputRef = {nativeElement: {focus: jasmine.createSpy('focus')}};
+    component.inputRef = {nativeElement: {focus: vi.fn()}};
 
     await component.setIssue();
 
     expect(planningService.updateIssue).toHaveBeenCalledWith('p1', 'ISSUE-2');
-    expect(component.edit).toBeFalse();
+    expect(component.edit).toBe(false);
   });
 
   it('resets the issue, re-enters edit mode and refocuses the input', async () => {
     createComponent();
     component.issue = 'ISSUE-2';
-    const focusSpy = jasmine.createSpy('focus');
+    const focusSpy = vi.fn();
     component.inputRef = {nativeElement: {focus: focusSpy}};
 
     await component.resetIssue();
 
     expect(component.issue).toBeNull();
     expect(planningService.updateIssue).toHaveBeenCalledWith('p1', null);
-    expect(component.edit).toBeTrue();
+    expect(component.edit).toBe(true);
     expect(focusSpy).toHaveBeenCalled();
   });
 

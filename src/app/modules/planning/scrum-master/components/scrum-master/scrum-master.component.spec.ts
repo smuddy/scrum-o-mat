@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -6,8 +33,10 @@ import {of, Subject} from 'rxjs';
 
 import {ScrumMasterComponent} from './scrum-master.component';
 import {PlanningService} from '../../../planning.service';
+import {AdminService} from '../../../admin/components/admin.service';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
+import {FireworksService} from '../../../../../shared/fireworks/fireworks.service';
 import {environment} from '../../../../../../environments/environment';
 import {Planning} from '../../../models/planning';
 import {DeveloperId} from '../../../models/delevoper';
@@ -16,10 +45,11 @@ import {StoryPoints} from '../../../models/storyPoints';
 describe('ScrumMasterComponent', () => {
   let component: ScrumMasterComponent;
   let fixture: ComponentFixture<ScrumMasterComponent>;
-  let planningService: jasmine.SpyObj<PlanningService>;
-  let router: jasmine.SpyObj<Router>;
-  let menuService: jasmine.SpyObj<MenuService>;
-  let headerService: jasmine.SpyObj<HeaderService>;
+  let planningService: any;
+  let router: any;
+  let menuService: any;
+  let headerService: any;
+  let fireworksService: any;
   let menuOpenSubject: Subject<boolean>;
 
   function createComponent(): void {
@@ -29,36 +59,40 @@ describe('ScrumMasterComponent', () => {
   }
 
   beforeEach(async () => {
-    (window as any).fireworks = {};
+    fireworksService = {start: vi.fn(), stop: vi.fn(), configure: vi.fn()};
 
-    planningService = jasmine.createSpyObj('PlanningService', [
-      'getDevelopers', 'getPlanning', 'resetEstimate', 'setEstimateResult', 'deletePlanning',
-    ]);
-    planningService.getDevelopers.and.returnValue(of([]));
-    planningService.getPlanning.and.returnValue(of(undefined));
-    planningService.resetEstimate.and.resolveTo();
-    planningService.setEstimateResult.and.resolveTo();
-    planningService.deletePlanning.and.resolveTo();
+    planningService = {
+      getDevelopers: vi.fn().mockReturnValue(of([])),
+      getPlanning: vi.fn().mockReturnValue(of(undefined)),
+      resetEstimate: vi.fn().mockResolvedValue(undefined),
+      setEstimateResult: vi.fn().mockResolvedValue(undefined),
+      deletePlanning: vi.fn().mockResolvedValue(undefined),
+    };
 
-    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'createUrlTree']);
-    router.navigateByUrl.and.resolveTo(true);
-    router.createUrlTree.and.returnValue({} as any);
+    router = {
+      navigateByUrl: vi.fn().mockResolvedValue(true),
+      createUrlTree: vi.fn().mockReturnValue({} as any),
+    };
 
     menuOpenSubject = new Subject<boolean>();
-    menuService = jasmine.createSpyObj('MenuService', ['addCustomAction', 'resetCustomActions']);
-    (menuService as any).menuOpen$ = menuOpenSubject.asObservable();
+    menuService = {
+      addCustomAction: vi.fn(),
+      resetCustomActions: vi.fn(),
+      menuOpen$: menuOpenSubject.asObservable(),
+    };
 
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb', 'setFullscreen']);
+    headerService = {setBreadcrumb: vi.fn(), setFullscreen: vi.fn()};
 
     await TestBed.configureTestingModule({
-      declarations: [ScrumMasterComponent],
-      imports: [NoopAnimationsModule],
+      imports: [ScrumMasterComponent, NoopAnimationsModule],
       providers: [
         {provide: ActivatedRoute, useValue: {params: of({planningId: 'p1'})} as any},
         {provide: PlanningService, useValue: planningService},
         {provide: Router, useValue: router},
         {provide: MenuService, useValue: menuService},
         {provide: HeaderService, useValue: headerService},
+        {provide: AdminService, useValue: {getDevelopers: vi.fn().mockReturnValue(of([])), deleteUser: vi.fn().mockResolvedValue(undefined)}},
+        {provide: FireworksService, useValue: fireworksService},
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -76,8 +110,8 @@ describe('ScrumMasterComponent', () => {
       issue: null, modified: new Date(), subject: 'Sprint 1', count: 2, userId: 'u1',
       estimateRequested: false, estimateSucceeded: true, storyPoints: StoryPoints.s5,
     };
-    planningService.getDevelopers.and.returnValue(of(developers));
-    planningService.getPlanning.and.returnValue(of(planning));
+    planningService.getDevelopers.mockReturnValue(of(developers));
+    planningService.getPlanning.mockReturnValue(of(planning));
 
     createComponent();
 
@@ -85,11 +119,14 @@ describe('ScrumMasterComponent', () => {
     expect(component.developers).toBe(developers);
     expect(component.planning).toBe(planning);
     expect(component.count).toBe(2);
-    expect(menuService.addCustomAction).toHaveBeenCalledWith('Session beenden', jasmine.any(Function));
+    expect(menuService.addCustomAction).toHaveBeenCalledWith('Session beenden', expect.any(Function));
+    expect(fireworksService.start).toHaveBeenCalled();
+    // estimateSucceeded=true, storyPoints=s5 (nicht Kaffee), count=2 -> 50 Partikel, Intervall [200*4, 1500*4].
+    expect(fireworksService.configure).toHaveBeenCalledWith(50, [800, 6000]);
   });
 
   it('navigates away when the loaded planning has no subject', () => {
-    planningService.getPlanning.and.returnValue(of({} as Planning));
+    planningService.getPlanning.mockReturnValue(of({} as Planning));
 
     createComponent();
 
@@ -102,7 +139,7 @@ describe('ScrumMasterComponent', () => {
       issue: 'ISSUE-1', modified: new Date(), subject: 'Sprint 1', count: 1, userId: 'u1',
       estimateRequested: false, estimateSucceeded: false, storyPoints: StoryPoints.s5,
     };
-    planningService.getPlanning.and.returnValue(of(planning));
+    planningService.getPlanning.mockReturnValue(of(planning));
 
     createComponent();
 
@@ -116,21 +153,21 @@ describe('ScrumMasterComponent', () => {
       estimateRequested: false, estimateSucceeded: true, storyPoints: StoryPoints.s5,
     };
 
-    expect(component.estimateSucceeded()).toBeTrue();
-    expect(component.coffeeBreak()).toBeFalse();
-    expect(component.estimateFailed()).toBeFalse();
-    expect(component.estimateRequested()).toBeFalse();
+    expect(component.estimateSucceeded()).toBe(true);
+    expect(component.coffeeBreak()).toBe(false);
+    expect(component.estimateFailed()).toBe(false);
+    expect(component.estimateRequested()).toBe(false);
 
     component.planning.storyPoints = StoryPoints.coffee;
-    expect(component.estimateSucceeded()).toBeFalse();
-    expect(component.coffeeBreak()).toBeTrue();
+    expect(component.estimateSucceeded()).toBe(false);
+    expect(component.coffeeBreak()).toBe(true);
 
     component.planning.estimateSucceeded = false;
     component.planning.storyPoints = StoryPoints.s5;
-    expect(component.estimateFailed()).toBeTrue();
+    expect(component.estimateFailed()).toBe(true);
 
     component.planning.estimateRequested = true;
-    expect(component.estimateRequested()).toBeTrue();
+    expect(component.estimateRequested()).toBe(true);
   });
 
   it('requests a new estimate for the next round', async () => {
@@ -168,7 +205,10 @@ describe('ScrumMasterComponent', () => {
 
   it('copies the given link to the clipboard', () => {
     createComponent();
-    const writeTextSpy = spyOn(navigator.clipboard, 'writeText');
+    if (!navigator.clipboard) {
+      (navigator as any).clipboard = {writeText: () => Promise.resolve()};
+    }
+    const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
 
     component.copyLink('http://link');
 
@@ -238,11 +278,11 @@ describe('ScrumMasterComponent', () => {
 
   it('hides the qr code once the menu is opened', () => {
     createComponent();
-    expect(component.showQrCode).toBeTrue();
+    expect(component.showQrCode).toBe(true);
 
     menuOpenSubject.next(true);
 
-    expect(component.showQrCode).toBeFalse();
+    expect(component.showQrCode).toBe(false);
   });
 
   it('resets the custom menu actions and disables fullscreen on destroy', () => {
@@ -252,6 +292,7 @@ describe('ScrumMasterComponent', () => {
 
     expect(menuService.resetCustomActions).toHaveBeenCalled();
     expect(headerService.setFullscreen).toHaveBeenCalledWith(false);
+    expect(fireworksService.stop).toHaveBeenCalled();
   });
 
 });

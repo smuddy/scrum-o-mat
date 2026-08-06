@@ -1,10 +1,14 @@
 import {Component, Input} from '@angular/core';
+
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faChalkboardTeacher, faCheckDouble, faComments} from '@fortawesome/free-solid-svg-icons';
 import {renderStoryPoint} from '../../../planning.service';
 import {StoryPoints} from '../../../models/storyPoints';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
+  imports: [FaIconComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.less']
 })

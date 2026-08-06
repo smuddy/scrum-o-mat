@@ -8,8 +8,10 @@
   <div class="header">
     <app-header></app-header>
   </div>
-  <perfect-scrollbar [class.fullscreen]="fullscreen$|async" class="outlet">
+  <div [class.fullscreen]="fullscreen$|async" class="outlet outlet-scroll">
     <router-outlet></router-outlet>
-  </perfect-scrollbar>
-  <div (click)="onClickMenuButton()" *ngIf="menuOpen" class="outlet backdrop"></div>
+  </div>
+  @if (menuOpen) {
+    <div (click)="onClickMenuButton()" class="outlet backdrop"></div>
+  }
 </div>

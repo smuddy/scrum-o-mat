@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {of} from 'rxjs';
@@ -12,12 +39,12 @@ describe('UsersComponent', () => {
 
   beforeEach(async () => {
     adminService = {
-      getDevelopers: jasmine.createSpy('getDevelopers').and.returnValue(of([])),
-      deleteUser: jasmine.createSpy('deleteUser').and.resolveTo(),
+      getDevelopers: vi.fn().mockReturnValue(of([])),
+      deleteUser: vi.fn().mockResolvedValue(undefined),
     };
 
     await TestBed.configureTestingModule({
-      declarations: [UsersComponent],
+      imports: [UsersComponent],
       providers: [
         {provide: AdminService, useValue: adminService},
       ],
@@ -38,7 +65,7 @@ describe('UsersComponent', () => {
 
   it('loads developers for the given planning id on init', () => {
     const developers = [{id: 'd1', name: 'Alice'} as any];
-    adminService.getDevelopers.and.returnValue(of(developers));
+    adminService.getDevelopers.mockReturnValue(of(developers));
     component.planningId = 'p1';
 
     fixture.detectChanges();

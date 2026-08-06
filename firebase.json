@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/scrum-o-mat",
+    "public": "dist/scrum-o-mat/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

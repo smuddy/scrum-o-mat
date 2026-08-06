@@ -1,22 +1,13 @@
-import {Injectable} from '@angular/core';
-import {CanActivate, CanDeactivate} from '@angular/router';
+import {inject} from '@angular/core';
+import {CanActivateFn, CanDeactivateFn} from '@angular/router';
 import {HeaderService} from '../../shared/header/header.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class LoginGuard implements CanActivate, CanDeactivate<unknown> {
-  constructor(private headerService: HeaderService) {
-  }
+export const loginCanActivateGuard: CanActivateFn = () => {
+  inject(HeaderService).setBreadcrumb([{route: '/login', name: 'Anmelden'}]);
+  return true;
+};
 
-  public canActivate(): boolean {
-    this.headerService.setBreadcrumb([{route: '/login', name: 'Anmelden'}]);
-    return true;
-  }
-
-  public canDeactivate(): boolean {
-    this.headerService.setBreadcrumb([]);
-    return true;
-  }
-
-}
+export const loginCanDeactivateGuard: CanDeactivateFn<unknown> = () => {
+  inject(HeaderService).setBreadcrumb([]);
+  return true;
+};

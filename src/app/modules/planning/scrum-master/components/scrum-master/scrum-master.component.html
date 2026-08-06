@@ -1,37 +1,59 @@
 <div class="div-scrum-master">
 
   <app-edit-issue [middle]="!(planning && planning.issue)" [planningId]="planningId"
-                  class="div-edit-issue" #edit></app-edit-issue>
+  class="div-edit-issue" #edit></app-edit-issue>
 
-  <div *ngIf="planning && planning.issue" @fadeTranslateInstant class="div-results">
-    <app-dashboard
-      [estimateFailed]="estimateFailed()"
-      [estimateRequested]="estimateRequested()"
-      [estimateSucceeded]="estimateSucceeded() || coffeeBreak()"
-      [storyPoints]="planning.storyPoints"
-    ></app-dashboard>
-    <app-developers [developers]="developers" [showIndicators]="!coffeeBreak()"
-                    [showResults]="!estimateRequested() && !coffeeBreak()">
-      <div class="div-repeat">
-        <button (click)="requestEstimate()" *ngIf="estimateFailed()" @fadeTranslateInstant class="comment">Schätzung
-          wiederholen
-        </button>
-        <div *ngIf="estimateSucceeded()" [ngSwitch]="count" class="comment">
-          <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
-          <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
-          <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>
-          <ng-container *ngSwitchDefault>Was lange währt wird endlich gut!</ng-container>
+  @if (planning && planning.issue) {
+    <div @fadeTranslateInstant class="div-results">
+      <app-dashboard
+        [estimateFailed]="estimateFailed()"
+        [estimateRequested]="estimateRequested()"
+        [estimateSucceeded]="estimateSucceeded() || coffeeBreak()"
+        [storyPoints]="planning.storyPoints"
+      ></app-dashboard>
+      <app-developers [developers]="developers" [showIndicators]="!coffeeBreak()"
+        [showResults]="!estimateRequested() && !coffeeBreak()">
+        <div class="div-repeat">
+          @if (estimateFailed()) {
+            <button (click)="requestEstimate()" @fadeTranslateInstant class="comment">Schätzung
+              wiederholen
+            </button>
+          }
+          @if (estimateSucceeded()) {
+            <div class="comment">
+              @switch (count) {
+                @case (1) {
+                  Punktlandung!
+                }
+                @case (2) {
+                  Fast Perfekt!
+                }
+                @case (3) {
+                  Aller guten Dinge sind drei!
+                }
+                @default {
+                  Was lange währt wird endlich gut!
+                }
+              }
+            </div>
+          }
+          @if (estimateSucceeded()) {
+            <button (click)="edit.resetIssue()" @fadeTranslateInstant class="comment">Schätzung
+              beenden
+            </button>
+          }
+          @if (coffeeBreak()) {
+            <div class="comment">Wir brauchen mal eine Pause!</div>
+          }
+          @if (coffeeBreak()) {
+            <button (click)="resumeAfterCoffeeBreak()" @fadeTranslateInstant class="comment">
+              Kaffepause beendet
+            </button>
+          }
         </div>
-        <button (click)="edit.resetIssue()" *ngIf="estimateSucceeded()" @fadeTranslateInstant class="comment">Schätzung
-          beenden
-        </button>
-        <div *ngIf="coffeeBreak()" class="comment">Wir brauchen mal eine Pause!</div>
-        <button (click)="resumeAfterCoffeeBreak()" *ngIf="coffeeBreak()" @fadeTranslateInstant class="comment">
-          Kaffepause beendet
-        </button>
-      </div>
-    </app-developers>
-  </div>
+      </app-developers>
+    </div>
+  }
 
   <div @fadeTranslateInstant class="div-planning-id">
     <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
@@ -42,6 +64,10 @@
 </div>
 
 
-<div *ngIf="showQrCode" @fadeBlur class="qrcode-background"></div>
-<ngx-qrcode (click)="showQrCode=false" *ngIf="showQrCode" @fadeBlur [scale]="10" [value]="link()">
-</ngx-qrcode>
+@if (showQrCode) {
+  <div @fadeBlur class="qrcode-background"></div>
+}
+@if (showQrCode) {
+  <qrcode (click)="showQrCode=false" @fadeBlur [qrdata]="link()" [errorCorrectionLevel]="'M'"
+  elementType="img" [width]="1000"></qrcode>
+}

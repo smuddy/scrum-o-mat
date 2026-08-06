@@ -1,5 +1,11 @@
 <div class="div-dashboard">
-  <fa-icon *ngIf="estimateRequested" [icon]="faTachometer"></fa-icon>
-  <div *ngIf="estimateSucceeded" class="success div-storyPoints">{{renderStoryPoint()}}</div>
-  <fa-icon *ngIf="estimateFailed" [icon]="faFailed" class="fail"></fa-icon>
+  @if (estimateRequested) {
+    <fa-icon [icon]="faTachometer"></fa-icon>
+  }
+  @if (estimateSucceeded) {
+    <div class="success div-storyPoints">{{renderStoryPoint()}}</div>
+  }
+  @if (estimateFailed) {
+    <fa-icon [icon]="faFailed" class="fail"></fa-icon>
+  }
 </div>

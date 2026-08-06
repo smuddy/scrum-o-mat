@@ -1,23 +1,35 @@
-<div *ngIf="projectsOwner$|async as projects" @fadeTranslateInstant class="projects">
-  <h1>Sprint Planer</h1>
-
-  <div *ngIf="projects.length!==0" class="list" >
-    <div *ngFor="let project of projects" [routerLink]="project.id" class="project">{{project.name}}</div>
+@if (projectsOwner$|async; as projects) {
+  <div @fadeTranslateInstant class="projects">
+    <h1>Sprint Planer</h1>
+    @if (projects.length!==0) {
+      <div class="list" >
+        @for (project of projects; track project.id) {
+          <div [routerLink]="project.id" class="project">{{project.name}}</div>
+        }
+      </div>
+    }
+    @if (projects.length===0) {
+      <div>Es sind noch keine eigenen Projekte vorhanden.</div>
+    }
+    @if (projectsReader$|async; as projectsReader) {
+      @if (projectsReader.length > 0) {
+        <div class="list follow-up-list">
+          Leser Mitgliedschaft an Projekten:
+          @for (project of projectsReader; track project.id) {
+            <div [routerLink]="project.id" class="project">{{project.name}}</div>
+          }
+        </div>
+      }
+    }
+    @if (projectsWriter$|async; as projectsWriter) {
+      @if (projectsWriter.length > 0) {
+        <div class="list follow-up-list">
+          Bearbeiter Mitgliedschaft an Projekten:
+          @for (project of projectsWriter; track project.id) {
+            <div [routerLink]="project.id" class="project">{{project.name}}</div>
+          }
+        </div>
+      }
+    }
   </div>
-
-  <div *ngIf="projects.length===0">Es sind noch keine eigenen Projekte vorhanden.</div>
-
-  <ng-container *ngIf="projectsReader$|async as projectsReader">
-    <div class="list follow-up-list" *ngIf="projectsReader.length > 0">
-      Leser Mitgliedschaft an Projekten:
-      <div *ngFor="let project of projectsReader" [routerLink]="project.id" class="project">{{project.name}}</div>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="projectsWriter$|async as projectsWriter">
-    <div class="list follow-up-list" *ngIf="projectsWriter.length > 0">
-      Bearbeiter Mitgliedschaft an Projekten:
-      <div *ngFor="let project of projectsWriter" [routerLink]="project.id" class="project">{{project.name}}</div>
-    </div>
-  </ng-container>
-</div>
+}

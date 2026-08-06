@@ -1,21 +1,19 @@
-import { TestBed } from '@angular/core/testing';
+import {describe, it, expect} from 'vitest';
+import {TestBed} from '@angular/core/testing';
+import {CanDeactivateFn} from '@angular/router';
 
-import { LeavePlanningGuard } from './leave-planning.guard';
+import {leavePlanningGuard} from './leave-planning.guard';
 
-describe('LeavePlanningGuard', () => {
-  let guard: LeavePlanningGuard;
+describe('leavePlanningGuard', () => {
+  const executeGuard: CanDeactivateFn<unknown> = (...guardParameters) =>
+    TestBed.runInInjectionContext(() => leavePlanningGuard(...guardParameters));
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    guard = TestBed.inject(LeavePlanningGuard);
-  });
-
-  it('should be created', () => {
-    expect(guard).toBeTruthy();
+  it('is defined', () => {
+    expect(leavePlanningGuard).toBeTruthy();
   });
 
   it('always allows deactivation', () => {
-    const result = guard.canDeactivate(null, null, null);
+    const result = executeGuard(null, null as any, null as any, null as any);
     expect(result).toBe(true);
   });
 });

@@ -1,33 +1,58 @@
 <div class="div-subject">{{subject}}</div>
-<div *ngIf="!issue" @fade class="div-waiting">Warte auf neue Schätzung</div>
+@if (!issue) {
+  <div @fade class="div-waiting">Warte auf neue Schätzung</div>
+}
 
 
-<div *ngIf="issue" @fade>
-  <div class="div-issue">{{issue}}</div>
-  <app-cards (cardSelected)="onCardSelected($event)" *ngIf="estimateRequested" @fade></app-cards>
-  <app-bubbles *ngIf="estimateRequested"></app-bubbles>
-  <div *ngIf="!estimateRequested && estimateSucceeded" @fade class="div-issue large">{{renderStoryPoint()}}</div>
-  <div *ngIf="!estimateRequested && estimateSucceeded && coffeeBreak" @fade class="div-issue">Wir brauchen mal eine
-    Pause!
-  </div>
-  <div *ngIf="!estimateRequested && estimateSucceeded && !coffeeBreak" @fade class="div-issue">
-    <ng-container [ngSwitch]="count">
-      <ng-container *ngSwitchCase="1">Punktlandung!</ng-container>
-      <ng-container *ngSwitchCase="2">Fast Perfekt!</ng-container>
-      <ng-container *ngSwitchCase="3">Aller guten Dinge sind drei!</ng-container>
-      <ng-container *ngSwitchDefault>Was lange währt wird endlich gut!</ng-container>
-    </ng-container>
-  </div>
-  <div *ngIf="!estimateRequested && !estimateSucceeded" @fade class="div-issue">
-    Wir müssen reden ...
-    <div [@listAnimation]="selectedStoryPoints.length" class="div-graph">
-      <div *ngFor="let selectedStoryPoint of selectedStoryPoints|orderBy: 'storyPoint'" class="div-graph-row">
-        <div class="div-story-point">{{renderStoryPoints(selectedStoryPoint.storyPoint)}}</div>
-        <div [ngStyle]="{'width' :  getWidthPercentage(selectedStoryPoint.count)  +'vw'}"
-             class="div-result" title={{selectedStoryPoint.count}}></div>
+@if (issue) {
+  <div @fade>
+    <div class="div-issue">{{issue}}</div>
+    @if (estimateRequested) {
+      <app-cards (cardSelected)="onCardSelected($event)" @fade></app-cards>
+    }
+    @if (estimateRequested) {
+      <app-bubbles></app-bubbles>
+    }
+    @if (!estimateRequested && estimateSucceeded) {
+      <div @fade class="div-issue large">{{renderStoryPoint()}}</div>
+    }
+    @if (!estimateRequested && estimateSucceeded && coffeeBreak) {
+      <div @fade class="div-issue">Wir brauchen mal eine
+        Pause!
       </div>
-    </div>
+    }
+    @if (!estimateRequested && estimateSucceeded && !coffeeBreak) {
+      <div @fade class="div-issue">
+        @switch (count) {
+          @case (1) {
+            Punktlandung!
+          }
+          @case (2) {
+            Fast Perfekt!
+          }
+          @case (3) {
+            Aller guten Dinge sind drei!
+          }
+          @default {
+            Was lange währt wird endlich gut!
+          }
+        }
+      </div>
+    }
+    @if (!estimateRequested && !estimateSucceeded) {
+      <div @fade class="div-issue">
+        Wir müssen reden ...
+        <div [@listAnimation]="selectedStoryPoints.length" class="div-graph">
+          @for (selectedStoryPoint of selectedStoryPoints; track selectedStoryPoint.storyPoint) {
+            <div class="div-graph-row">
+              <div class="div-story-point">{{renderStoryPoints(selectedStoryPoint.storyPoint)}}</div>
+              <div [ngStyle]="{'width' :  getWidthPercentage(selectedStoryPoint.count)  +'vw'}"
+              class="div-result" title={{selectedStoryPoint.count}}></div>
+            </div>
+          }
+        </div>
+      </div>
+    }
   </div>
-
-</div>
+}
 

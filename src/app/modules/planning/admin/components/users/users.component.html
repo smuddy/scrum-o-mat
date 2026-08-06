@@ -1,8 +1,10 @@
-<div *ngFor="let user of users">
-  <div class="div-planning-users">
-    <div>
-      <fa-icon (click)="delete(user.id)" [icon]="faTrash" class="button"></fa-icon>
+@for (user of users; track user.id) {
+  <div>
+    <div class="div-planning-users">
+      <div>
+        <fa-icon (click)="delete(user.id)" [icon]="faTrash" class="button"></fa-icon>
+      </div>
+      <div>{{user.name}}</div>
     </div>
-    <div>{{user.name}}</div>
   </div>
-</div>
+}

@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
@@ -10,7 +11,7 @@ describe('CardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CardComponent],
+      imports: [CardComponent],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
@@ -26,10 +27,11 @@ describe('CardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('exposes the storyPoint input', () => {
+  it('renders the story point input in the template', () => {
     component.storyPoint = StoryPoints.s8;
+    fixture.detectChanges();
 
-    expect(component.storyPoint).toBe(StoryPoints.s8);
+    expect(fixture.nativeElement.textContent).toContain('8');
   });
 
   it('renders the story point label', () => {

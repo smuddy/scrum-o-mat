@@ -1,41 +1,36 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+
 import {TestBed} from '@angular/core/testing';
-import {AngularFirestore} from '@angular/fire/compat/firestore';
-import {of} from 'rxjs';
+import {Firestore, collection, doc, collectionData, deleteDoc} from '@angular/fire/firestore';
+import {firstValueFrom, of} from 'rxjs';
 
 import {AdminService} from './admin.service';
 
 describe('AdminService', () => {
   let service: AdminService;
-  let afs: any;
-  let planningCollection: any;
-  let planningDoc: any;
-  let developerCollection: any;
-  let developerDoc: any;
 
   beforeEach(() => {
-    developerDoc = jasmine.createSpyObj('developerDoc', ['delete']);
-    developerDoc.delete.and.resolveTo();
-
-    developerCollection = jasmine.createSpyObj('developerCollection', ['doc', 'valueChanges']);
-    developerCollection.doc.and.returnValue(developerDoc);
-    developerCollection.valueChanges.and.returnValue(of([]));
-
-    planningDoc = jasmine.createSpyObj('planningDoc', ['delete', 'collection']);
-    planningDoc.delete.and.resolveTo();
-    planningDoc.collection.and.returnValue(developerCollection);
-
-    planningCollection = jasmine.createSpyObj('planningCollection', ['doc', 'valueChanges']);
-    planningCollection.doc.and.returnValue(planningDoc);
-    planningCollection.valueChanges.and.returnValue(of([]));
-
-    afs = jasmine.createSpyObj('AngularFirestore', ['collection', 'doc']);
-    afs.collection.and.returnValue(planningCollection);
-    afs.doc.and.returnValue(planningDoc);
+    vi.clearAllMocks();
+    vi.mocked(collectionData).mockReturnValue(of([]) as any);
+    vi.mocked(deleteDoc).mockResolvedValue(undefined as any);
 
     TestBed.configureTestingModule({
       providers: [
         AdminService,
-        {provide: AngularFirestore, useValue: afs},
+        {provide: Firestore, useValue: {}},
       ],
     });
     service = TestBed.inject(AdminService);
@@ -43,34 +38,51 @@ describe('AdminService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-    expect(afs.collection).toHaveBeenCalledWith('planning');
+    expect(vi.mocked(collection)).toHaveBeenCalledWith(expect.anything(), 'planning');
   });
 
   it('deletes a planning by id', async () => {
     await service.deletePlanning('p1');
 
-    expect(planningCollection.doc).toHaveBeenCalledWith('p1');
-    expect(planningDoc.delete).toHaveBeenCalled();
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'planning/p1');
+    expect(vi.mocked(deleteDoc)).toHaveBeenCalled();
+  });
+
+  it('deletes all developers of a planning before deleting the planning itself (no orphaned docs)', async () => {
+    vi.mocked(collectionData).mockReturnValue(of([
+      {id: 'u1', name: 'Ada', storyPoints: null},
+      {id: 'u2', name: 'Bob', storyPoints: null},
+    ]) as any);
+    const deletedPaths: string[] = [];
+    vi.mocked(doc).mockImplementation(((_afs: any, path: string) => ({path})) as any);
+    vi.mocked(deleteDoc).mockImplementation((async (ref: any) => {
+      deletedPaths.push(ref.path);
+    }) as any);
+
+    await service.deletePlanning('p1');
+
+    // Erst beide developer-Subcollection-Docs, dann die Planning selbst.
+    expect(deletedPaths).toEqual([
+      'planning/p1/developer/u1',
+      'planning/p1/developer/u2',
+      'planning/p1',
+    ]);
   });
 
   it('deletes a developer within a planning', async () => {
     await service.deleteUser('p1', 'u1');
 
-    expect(planningCollection.doc).toHaveBeenCalledWith('p1');
-    expect(planningDoc.collection).toHaveBeenCalledWith('developer');
-    expect(developerCollection.doc).toHaveBeenCalledWith('u1');
-    expect(developerDoc.delete).toHaveBeenCalled();
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'planning/p1/developer/u1');
+    expect(vi.mocked(deleteDoc)).toHaveBeenCalled();
   });
 
-  it('exposes the developers of a planning', done => {
-    developerCollection.valueChanges.and.returnValue(of([{id: 'u1', name: 'Ada', storyPoints: null}]));
+  it('exposes the developers of a planning', async () => {
+    vi.mocked(collectionData).mockReturnValue(of([{id: 'u1', name: 'Ada', storyPoints: null}]) as any);
 
-    service.getDevelopers('p1').subscribe(developers => {
-      expect(afs.doc).toHaveBeenCalledWith('planning/p1');
-      expect(planningDoc.collection).toHaveBeenCalledWith('developer');
-      expect(developers).toEqual([{id: 'u1', name: 'Ada', storyPoints: null}]);
-      done();
-    });
+    const developers = await firstValueFrom(service.getDevelopers('p1'));
+
+    expect(vi.mocked(collection)).toHaveBeenCalledWith(expect.anything(), 'planning/p1/developer');
+    expect(developers).toEqual([{id: 'u1', name: 'Ada', storyPoints: null}]);
   });
 
 });

@@ -1,5 +1,6 @@
-import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
+import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
+import {addDoc, collection, collectionData, deleteDoc, doc, docData, Firestore, query, updateDoc, where} from '@angular/fire/firestore';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, first, mergeMap} from 'rxjs/operators';
 import {StoryPoints} from './models/storyPoints';
 import {Developer, DeveloperId} from './models/delevoper';
@@ -14,27 +15,31 @@ import {LoginService} from '../login/login.service';
 })
 export class PlanningService {
 
-  private planningCollection: AngularFirestoreCollection<Planning>;
-  private plannings: Observable<Planning[]>;
+  private afs = inject(Firestore);
+  private injector = inject(Injector);
+  private loginService = inject(LoginService);
 
-  public listMyPlannings$ = this.loginService.authStateAllowAnonymous$.pipe(
-    mergeMap(user => this.afs.collection<PlanningId>('planning/', ref => ref.where('userId', '==', user.uid)).valueChanges({idField: 'id'})),
+  // AngularFire-Aufrufe muessen im Injection-Kontext laufen (sonst Warnung + instabile CD/Hydration).
+  private inCtx<T>(op: () => T): T {
+    return runInInjectionContext(this.injector, op);
+  }
+
+  public listMyPlannings$: Observable<PlanningId[]> = this.loginService.authStateAllowAnonymous$.pipe(
+    mergeMap(user => this.inCtx(() => collectionData(
+      query(collection(this.afs, 'planning'), where('userId', '==', user.uid)),
+      {idField: 'id'}
+    )) as Observable<PlanningId[]>),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
   );
+
+  // Signal-Variante additiv (Observable listMyPlannings$ bleibt bestehen)
+  public listMyPlanningsSignal = toSignal(this.listMyPlannings$, {initialValue: [] as PlanningId[]});
 
   private static newDeveloper(name: string): Developer {
     return {
       name,
       storyPoints: null
     };
-  }
-
-  constructor(
-    private afs: AngularFirestore,
-    private loginService: LoginService,
-  ) {
-    this.planningCollection = afs.collection<Planning>('planning');
-    this.plannings = this.planningCollection.valueChanges();
   }
 
   public async updateIssue(planningId: string, issue: string) {
@@ -47,9 +52,8 @@ export class PlanningService {
       count: 1,
     };
 
-    const planningRef = this.getPlanningRef(planningId);
-    await planningRef.update(planning);
-    this.resetStoryPoints(planningId);
+    await this.inCtx(() => updateDoc(doc(this.afs, 'planning/' + planningId), planning));
+    await this.resetStoryPoints(planningId);
   }
 
   public async createNewSession(subject: string): Promise<string> {
@@ -64,55 +68,44 @@ export class PlanningService {
       count: 0,
       userId: user.uid,
     };
-    const newDoc = await this.planningCollection.add(planning);
+    const newDoc = await this.inCtx(() => addDoc(collection(this.afs, 'planning'), planning));
     return newDoc.id;
   }
 
   public getPlanning(planningId: string): Observable<Planning | undefined> {
-    return this.afs.doc<Planning>('planning/' + planningId).valueChanges();
+    return this.inCtx(() => docData(doc(this.afs, 'planning/' + planningId))) as Observable<Planning | undefined>;
   }
 
   public async deletePlanning(planningId: string) {
-    const planningRef = this.afs.doc<Planning>('planning/' + planningId);
-    const developerCollection = planningRef.collection<DeveloperId>('developer');
-    const developers = await developerCollection.valueChanges({idField: 'id'}).pipe(first()).toPromise();
+    const developers = await firstValueFrom(this.getDevelopers(planningId).pipe(first()));
     const deleteOperations = developers.map(_ => this.deleteUser(planningId, _.id));
     await Promise.all(deleteOperations);
-    await this.planningCollection.doc(planningId).delete();
+    await this.inCtx(() => deleteDoc(doc(this.afs, 'planning/' + planningId)));
   }
 
   public async addUser(planningId: string, name: string): Promise<string> {
     const user = PlanningService.newDeveloper(name);
     localStorage.setItem('user', name);
-    const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection('developer');
-    const newDoc = await developerCollection.add(user);
+    const newDoc = await this.inCtx(() => addDoc(collection(this.afs, 'planning/' + planningId + '/developer'), user));
 
     return newDoc.id;
   }
 
   public async updateStoryPoints(planningId: string, userId: string, storyPoints: StoryPoints) {
     const partial: StoryPointsPartial = {storyPoints};
-    const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection('developer');
-    const developer = developerCollection.doc(userId);
-    await developer.update(partial);
+    await this.inCtx(() => updateDoc(doc(this.afs, 'planning/' + planningId + '/developer/' + userId), {...partial}));
   }
 
   public getDevelopers(planningId: string): Observable<DeveloperId[]> {
-    const planningRef = this.afs.doc<Planning>('planning/' + planningId);
-    const developerCollection = planningRef.collection<DeveloperId>('developer');
-    return developerCollection.valueChanges({idField: 'id'});
+    return this.inCtx(() => collectionData(collection(this.afs, 'planning/' + planningId + '/developer'), {idField: 'id'})) as Observable<DeveloperId[]>;
   }
 
   public getDeveloper(planningId: string, userId: string): Observable<Developer> {
-    const planningRef = this.getPlanningRef(planningId);
-    const developerCollection = planningRef.collection<Developer>('developer');
-    return developerCollection.doc<Developer>(userId).valueChanges();
+    return this.inCtx(() => docData(doc(this.afs, 'planning/' + planningId + '/developer/' + userId))) as Observable<Developer>;
   }
 
   public async deleteUser(planningId: string, userId: string) {
-    await this.planningCollection.doc(planningId).collection('developer').doc(userId).delete();
+    await this.inCtx(() => deleteDoc(doc(this.afs, 'planning/' + planningId + '/developer/' + userId)));
   }
 
   public async setEstimateResult(planningId: string, allValidStoryPointsAreEqual: boolean, storyPoints: StoryPoints) {
@@ -122,8 +115,7 @@ export class PlanningService {
       storyPoints,
     };
 
-    const planningRef = this.getPlanningRef(planningId);
-    await planningRef.update(estimateResult);
+    await this.inCtx(() => updateDoc(doc(this.afs, 'planning/' + planningId), {...estimateResult}));
   }
 
   public async resetEstimate(planningId: string, count: number) {
@@ -135,8 +127,7 @@ export class PlanningService {
       count: count,
     };
 
-    const planningRef = this.getPlanningRef(planningId);
-    await planningRef.update(estimateResult);
+    await this.inCtx(() => updateDoc(doc(this.afs, 'planning/' + planningId), {...estimateResult}));
   }
 
   private async resetStoryPoints(planningId: string) {
@@ -146,11 +137,6 @@ export class PlanningService {
       await this.updateStoryPoints(planningId, developer.id, null);
     }
 
-  }
-
-
-  private getPlanningRef(planningId: string): AngularFirestoreDocument<Planning> {
-    return this.afs.doc<Planning>('planning/' + planningId);
   }
 }
 

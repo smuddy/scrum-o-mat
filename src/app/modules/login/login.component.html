@@ -1,5 +1,7 @@
 <div @fadeTranslateInstant class="div-init">
-  <div *ngIf="errorMessage">{{errorMessage}}</div>
+  @if (errorMessage) {
+    <div>{{errorMessage}}</div>
+  }
   <div class="div-estimate-id">
     <input (keyup.enter)="login()" [formControl]="email" name="email" placeholder="E-Mail Addresse" type="text">
   </div>

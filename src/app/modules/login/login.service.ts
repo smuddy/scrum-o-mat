@@ -1,32 +1,34 @@
-import {Injectable} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/compat/auth';
+import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
+import {Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {map} from 'rxjs/operators';
-import {v4 as uuid} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-  public static userIdRegex = /[a-zA-Z0-9-_;]*/gm;
+  public static userIdRegex = /^[a-zA-Z0-9-_;]+$/;
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private router: Router
-  ) {
+  private auth = inject(Auth);
+  private injector = inject(Injector);
+  private router = inject(Router);
+
+  // AngularFire-Aufrufe muessen im Injection-Kontext laufen (sonst Warnung + instabile CD/Hydration).
+  private inCtx<T>(op: () => T): T {
+    return runInInjectionContext(this.injector, op);
   }
 
-  public authState$ = () => this.afAuth.authState;
+  public authState$ = () => this.inCtx(() => authState(this.auth));
 
-  public authStateAllowAnonymous$ = this.afAuth.authState.pipe(
+  public authStateAllowAnonymous$ = this.inCtx(() => authState(this.auth)).pipe(
     map(_ => {
       if (_) return (_);
 
       const userId = localStorage.getItem('annonymUser');
       if (userId) return ({uid: userId});
 
-      const newUserId = uuid();
+      const newUserId = crypto.randomUUID();
       localStorage.setItem('annonymUser', newUserId);
       return ({uid: newUserId});
     })
@@ -36,7 +38,7 @@ export class LoginService {
 
   public async login(email: string, pass: string): Promise<string | null> {
     try {
-      await this.afAuth.signInWithEmailAndPassword(email, pass);
+      await this.inCtx(() => signInWithEmailAndPassword(this.auth, email, pass));
       await this.router.navigateByUrl('/');
       return null;
     } catch (e) {
@@ -46,7 +48,7 @@ export class LoginService {
 
   public async register(email: string, pass: string): Promise<string | null> {
     try {
-      await this.afAuth.createUserWithEmailAndPassword(email, pass);
+      await this.inCtx(() => createUserWithEmailAndPassword(this.auth, email, pass));
       await this.router.navigateByUrl('/');
       return null;
     } catch (e) {
@@ -55,7 +57,7 @@ export class LoginService {
   }
 
   public async logout() {
-    await this.afAuth.signOut();
+    await this.inCtx(() => signOut(this.auth));
   }
 
   private static errorMessage(e) {

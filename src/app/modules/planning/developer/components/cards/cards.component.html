@@ -1,2 +1,4 @@
-<app-card (click)="selectCard(card)" *ngFor="let card of cards" [class.selected]="selectedCard === card"
-          [storyPoint]="card"></app-card>
+@for (card of cards; track card) {
+  <app-card (click)="selectCard(card)" [class.selected]="selectedCard === card"
+  [storyPoint]="card"></app-card>
+}

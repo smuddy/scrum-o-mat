@@ -1,4 +1,7 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+
+import {FormsModule} from '@angular/forms';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {filter} from 'rxjs/operators';
 import {PlanningService} from '../../../planning.service';
@@ -6,6 +9,8 @@ import {fade} from '../../../../../animation';
 
 @Component({
   selector: 'app-edit-issue',
+  standalone: true,
+  imports: [FormsModule, FaIconComponent],
   templateUrl: './edit-issue.component.html',
   styleUrls: ['./edit-issue.component.less'],
   animations: [fade],
@@ -20,10 +25,7 @@ export class EditIssueComponent implements OnInit {
   public issue: string;
   public edit = true;
 
-  constructor(
-    private planningService: PlanningService
-  ) {
-  }
+  private planningService = inject(PlanningService);
 
   public ngOnInit(): void {
     this.edit = true;

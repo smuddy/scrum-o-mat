@@ -1,3 +1,30 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -15,30 +42,31 @@ import {ProjectId} from '../../../models/project';
 describe('EditProjectComponent', () => {
   let component: EditProjectComponent;
   let fixture: ComponentFixture<EditProjectComponent>;
-  let velocityService: jasmine.SpyObj<VelocityService>;
-  let projectService: jasmine.SpyObj<ProjectService>;
-  let menusService: jasmine.SpyObj<MenuService>;
-  let headerService: jasmine.SpyObj<HeaderService>;
+  let velocityService: any;
+  let projectService: any;
+  let menusService: any;
+  let headerService: any;
   let project: ProjectId;
 
   beforeEach(async () => {
     project = {id: 'pr1', name: 'Projekt X', sprints: [], initialVelocity: 1, coReaders: [], coWriters: []};
 
-    velocityService = jasmine.createSpyObj('VelocityService', ['updateInitialVelocity', 'addReader', 'removeReader']);
-    velocityService.updateInitialVelocity.and.resolveTo();
-    velocityService.addReader.and.resolveTo();
-    velocityService.removeReader.and.resolveTo();
+    velocityService = {
+      updateInitialVelocity: vi.fn().mockResolvedValue(undefined),
+      addReader: vi.fn().mockResolvedValue(undefined),
+      removeReader: vi.fn().mockResolvedValue(undefined),
+    };
 
-    projectService = jasmine.createSpyObj('ProjectService', ['getProject', 'updateProject']);
-    projectService.getProject.and.returnValue(of(project));
-    projectService.updateProject.and.resolveTo();
+    projectService = {
+      getProject: vi.fn().mockReturnValue(of(project)),
+      updateProject: vi.fn().mockResolvedValue(undefined),
+    };
 
-    menusService = jasmine.createSpyObj('MenuService', ['resetCustomActions']);
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb']);
+    menusService = {resetCustomActions: vi.fn()};
+    headerService = {setBreadcrumb: vi.fn()};
 
     await TestBed.configureTestingModule({
-      declarations: [EditProjectComponent],
-      imports: [CommonModule, NoopAnimationsModule],
+      imports: [EditProjectComponent, CommonModule, NoopAnimationsModule],
       providers: [
         {provide: ActivatedRoute, useValue: {params: of({projectId: 'pr1'})} as any},
         {provide: VelocityService, useValue: velocityService},
@@ -48,20 +76,24 @@ describe('EditProjectComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
+      .overrideComponent(EditProjectComponent, {
+        set: {imports: [CommonModule], schemas: [NO_ERRORS_SCHEMA]},
+      })
       .compileComponents();
   });
 
   beforeEach(() => {
-    // Kein fixture.detectChanges(): das Template bindet "@fadeTranslateInstant", der Trigger ist
-    // im @Component-Decorator dieser Komponente aber nicht registriert (siehe Bug-Hinweis in der
-    // Rückmeldung). detectChanges() wuerde daher zur Laufzeit werfen. ngOnInit ist ein No-Op,
-    // es geht dadurch keine Abdeckung verloren.
     fixture = TestBed.createComponent(EditProjectComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('renders the project form once the project has loaded', () => {
+    expect(fixture.nativeElement.textContent).toContain('Mitarbeiter');
   });
 
   it('sets the breadcrumb using the loaded project', () => {
@@ -97,6 +129,16 @@ describe('EditProjectComponent', () => {
 
     expect(velocityService.addReader).toHaveBeenCalledWith('pr1', project, 'newUser1');
     expect(component.newReaderName).toBe('');
+  });
+
+  it('rejects an invalid reader name and keeps the input untouched', async () => {
+    // Alt-Bug: ungeankerte userIdRegex akzeptierte jeden String -> ungueltige Reader wurden angelegt.
+    component.newReaderName = 'foo bar!';
+
+    await component.addReader();
+
+    expect(velocityService.addReader).not.toHaveBeenCalled();
+    expect(component.newReaderName).toBe('foo bar!');
   });
 
   it('delegates reader removal to the velocity service', async () => {

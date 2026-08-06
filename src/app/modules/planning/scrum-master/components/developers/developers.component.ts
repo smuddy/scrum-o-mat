@@ -1,4 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
+
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faTimes, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AdminService} from '../../../admin/components/admin.service';
@@ -9,6 +11,8 @@ import {Developer, DeveloperId} from '../../../models/delevoper';
 
 @Component({
   selector: 'app-developers',
+  standalone: true,
+  imports: [FaIconComponent],
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.less'],
   animations: [listAnimation],
@@ -24,15 +28,19 @@ export class DevelopersComponent implements OnInit {
 
   public users: { id: string, data: Developer }[];
 
-  // eslint-disable-next-line max-len
+  private activatedRoute = inject(ActivatedRoute);
+  private planningService = inject(PlanningService);
+  private router = inject(Router);
+  private adminService = inject(AdminService);
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private planningService: PlanningService,
-    private router: Router,
-    private adminService: AdminService,
-  ) {
-    activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
+  // Ersetzt den frueheren |orderBy:'name'-Pipe: liefert eine nach Name sortierte Kopie.
+  public get sortedDevelopers(): DeveloperId[] {
+    return (this.developers ?? []).slice()
+      .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+  }
+
+  constructor() {
+    this.activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
   }
 
   ngOnInit() {

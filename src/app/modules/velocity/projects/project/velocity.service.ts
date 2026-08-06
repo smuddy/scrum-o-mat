@@ -1,23 +1,19 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Project, Sprint, Staff} from '../../models/project';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import produce from 'immer';
+import {produce} from 'immer';
 import {simpleMovingAverage} from '../../moving-average-helper';
 import {ProjectService} from '../project.service';
-import firebase from 'firebase/compat/app';
+import {Timestamp} from '@angular/fire/firestore';
 import {ID} from '../../../../helpers/id';
-import Timestamp = firebase.firestore.Timestamp;
 
 @Injectable({
   providedIn: 'root'
 })
 export class VelocityService {
 
-  constructor(
-    private projectService: ProjectService
-  ) {
-  }
+  private projectService = inject(ProjectService);
 
   private static calcVelocityFromHistory(initialVelocity: number, velocityHistory: number[], isForecast: boolean, lastCalculatedVelocity: number): number {
     if (velocityHistory.length === 0) {

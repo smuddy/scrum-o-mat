@@ -1,5 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+
 import {ActivatedRoute, Router} from '@angular/router';
+import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {QRCodeComponent} from 'angularx-qrcode';
 import {faClipboard} from '@fortawesome/free-solid-svg-icons/faClipboard';
 import {faQrcode} from '@fortawesome/free-solid-svg-icons/faQrcode';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
@@ -11,11 +14,15 @@ import {Planning} from '../../../models/planning';
 import {environment} from '../../../../../../environments/environment';
 import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
-
-declare var fireworks;
+import {EditIssueComponent} from '../edit-issue/edit-issue.component';
+import {DashboardComponent} from '../dashboard/dashboard.component';
+import {DevelopersComponent} from '../developers/developers.component';
+import {FireworksService} from '../../../../../shared/fireworks/fireworks.service';
 
 @Component({
   selector: 'app-scrum-master',
+  standalone: true,
+  imports: [FaIconComponent, QRCodeComponent, EditIssueComponent, DashboardComponent, DevelopersComponent],
   templateUrl: './scrum-master.component.html',
   styleUrls: ['./scrum-master.component.less'],
   animations: [fadeTranslateInstant, fadeBlur]
@@ -30,15 +37,16 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   public faTimes = faTimes;
   public faClipboard = faClipboard;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private planningService: PlanningService,
-    private router: Router,
-    private menuService: MenuService,
-    private headerService: HeaderService,
-  ) {
-    activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
-    menuService.menuOpen$.subscribe(_ => {
+  private activatedRoute = inject(ActivatedRoute);
+  private planningService = inject(PlanningService);
+  private router = inject(Router);
+  private menuService = inject(MenuService);
+  private headerService = inject(HeaderService);
+  private fireworksService = inject(FireworksService);
+
+  constructor() {
+    this.activatedRoute.params.subscribe(_ => this.planningId = _.planningId);
+    this.menuService.menuOpen$.subscribe(_ => {
       if (_) {
         this.showQrCode = false;
       }
@@ -47,6 +55,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.headerService.setBreadcrumb([{route: '/planning', name: 'Scrum Poker'}]);
+    this.fireworksService.start();
     this.planningService.getDevelopers(this.planningId).subscribe(_ => this.developersChanged(_));
     this.planningService.getPlanning(this.planningId).subscribe(_ => this.planningChanged(_));
     this.menuService.addCustomAction('Session beenden', () => this.logout());
@@ -55,6 +64,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.menuService.resetCustomActions();
     this.headerService.setFullscreen(false);
+    this.fireworksService.stop();
   }
 
   public estimateSucceeded = () => this.planning && !this.planning.estimateRequested && this.planning.estimateSucceeded && this.planning.storyPoints !== StoryPoints.coffee;
@@ -105,8 +115,7 @@ export class ScrumMasterComponent implements OnInit, OnDestroy {
     this.headerService.setFullscreen(!!_.issue);
 
     if (_.storyPoints !== StoryPoints.coffee) {
-      fireworks._particlesPerExplosion = _.estimateSucceeded ? 50 : 0;
-      fireworks._interval = [200 * _.count * _.count, 1500 * _.count * _.count];
+      this.fireworksService.configure(_.estimateSucceeded ? 50 : 0, [200 * _.count * _.count, 1500 * _.count * _.count]);
     }
   }
 

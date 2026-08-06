@@ -1,31 +1,32 @@
-import {Injectable} from '@angular/core';
-import {AngularFirestore} from '@angular/fire/compat/firestore';
+import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
+import {doc, docData, Firestore, setDoc} from '@angular/fire/firestore';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {LoginService} from './login.service';
 import {mergeMap} from 'rxjs/operators';
 import {User, UserId} from '../planning/models/user';
-import {firstValueFrom, from, of} from 'rxjs';
+import {firstValueFrom, from, Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  public user$ = this.loginService.authStateAllowAnonymous$.pipe(
-    // mergeMap(user => this.afs.collection<UserId>('user/', ref => ref.where('userId', '==', user.uid)).valueChanges({idField: 'id'}).pipe(
-    //   map(users => users.length > 0 ? users[0] : null),
-    //   mergeMap(foundUser => {
-    //     if (foundUser !== null) return of(foundUser);
-    //     return from(this.afs.collection<User>('user/',).add({userId: user.uid, name: null})).pipe(
-    //       mergeMap(() => this.afs.collection<UserId>('user/', ref => ref.where('userId', '==', user.uid)).valueChanges({idField: 'id'}))
-    //     );
-    //   })
-    // )),
-    mergeMap(user => this.afs.doc<UserId>('user/' + user.uid).valueChanges().pipe(
+  private afs = inject(Firestore);
+  private injector = inject(Injector);
+  private loginService = inject(LoginService);
+
+  // AngularFire-Aufrufe muessen im Injection-Kontext laufen (sonst Warnung + instabile CD/Hydration).
+  private inCtx<T>(op: () => T): T {
+    return runInInjectionContext(this.injector, op);
+  }
+
+  public user$: Observable<UserId> = this.loginService.authStateAllowAnonymous$.pipe(
+    mergeMap(user => (this.inCtx(() => docData(doc(this.afs, 'user/' + user.uid))) as Observable<UserId>).pipe(
         mergeMap(dbUser => {
             return dbUser
               ? of(dbUser)
-              : from(this.afs.doc<User>('user/' + user.uid).set({name: null})).pipe(
-                mergeMap(() => this.afs.doc<UserId>('user/' + user.uid).valueChanges())
+              : from(this.inCtx(() => setDoc(doc(this.afs, 'user/' + user.uid), {name: null} as User))).pipe(
+                mergeMap(() => this.inCtx(() => docData(doc(this.afs, 'user/' + user.uid))) as Observable<UserId>)
               );
           }
         )
@@ -33,15 +34,12 @@ export class UserService {
     )
   );
 
-  constructor(
-    private afs: AngularFirestore,
-    private loginService: LoginService,
-  ) {
-  }
+  // Signal-Variante additiv (Rückwärtskompatibilität: user$ bleibt bestehen)
+  public userSignal = toSignal(this.user$, {initialValue: null as UserId | null});
 
   public async setUserNameAsync(name: string) {
     const user = await firstValueFrom(this.loginService.authStateAllowAnonymous$);
-    await this.afs.doc<UserId>('user/' + user.uid).update({name});
+    await this.inCtx(() => setDoc(doc(this.afs, 'user/' + user.uid), {name}, {merge: true}));
   }
 
 }

@@ -1,3 +1,4 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -10,8 +11,7 @@ describe('EditNumberComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditNumberComponent],
-      imports: [ReactiveFormsModule],
+      imports: [EditNumberComponent, ReactiveFormsModule],
       schemas: [NO_ERRORS_SCHEMA],
     })
       .compileComponents();
@@ -28,7 +28,7 @@ describe('EditNumberComponent', () => {
   });
 
   it('patches the incoming number into the control without emitting', () => {
-    const emitSpy = spyOn(component.numberChanged, 'emit');
+    const emitSpy = vi.spyOn(component.numberChanged, 'emit');
 
     component.number = 42;
 
@@ -37,7 +37,7 @@ describe('EditNumberComponent', () => {
   });
 
   it('emits the changed number once initialised', () => {
-    const emitSpy = spyOn(component.numberChanged, 'emit');
+    const emitSpy = vi.spyOn(component.numberChanged, 'emit');
 
     component.numControl.setValue(7);
 
@@ -45,7 +45,7 @@ describe('EditNumberComponent', () => {
   });
 
   it('unsubscribes from the control on destroy', () => {
-    const emitSpy = spyOn(component.numberChanged, 'emit');
+    const emitSpy = vi.spyOn(component.numberChanged, 'emit');
 
     component.ngOnDestroy();
     component.numControl.setValue(99);

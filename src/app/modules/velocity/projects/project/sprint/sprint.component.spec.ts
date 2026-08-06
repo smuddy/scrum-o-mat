@@ -1,9 +1,35 @@
+import {describe, it, expect, beforeEach, vi} from 'vitest';
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
+vi.mock('@angular/fire/auth', () => {
+  const g = globalThis as any;
+  if (!g.__fireAuthMock) {
+    g.__fireAuthMock = {
+      Auth: class Auth {},
+      authState: vi.fn(), signInAnonymously: vi.fn(),
+      signInWithEmailAndPassword: vi.fn(), createUserWithEmailAndPassword: vi.fn(),
+      signOut: vi.fn(), user: vi.fn(),
+    };
+  }
+  return g.__fireAuthMock;
+});
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {NgLetModule} from 'ng-let';
 import {of} from 'rxjs';
 
 import {SprintComponent} from './sprint.component';
@@ -15,46 +41,43 @@ import {HeaderService} from '../../../../../shared/header/header.service';
 describe('SprintComponent', () => {
   let component: SprintComponent;
   let fixture: ComponentFixture<SprintComponent>;
-  let velocityService: jasmine.SpyObj<VelocityService>;
-  let projectService: jasmine.SpyObj<ProjectService>;
-  let menuService: jasmine.SpyObj<MenuService>;
-  let headerService: jasmine.SpyObj<HeaderService>;
-  let router: jasmine.SpyObj<Router>;
+  let velocityService: any;
+  let projectService: any;
+  let menuService: any;
+  let headerService: any;
+  let router: any;
 
   beforeEach(async () => {
-    velocityService = jasmine.createSpyObj('VelocityService', [
-      'getSprint$', 'updateFromDate', 'updateToDate', 'updateSprintName', 'updatePointsAchieved',
-      'updateStaffName', 'updateStaffDays', 'updateStaffPercent', 'addStaff', 'removeStaff', 'removeSprint',
-    ]);
-    velocityService.getSprint$.and.returnValue(of({
-      id: 's1', sprintName: '1', sprintNumber: 1, fromDate: null, toDate: null,
-      pointsAchieved: 0, availableStaff: [], projectName: 'P',
-    } as any));
-    velocityService.updateFromDate.and.resolveTo();
-    velocityService.updateToDate.and.resolveTo();
-    velocityService.updateSprintName.and.resolveTo();
-    velocityService.updatePointsAchieved.and.resolveTo();
-    velocityService.updateStaffName.and.resolveTo();
-    velocityService.updateStaffDays.and.resolveTo();
-    velocityService.updateStaffPercent.and.resolveTo();
-    velocityService.addStaff.and.resolveTo();
-    velocityService.removeStaff.and.resolveTo();
-    velocityService.removeSprint.and.resolveTo();
+    velocityService = {
+      getSprint$: vi.fn().mockReturnValue(of({
+        id: 's1', sprintName: '1', sprintNumber: 1, fromDate: null, toDate: null,
+        pointsAchieved: 0, availableStaff: [], projectName: 'P',
+      } as any)),
+      updateFromDate: vi.fn().mockResolvedValue(undefined),
+      updateToDate: vi.fn().mockResolvedValue(undefined),
+      updateSprintName: vi.fn().mockResolvedValue(undefined),
+      updatePointsAchieved: vi.fn().mockResolvedValue(undefined),
+      updateStaffName: vi.fn().mockResolvedValue(undefined),
+      updateStaffDays: vi.fn().mockResolvedValue(undefined),
+      updateStaffPercent: vi.fn().mockResolvedValue(undefined),
+      addStaff: vi.fn().mockResolvedValue(undefined),
+      removeStaff: vi.fn().mockResolvedValue(undefined),
+      removeSprint: vi.fn().mockResolvedValue(undefined),
+    };
 
-    projectService = jasmine.createSpyObj('ProjectService', ['getProject']);
-    projectService.getProject.and.returnValue(of({
-      id: 'pr1', name: 'P', sprints: [{id: 's1', sprintNumber: 1, availableStaff: []}],
-      initialVelocity: 1, coReaders: [], coWriters: [],
-    } as any));
+    projectService = {
+      getProject: vi.fn().mockReturnValue(of({
+        id: 'pr1', name: 'P', sprints: [{id: 's1', sprintNumber: 1, availableStaff: []}],
+        initialVelocity: 1, coReaders: [], coWriters: [],
+      } as any)),
+    };
 
-    menuService = jasmine.createSpyObj('MenuService', ['addCustomAction', 'resetCustomActions']);
-    headerService = jasmine.createSpyObj('HeaderService', ['setBreadcrumb', 'setFullscreen']);
-    router = jasmine.createSpyObj('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.resolveTo(true);
+    menuService = {addCustomAction: vi.fn(), resetCustomActions: vi.fn()};
+    headerService = {setBreadcrumb: vi.fn(), setFullscreen: vi.fn()};
+    router = {navigateByUrl: vi.fn().mockResolvedValue(true)};
 
     await TestBed.configureTestingModule({
-      declarations: [SprintComponent],
-      imports: [CommonModule, NoopAnimationsModule, NgLetModule],
+      imports: [SprintComponent, CommonModule, NoopAnimationsModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         {provide: ActivatedRoute, useValue: {params: of({projectId: 'pr1', sprintId: 's1'})} as any},
@@ -96,7 +119,20 @@ describe('SprintComponent', () => {
   });
 
   it('registers a custom action to delete the sprint on init', () => {
-    expect(menuService.addCustomAction).toHaveBeenCalledWith('Sprint löschen', jasmine.any(Function), true);
+    expect(menuService.addCustomAction).toHaveBeenCalledWith('Sprint löschen', expect.any(Function), true);
+  });
+
+  it('deletes the sprint and navigates back to the project when the registered action runs', async () => {
+    const project = {sprints: [{id: 's1'}]} as any;
+    component['project'] = project;
+    component['projectId'] = 'pr1';
+    component['sprintId'] = 's1';
+    const deleteAction = menuService.addCustomAction.mock.calls[0][1];
+
+    await deleteAction();
+
+    expect(velocityService.removeSprint).toHaveBeenCalledWith('pr1', project, 's1');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/velocity/pr1');
   });
 
   it('resets the custom actions on destroy', () => {
@@ -216,6 +252,7 @@ describe('SprintComponent', () => {
       component['projectId'] = 'pr1';
       component['sprintId'] = 's1';
 
+      router.navigateByUrl.mockClear();
       component.onClickRight();
 
       expect(router.navigateByUrl).not.toHaveBeenCalled();
@@ -240,6 +277,7 @@ describe('SprintComponent', () => {
       component['projectId'] = 'pr1';
       component['sprintId'] = 's0';
 
+      router.navigateByUrl.mockClear();
       component.onClickLeft();
 
       expect(router.navigateByUrl).not.toHaveBeenCalled();
