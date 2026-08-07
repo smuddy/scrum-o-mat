@@ -1,0 +1,45 @@
+<div class="action-items">
+  <h2 class="action-items-title">Action-Items</h2>
+  <div class="action-items-list">
+    @for (item of (items$ | async) ?? []; track item.id) {
+      <div [class.action-item--done]="item.done" class="action-item">
+        <input (change)="toggleDone(item)" [checked]="item.done" class="action-item-checkbox" type="checkbox" />
+        @if (editingItemId === item.id) {
+          <div class="action-item-edit">
+            <input [(ngModel)]="editingText" class="action-item-input" type="text" />
+            <input [(ngModel)]="editingAssignee" class="action-item-input action-item-input--assignee"
+                   placeholder="Zuständig (optional)" type="text" />
+            <div class="action-item-actions">
+              <fa-icon (click)="saveEdit(item.id)" [icon]="faCheck" class="button"></fa-icon>
+              <fa-icon (click)="cancelEdit()" [icon]="faTimes" class="button"></fa-icon>
+            </div>
+          </div>
+        } @else {
+          <div class="action-item-content">
+            <span [class.action-item-text--done]="item.done" class="action-item-text">{{item.text}}</span>
+            @if (item.assignee) {
+              <span class="action-item-assignee">{{item.assignee}}</span>
+            }
+          </div>
+          @if (canEdit(item)) {
+            <div class="action-item-actions">
+              <fa-icon (click)="startEdit(item)" [icon]="faPen" class="button"></fa-icon>
+              <fa-icon (click)="deleteItem(item.id)" [icon]="faTrash" class="button"></fa-icon>
+            </div>
+          }
+        }
+      </div>
+    } @empty {
+      <div class="no-items">Noch keine Action-Items.</div>
+    }
+  </div>
+  <div class="action-items-add">
+    <input [(ngModel)]="newItemText" class="action-item-input" placeholder="Neues Action-Item..." type="text" />
+    <input [(ngModel)]="newItemAssignee" class="action-item-input action-item-input--assignee"
+           placeholder="Zuständig (optional)" type="text" />
+    <button (click)="addItem()" type="button">
+      <fa-icon [icon]="faPlus"></fa-icon>
+      Hinzufügen
+    </button>
+  </div>
+</div>

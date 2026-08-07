@@ -1,0 +1,137 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board-list {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.btn-primary {
+  font-weight: bold;
+  margin: 10px 0 20px;
+}
+
+.list {
+  width: 100%;
+  display: grid;
+  grid-gap: 10px;
+}
+
+.board {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  background-color: #fff0;
+  opacity: 0.8;
+  transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Ticket 12: nur dieser Bereich navigiert (routerLink im Template) -- die Aktions-Icons liegen
+// als Geschwister-Element ausserhalb und triggern deshalb nie eine Navigation.
+.board-content {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #fff2;
+    cursor: pointer;
+  }
+}
+
+// Inline-Rename (Ticket 12): kein Navigations-Hover, das Eingabefeld ist keine Navigationsflaeche.
+.board-content--edit {
+  cursor: default;
+
+  &:hover {
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+.title-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 8px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+
+  fa-icon {
+    font-size: 16px;
+  }
+}
+
+.title {
+  font-weight: bold;
+}
+
+.columns {
+  font-size: 0.8em;
+  color: #fffa;
+}
+
+.empty {
+  opacity: 0.8;
+  margin-top: 20px;
+}
+
+// Ticket 12: einklappbarer Archiv-Bereich unterhalb der aktiven Boards.
+.archived-section {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.archived-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 6px 0;
+  color: #fffa;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+
+  fa-icon {
+    font-size: 0.9em;
+  }
+}

@@ -23,9 +23,13 @@
     <fa-icon [icon]="faDice"></fa-icon>
     Scrum Poker
   </div>
-  <div (click)="closeMenu()" class="menu-item no-space border-bottom" routerLink="/velocity">
+  <div (click)="closeMenu()" class="menu-item no-space" routerLink="/velocity">
     <fa-icon [icon]="faCalendar"></fa-icon>
     Sprint Planer
+  </div>
+  <div (click)="closeMenu()" class="menu-item no-space border-bottom" routerLink="/retrospective">
+    <fa-icon [icon]="faRetrospective"></fa-icon>
+    Retrospektive
   </div>
 
 
@@ -36,10 +40,13 @@
     <div (click)="logout()" class="menu-item">Abmelden</div>
   }
   @for (entry of menuEntries$|async; track entry) {
-    @if (!entry.confirm) {
+    @if (entry.component) {
+      <div class="menu-item menu-component">
+        <ng-container *ngComponentOutlet="entry.component; inputs: entry.inputs"></ng-container>
+      </div>
+    } @else if (!entry.confirm) {
       <div (click)="entry.action(); closeMenu()" class="menu-item">{{entry.name}}</div>
-    }
-    @if (entry.confirm) {
+    } @else {
       <div (click)="entry.open=!entry.open"
         class="menu-item">{{entry.name}}{{entry.open ? '?' : ''}}
         @if (entry.open) {

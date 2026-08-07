@@ -1,0 +1,66 @@
+@if (boards$|async; as boards) {
+  @if (archivedBoards$|async; as archivedBoards) {
+    <div @fadeTranslateInstant class="board-list">
+      @if (boards.length!==0) {
+        <div @card class="list">
+          @for (board of boards; track board.id) {
+            <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
+          }
+        </div>
+      }
+      @if (boards.length===0 && archivedBoards.length===0) {
+        <div class="empty">Noch keine Boards — leg dein erstes an.</div>
+      }
+      @if (archivedBoards.length!==0) {
+        <div class="archived-section">
+          <button (click)="toggleArchivedSection()" class="archived-toggle" type="button">
+            <fa-icon [icon]="archivedExpanded ? faChevronUp : faChevronDown"></fa-icon>
+            Archiviert ({{archivedBoards.length}})
+          </button>
+          @if (archivedExpanded) {
+            <div @card class="list">
+              @for (board of archivedBoards; track board.id) {
+                <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+}
+
+<!-- Ticket 12: gemeinsame Zeilen-Vorlage fuer aktive und archivierte Boards (per ngTemplateOutlet).
+     Navigation (routerLink) liegt bewusst NUR auf .board-content -- die Aktions-Icons sind ein
+     eigenstaendiges Geschwister-Element, damit ein Klick auf Umbenennen/Archivieren nie navigiert. -->
+<ng-template #boardRow let-board>
+  <div class="board card-child">
+    @if (editingBoardId === board.id) {
+      <div class="board-content board-content--edit">
+        <input
+          (keyup.enter)="saveEdit(board.id)"
+          (keyup.escape)="cancelEdit()"
+          [(ngModel)]="editingTitle"
+          class="title-input"
+          type="text"/>
+      </div>
+      <div class="actions">
+        <fa-icon (click)="saveEdit(board.id)" [icon]="faCheck" class="button"></fa-icon>
+        <fa-icon (click)="cancelEdit()" [icon]="faTimes" class="button"></fa-icon>
+      </div>
+    } @else {
+      <div [routerLink]="'/retrospective/' + board.id" class="board-content">
+        <span class="title">{{board.title}}</span>
+        <span class="columns">{{board.columns.length}} Spalten</span>
+      </div>
+      <div class="actions">
+        <fa-icon (click)="startEdit(board)" [icon]="faPen" class="button"></fa-icon>
+        @if (board.archived) {
+          <fa-icon (click)="toggleArchived(board)" [icon]="faTrashCanArrowUp" class="button" title="Wiederherstellen"></fa-icon>
+        } @else {
+          <fa-icon (click)="toggleArchived(board)" [icon]="faBoxArchive" class="button" title="Archivieren"></fa-icon>
+        }
+      </div>
+    }
+  </div>
+</ng-template>

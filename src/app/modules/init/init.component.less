@@ -12,10 +12,19 @@
   display: grid;
   padding: 20px;
   grid-gap: 20px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas:
-    "planning velocity"
-    "changelog changelog";
+    "planning velocity retrospective"
+    "changelog changelog changelog";
+
+  @media only screen and (max-width: 900px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "planning"
+      "velocity"
+      "retrospective"
+      "changelog";
+  }
 }
 
 .changelog {
@@ -30,6 +39,10 @@
 
 .velocity {
   grid-area: velocity;
+}
+
+.retrospective {
+  grid-area: retrospective;
 }
 
 .item {
@@ -54,7 +67,7 @@
 }
 
 .caption {
-  font-size: 2em;
+  font-size: 1.6em;
 
   @media only screen and (max-width: 900px) {
     font-size: 1.1em;

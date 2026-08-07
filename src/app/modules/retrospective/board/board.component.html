@@ -1,0 +1,138 @@
+@if (vm$ | async; as vm) {
+  <div class="retro-board">
+    @if (remainingSeconds !== null) {
+      <div [class.timer-display--expired]="!paused && remainingSeconds <= 0" [class.timer-display--paused]="paused"
+           class="timer-display">
+        <fa-icon [icon]="faStopwatch"></fa-icon>
+        <span class="timer-time">{{formatRemaining(remainingSeconds)}}</span>
+        @if (paused) {
+          <span class="timer-paused-label">Pausiert</span>
+        } @else if (remainingSeconds <= 0) {
+          <span class="timer-expired-label">Zeit abgelaufen</span>
+        }
+      </div>
+    }
+    <div @card cdkDropListGroup class="columns">
+      @for (colView of vm.columns; track colView.column.id) {
+        <div [style.border-top-color]="colView.column.color" class="column card-child">
+          <div [style.background]="'linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), ' + colView.column.color"
+               class="column-header">
+            @if (editColumns && vm.isOwner) {
+              <div class="column-edit">
+                <div class="column-edit-row">
+                  <button (click)="moveColumn(vm, colView.column.id, -1)" [disabled]="isFirstColumn(vm, colView.column.id)"
+                          class="column-edit-arrow" title="Nach links verschieben" type="button">
+                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                  </button>
+                  <input [(ngModel)]="columnNameDraft[colView.column.id]" (change)="renameColumn(vm, colView.column.id)"
+                         class="column-name-input" type="text" />
+                  <button (click)="moveColumn(vm, colView.column.id, 1)" [disabled]="isLastColumn(vm, colView.column.id)"
+                          class="column-edit-arrow" title="Nach rechts verschieben" type="button">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                  </button>
+                </div>
+                <div class="column-edit-row">
+                  <input [(ngModel)]="columnColorDraft[colView.column.id]" (change)="recolorColumn(vm, colView.column.id)"
+                         class="column-color-input" type="color" />
+                  <span class="column-count">{{colView.cards.length}}</span>
+                  <button (click)="removeColumn(vm, colView.column.id)" [disabled]="!canRemoveColumn(vm)"
+                          class="column-edit-remove" title="Spalte entfernen" type="button">
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <span class="column-name">{{colView.column.name}}</span>
+              <div class="column-header-actions">
+                <button (click)="addAndEdit(colView.column.id)" class="column-add-button"
+                        title="Karte hinzufügen" type="button">
+                  <fa-icon [icon]="faPlus"></fa-icon>
+                </button>
+                <span class="column-count">{{colView.cards.length}}</span>
+              </div>
+            }
+          </div>
+          <div (cdkDropListDropped)="onDrop($event, vm, colView.column.id)"
+               [cdkDropListData]="colView.cards" [cdkDropListSortingDisabled]="true" cdkDropList class="cards">
+            @for (card of colView.cards; track card.id) {
+              <div (cdkDragEnded)="onCardDragEnded()" (cdkDragMoved)="onCardDragMoved($event, vm)"
+                   [attr.data-card-id]="card.id" [cdkDragData]="card"
+                   [cdkDragDisabled]="!canMove(card, vm) || editingCardId === card.id"
+                   [class.card--merge-target]="dropTargetCardId === card.id && dropZone === 'merge'"
+                   [class.card--drop-before]="dropTargetCardId === card.id && dropZone === 'before'"
+                   [class.card--drop-after]="dropTargetCardId === card.id && dropZone === 'after'"
+                   [class.card--editing]="isBeingEditedByOther(card, vm)" cdkDrag class="card">
+                @if (editingCardId === card.id) {
+                  <textarea appAutofocus [(ngModel)]="editingText" class="card-input" rows="3"></textarea>
+                  <div class="card-actions">
+                    <fa-icon (click)="saveEdit(card.id)" [icon]="faCheck" class="button"></fa-icon>
+                    <fa-icon (click)="cancelEdit()" [icon]="faTimes" class="button"></fa-icon>
+                  </div>
+                } @else {
+                  <div [class.card-text--hidden]="vm.scrambledById[card.id]"
+                       class="card-text">{{vm.displayTextById[card.id]}}</div>
+                  <div class="card-reactions-row">
+                    @if (vm.canInteract) {
+                      <button (click)="addVote(card, vm)" (contextmenu)="onVoteContext($event, card, vm)"
+                              [class.card-vote-star--full]="!vm.canVote" class="card-vote-star"
+                              title="Linksklick: Stimme hinzufügen · Rechtsklick: Stimme entfernen" type="button">
+                        <fa-icon [icon]="faStar"></fa-icon>
+                        <span class="card-vote-star-count">{{totalVotes(card)}}</span>
+                        @if (myVotes(card, vm) > 0) {
+                          <span class="card-vote-star-mine">({{myVotes(card, vm)}})</span>
+                        }
+                      </button>
+                      <div class="reaction-chips">
+                        @for (emoji of activeReactions(card); track emoji) {
+                          <button (click)="toggleReaction(card, emoji, vm)"
+                                  [class.reaction-chip--active]="hasReacted(card, emoji, vm)"
+                                  class="reaction-chip" type="button">
+                            <span class="reaction-chip-emoji">{{emoji}}</span>
+                            <span class="reaction-chip-count">{{reactionCount(card, emoji)}}</span>
+                          </button>
+                        }
+                        <button (click)="toggleReactionPicker(card.id)"
+                                [class.reaction-add-button--active]="reactionPickerCardId === card.id"
+                                class="reaction-add-button" title="Reaktion hinzufügen" type="button">
+                          <fa-icon [icon]="faFaceSmile"></fa-icon>
+                        </button>
+                      </div>
+                    }
+                    @if (canEdit(card, vm)) {
+                      <div class="card-actions">
+                        <fa-icon (click)="startEdit(card)" [icon]="faPen" class="button"></fa-icon>
+                        <fa-icon (click)="deleteCard(card.id)" [icon]="faTrash" class="button"></fa-icon>
+                      </div>
+                    }
+                  </div>
+                  @if (vm.canInteract && reactionPickerCardId === card.id) {
+                    <div class="reaction-picker">
+                      @for (emoji of REACTION_EMOJIS; track emoji) {
+                        <button (click)="selectReaction(card, emoji, vm)"
+                                [class.reaction-picker-option--active]="hasReacted(card, emoji, vm)"
+                                class="reaction-picker-option" type="button">{{emoji}}</button>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            } @empty {
+              <div class="no-cards">Noch keine Karten.</div>
+            }
+          </div>
+        </div>
+      }
+      @if (editColumns && vm.isOwner) {
+        <div class="column column--add">
+          <button (click)="addColumn(vm)" class="add-column-button" type="button">
+            <fa-icon [icon]="faPlus"></fa-icon>
+            Spalte hinzufügen
+          </button>
+        </div>
+      }
+    </div>
+    <app-action-items [boardId]="vm.board.id" [isOwner]="vm.isOwner" [myUid]="vm.myUid"></app-action-items>
+  </div>
+} @else {
+  <div class="board-not-found">Board wird geladen oder existiert nicht.</div>
+}

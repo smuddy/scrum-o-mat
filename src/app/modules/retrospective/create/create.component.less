@@ -1,0 +1,112 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+}
+
+.retro-create {
+  padding: 20px;
+  display: grid;
+  grid-gap: 20px;
+
+  @media only screen and (min-width: 600px) {
+    grid-template-columns: 400px;
+  }
+
+  button {
+    margin: 0;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+
+  input[type='text'],
+  input[type='number'] {
+    background: #fff1;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  input[type='text']:focus,
+  input[type='number']:focus {
+    background: #fff2;
+  }
+}
+
+.column-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input[type='number'] {
+    width: 60px;
+    text-align: center;
+  }
+
+  button {
+    width: 36px;
+    padding: 10px 0;
+  }
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.column-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input[type='color'] {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
+  }
+
+  input[type='text'] {
+    flex: 1;
+    background: #fff1;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  input[type='text']:focus {
+    background: #fff2;
+  }
+}
+
+.share-link {
+  display: flex;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    background: #fff1;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  button {
+    margin: 0;
+  }
+}
+
+.btn-primary {
+  font-weight: bold;
+}

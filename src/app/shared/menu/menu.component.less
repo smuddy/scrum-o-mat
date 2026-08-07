@@ -61,4 +61,17 @@ a, div.menu-item {
   &.border-bottom {
     border-bottom: 1px solid var(--border-color)
   }
+
+  // Menu-Zeile mit eingebetteter Component (siehe MenuService.addCustomComponent) statt Text-Aktion.
+  // Kein Klick-/Hover-Verhalten auf der Zeile selbst -- die eingebettete Component (z.B.
+  // TimerControlComponent) bringt ihre eigenen interaktiven Elemente mit. Sie erhaelt ueber
+  // width:100% (im eigenen :host) die volle verfuegbare Breite dieser Flex-Zeile.
+  &.menu-component {
+    cursor: default;
+
+    &:hover {
+      background: unset;
+      cursor: default;
+    }
+  }
 }

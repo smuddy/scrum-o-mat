@@ -1,0 +1,18 @@
+<span class="timer-label">Timer</span>
+@switch (state) {
+  @case ('idle') {
+    <span class="minutes-field">
+      <input [(ngModel)]="minutes" class="form center" max="120" min="1" type="number">
+      <span class="minutes-unit">m</span>
+    </span>
+    <fa-icon (click)="startTimer()" [icon]="faPlay" class="button"></fa-icon>
+  }
+  @case ('running') {
+    <fa-icon (click)="pauseTimer()" [icon]="faPause" class="button"></fa-icon>
+    <fa-icon (click)="resetTimer()" [icon]="faRotateLeft" class="button"></fa-icon>
+  }
+  @case ('paused') {
+    <fa-icon (click)="resumeTimer()" [icon]="faPlay" class="button"></fa-icon>
+    <fa-icon (click)="resetTimer()" [icon]="faRotateLeft" class="button"></fa-icon>
+  }
+}

@@ -5,6 +5,7 @@ import {cardTransition, fadeTranslateInstant} from '../../animation';
 import {HeaderService} from '../../shared/header/header.service';
 import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
 import {faDice} from '@fortawesome/free-solid-svg-icons/faDice';
+import {faChalkboardTeacher} from '@fortawesome/free-solid-svg-icons/faChalkboardTeacher';
 
 @Component({
   selector: 'app-init',
@@ -17,6 +18,7 @@ import {faDice} from '@fortawesome/free-solid-svg-icons/faDice';
 export class InitComponent implements OnInit {
   public faDice = faDice;
   public faCalendar = faCalendarAlt;
+  public faRetrospective = faChalkboardTeacher;
 
   private headerService = inject(HeaderService);
 

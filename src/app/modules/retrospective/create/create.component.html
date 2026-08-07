@@ -1,0 +1,44 @@
+@if (!boardId) {
+  <div @fadeTranslateInstant class="retro-create">
+    <h2>Retrospektive anlegen</h2>
+
+    <label class="field">
+      <span>Board-Titel</span>
+      <input (keyup.enter)="createBoard()" [(ngModel)]="title" name="title" placeholder="z.B. Sprint 12 Retro" type="text">
+    </label>
+
+    <div class="field">
+      <span>Spaltenanzahl</span>
+      <div class="column-count">
+        <button (click)="decrementColumns()" [disabled]="columnCount <= 1" type="button">-</button>
+        <input (ngModelChange)="setColumnCount($event)" [ngModel]="columnCount" min="1" name="columnCount" type="number">
+        <button (click)="incrementColumns()" type="button">+</button>
+      </div>
+    </div>
+
+    <div class="columns">
+      @for (col of columns; track $index) {
+        <div class="column-row">
+          <input [(ngModel)]="col.color" [name]="'color' + $index" type="color">
+          <input [(ngModel)]="col.name" [name]="'name' + $index" placeholder="Spaltenname" type="text">
+        </div>
+      }
+    </div>
+
+    <button (click)="createBoard()" [disabled]="!title || creating" class="btn-primary" type="button">Board anlegen</button>
+  </div>
+}
+
+@if (boardId) {
+  <div @fadeTranslateInstant class="retro-create">
+    <h2>Board angelegt</h2>
+    <p>Teile diesen Link mit deinem Team:</p>
+
+    <div class="share-link">
+      <input [value]="shareLink" readonly type="text">
+      <button (click)="copyLink()" type="button">{{copied ? 'Kopiert!' : 'Kopieren'}}</button>
+    </div>
+
+    <button (click)="openBoard()" class="btn-primary" type="button">Board öffnen</button>
+  </div>
+}

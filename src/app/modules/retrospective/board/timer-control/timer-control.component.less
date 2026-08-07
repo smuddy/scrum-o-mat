@@ -1,0 +1,44 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.timer-label {
+  flex: 0 0 auto;
+}
+
+// Input + Einheit "m" bilden EIN Feld mit einem gemeinsamen Unterstrich
+// (kein separater Strich mehr unter dem "m").
+.minutes-field {
+  display: flex;
+  align-items: baseline;
+  flex: 0 0 auto;
+  gap: 2px;
+  border-bottom: 1px solid #fff8;
+}
+
+input.form {
+  width: 34px;
+  flex: 0 0 auto;
+  font-family: "Ubuntu Mono", monospace;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.minutes-unit {
+  font-family: "Ubuntu Mono", monospace;
+  color: #fff8;
+}
+
+fa-icon.button {
+  font-size: 20px;
+}

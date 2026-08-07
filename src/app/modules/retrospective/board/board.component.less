@@ -1,0 +1,467 @@
+.retro-board {
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
+.board-title {
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: bold;
+
+  fa-icon {
+    font-size: 20px;
+  }
+}
+
+.timer-display--expired {
+  color: #ff6b6b;
+}
+
+.timer-expired-label {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+// Ticket 14: Kennzeichnung, waehrend der Timer pausiert ist (siehe BoardComponent.paused/deriveCountdown()).
+.timer-display--paused {
+  color: #ffd166;
+}
+
+.timer-paused-label {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.column {
+  display: flex;
+  // Spalten teilen sich die volle Board-Breite gleichmaessig; min-width haelt sie bei sehr vielen
+  // Spalten nutzbar (dann greift der horizontale Scroll von .columns).
+  flex: 1 1 0;
+  min-width: 220px;
+  flex-direction: column;
+  background: #fff1;
+  border-top: 6px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  font-size: 22px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+
+.column-count {
+  background: #0004;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 16px;
+}
+
+// UI-Feintuning (Teil B): Gruppe aus "+"-Button (addAndEdit()) und dem .column-count-Badge, rechts
+// im Column-Header (siehe BoardComponent.addAndEdit()/Template, editColumns-false-Zweig). Fuer ALLE
+// Betrachter verfuegbar, auch bei board.hidden.
+.column-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  background: #fff2;
+  border: 1px solid #fff3;
+  border-radius: 50%;
+  cursor: pointer;
+
+  fa-icon {
+    font-size: 13px;
+  }
+}
+
+// Ticket 13: Spalten-Bearbeitungsmodus (Name/Farbe/Reihenfolge/Entfernen), siehe
+// BoardComponent.editColumns und board.component.html (column-header, editColumns-Zweig).
+.column-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.column-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-name-input {
+  flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 4px 6px;
+  color: inherit;
+  background: #0003;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.column-color-input {
+  box-sizing: border-box;
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.column-edit-arrow,
+.column-edit-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 16px;
+
+  &:disabled {
+    opacity: .35;
+    cursor: default;
+  }
+}
+
+.column-edit-remove {
+  margin-left: auto;
+}
+
+.column--add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Nur knopfgross am Ende der Zeile -- nicht auf volle Spaltenbreite dehnen.
+  flex: 0 0 auto;
+  min-height: 60px;
+}
+
+.add-column-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.no-cards {
+  color: #fff5;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff2;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+// Ticket 07: dezentes Hover-Feedback, waehrend eine Karte auf das mittlere Drittel einer anderen
+// gezogen wird (potenzielles Merge-Ziel, nur Owner, siehe
+// BoardComponent.onCardDragMoved()/dropTargetCardId/dropZone).
+.card--merge-target {
+  background: #ffffff26;
+  outline: 2px dashed #ffd166;
+  outline-offset: 2px;
+}
+
+// Drei-Zonen-Modell: oberes/unteres Drittel der Zielkarte -> davor/dahinter einsortieren (siehe
+// BoardComponent.resolveDropTarget()/dropTargetCardId/dropZone). Deutliche Einfuege-Linie innen an
+// der Kartenkante, im Dark-Theme.
+.card--drop-before {
+  box-shadow: inset 0 3px 0 0 #ffd166;
+}
+
+.card--drop-after {
+  box-shadow: inset 0 -3px 0 0 #ffd166;
+}
+
+.card-text {
+  font-size: 18px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+// Live-Bearbeitungs-Hinweis: dezentes Pulsieren, waehrend ein ANDERER Teilnehmer die Karte gerade
+// bearbeitet (siehe BoardComponent.isBeingEditedByOther()/RetroCard.editingBy). Die eigene Bearbeitung
+// pulsiert bewusst nicht. Leicht/subtil gehalten, passend zum Dark-Theme.
+@keyframes retro-card-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(255, 209, 102, .5); }
+}
+
+.card--editing {
+  animation: retro-card-pulse 1.5s ease-in-out infinite;
+}
+
+// Zeigt nur den gescrambelten Ersatztext (siehe BoardComponent.displayText/isScrambled) an;
+// der Blur ist zusaetzlicher visueller Schutz, der echte Text steht nie im DOM.
+.card-text--hidden {
+  filter: blur(4px);
+  user-select: none;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  // In der gemeinsamen Reaktionen/Actions-Zeile (.card-reactions-row) schiebt margin-left:auto diese
+  // Gruppe an den rechten Rand; im Editier-Modus (eigene Zeile, Save/Cancel) hat es keinen Effekt, da
+  // die Gruppe dort ohnehin die volle Breite einnimmt (align-items:stretch des .card-Flex-Containers).
+  margin-left: auto;
+  gap: 10px;
+
+  fa-icon {
+    font-size: 18px;
+  }
+}
+
+// UI-Feintuning (Teil A2/C): Reaktionen + Sterne (Voting) + Bearbeiten/Loeschen in EINER Zeile --
+// Stern (Gesamtstimmen, Links-/Rechtsklick siehe BoardComponent.addVote()/onVoteContext()) +
+// Reaktions-Chips (nur Emojis mit reactionCount > 0) + Dropdown-Button links, Edit/Delete rechts
+// (siehe .card-actions/margin-left:auto oben). Stern + Reaktionen werden nur bei canInteract(vm)
+// (also !board.hidden) gerendert; Edit/Delete weiterhin nur bei canEdit() (siehe Template).
+// Eigener Klickbereich (button-Elemente) statt Karten-Klickflaeche, damit die Karten-DnD (cdkDrag)
+// nicht durch Voting-/Reaktions-Klicks gestoert wird.
+.card-reactions-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Ticket 15: Dot-Voting -- klickbarer Stern in der gemeinsamen Reaktionen-Zeile. Linksklick fuegt
+// eine eigene Stimme hinzu (addVote()), Rechtsklick entfernt eine (onVoteContext()/removeVote()).
+.card-vote-star {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 2px 8px;
+  background: #fff1;
+  border: 1px solid #fff2;
+  border-radius: 12px;
+  color: #ffd166;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+
+  fa-icon {
+    font-size: 13px;
+  }
+}
+
+// Visuelle "Kontingent voll"-Kennzeichnung (canVote(vm) === false). Bewusst KEIN natives [disabled]
+// auf dem Button, damit der Rechtsklick (Stimme entfernen) weiterhin funktioniert.
+.card-vote-star--full {
+  opacity: .6;
+}
+
+.card-vote-star-mine {
+  color: #fffc;
+}
+
+.reaction-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reaction-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 8px;
+  background: #fff1;
+  border: 1px solid #fff2;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.reaction-chip--active {
+  background: #ffd16633;
+  border-color: #ffd166;
+}
+
+.reaction-chip-emoji {
+  font-size: 15px;
+}
+
+.reaction-chip-count {
+  color: #fffc;
+}
+
+// Kleiner Icon-Button, der das inline Emoji-Auswahl-Panel (.reaction-picker) oeffnet/schliesst
+// (siehe BoardComponent.toggleReactionPicker()).
+.reaction-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  background: #fff1;
+  border: 1px solid #fff2;
+  border-radius: 50%;
+  cursor: pointer;
+
+  fa-icon {
+    font-size: 13px;
+  }
+}
+
+.reaction-add-button--active {
+  background: #ffd16633;
+  border-color: #ffd166;
+}
+
+// Emoji-Auswahl-Panel (BoardComponent.reactionPickerCardId): bewusst INLINE als eigene Zeile
+// unterhalb von .card-reactions-row (kein absolut positioniertes Overlay/Popover) -- .column hat
+// overflow:hidden und .cards overflow-y:auto, ein Popover wuerde dort abgeschnitten.
+.reaction-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  background: #0003;
+  border: 1px solid #fff2;
+  border-radius: 8px;
+}
+
+.reaction-picker-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  background: #fff1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reaction-picker-option--active {
+  background: #ffd16633;
+  border-color: #ffd166;
+}
+
+.card-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.board-not-found {
+  padding: 40px;
+  color: #fff8;
+  font-size: 24px;
+  text-align: center;
+}
+
+// Drag&Drop (@angular/cdk/drag-drop), Ticket 06 -- Spalten-DnD. Standard-CDK-Klassen, angepasst
+// ans Dark-Theme der Karten. Der Drag-Preview-Clone traegt die Original-Klassen (inkl. Scoping-
+// Attribut) mit sich, weshalb .card-Styles bereits greifen; hier nur der zusaetzliche "Lift"-Effekt.
+.cdk-drag-preview {
+  box-sizing: border-box;
+  background: #2a2a2a;
+  border-radius: 6px;
+  // Halbtransparent, damit die Marker (Einfuege-Linie/Merge-Rahmen) der darunterliegenden Zielkarte durchscheinen.
+  opacity: .3;
+  // Wichtig fuer die Merge-Erkennung (Ticket 07): ohne pointer-events:none liegt der Preview-Klon
+  // (traegt die data-card-id der GEZOGENEN Karte) beim Loslassen unter dem Zeiger, sodass
+  // document.elementFromPoint() den Klon statt der Zielkarte trifft -> Merge scheitert, es wird nur
+  // umsortiert. pointer-events:none laesst elementFromPoint durch den Klon auf die echte Zielkarte zeigen.
+  pointer-events: none;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .4), 0 8px 10px 1px rgba(0, 0, 0, .3), 0 3px 14px 2px rgba(0, 0, 0, .25);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+  // Ebenfalls fuer elementFromPoint transparent halten (siehe .cdk-drag-preview).
+  pointer-events: none;
+}
+
+.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0, 0, .2, 1);
+}
+
+.cards.cdk-drop-list-dragging .card:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, .2, 1);
+}
+
+.card.cdk-drag-disabled {
+  cursor: default;
+}
+
+.card:not(.cdk-drag-disabled) {
+  cursor: grab;
+}

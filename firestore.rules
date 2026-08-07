@@ -4,6 +4,9 @@ service cloud.firestore {
     match /planning/{document=**} {
       allow read, write;
     }
+    match /retro/{document=**} {
+      allow read, write;
+    }
     match /user/{document=**} {
       allow read, write;
       allow list: if false;

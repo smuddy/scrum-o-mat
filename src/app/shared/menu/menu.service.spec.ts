@@ -34,6 +34,20 @@ describe('MenuService', () => {
     expect(entries[0].confirm).toBe(false);
   });
 
+  it('adds a custom component entry with the given inputs, leaving name/action as no-op placeholders', () => {
+    let entries: any[];
+    service.menuEntries$.subscribe(_ => entries = _);
+    class Widget {}
+
+    service.addCustomComponent(Widget as any, {boardId: 'b1'});
+
+    expect(entries.length).toBe(1);
+    expect(entries[0].component).toBe(Widget);
+    expect(entries[0].inputs).toEqual({boardId: 'b1'});
+    expect(entries[0].name).toBe('');
+    expect(typeof entries[0].action).toBe('function');
+  });
+
   it('resets the custom actions', () => {
     let entries: any[];
     service.menuEntries$.subscribe(_ => entries = _);

@@ -27,7 +27,7 @@ vi.mock('@angular/fire/auth', () => {
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Input, NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Router} from '@angular/router';
 import {BehaviorSubject, of} from 'rxjs';
@@ -35,6 +35,17 @@ import {BehaviorSubject, of} from 'rxjs';
 import {MenuComponent} from './menu.component';
 import {LoginService} from '../../modules/login/login.service';
 import {MenuService} from './menu.service';
+
+// Winziges Stand-in fuer eine ueber MenuService.addCustomComponent registrierte Component (z.B.
+// TimerControlComponent), nur um NgComponentOutlet + Inputs-Weitergabe im Menu zu verifizieren.
+@Component({
+  standalone: true,
+  selector: 'app-test-menu-widget',
+  template: '<span>{{label}}</span>',
+})
+class TestMenuWidgetComponent {
+  @Input() label = '';
+}
 
 describe('MenuComponent', () => {
   let component: MenuComponent;
@@ -104,6 +115,17 @@ describe('MenuComponent', () => {
     entriesComponent.menuEntries$.subscribe(_ => entries = _);
 
     expect(entries).toBe(menuEntries);
+  });
+
+  it('renders a component-based menu entry (MenuService.addCustomComponent) via NgComponentOutlet, passing through its inputs', () => {
+    const menuEntries = [{name: '', action: () => {}, component: TestMenuWidgetComponent, inputs: {label: 'Hallo'}}];
+    menuService.menuEntries$ = of(menuEntries);
+    const componentFixture = TestBed.createComponent(MenuComponent);
+    componentFixture.detectChanges();
+
+    const host = componentFixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.menu-item.menu-component')).toBeTruthy();
+    expect(host.textContent).toContain('Hallo');
   });
 
   it('delegates closeMenu to the MenuService', () => {

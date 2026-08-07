@@ -71,6 +71,29 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'retrospective',
+    data: {moduleName: 'Retrospektive'},
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./modules/retrospective/board-list/board-list.component').then(m => m.BoardListComponent),
+        canActivate: [AuthGuard],
+        data: {authGuardPipe: redirectUnauthorizedToLogin, moduleName: 'Retrospektive'},
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./modules/retrospective/create/create.component').then(m => m.CreateComponent),
+        canActivate: [AuthGuard],
+        data: {authGuardPipe: redirectUnauthorizedToLogin, moduleName: 'Retrospektive'},
+      },
+      {
+        path: ':boardId',
+        loadComponent: () => import('./modules/retrospective/board/board.component').then(m => m.BoardComponent),
+      },
+    ],
+  },
+  {
     path: 'login',
     loadComponent: () => import('./modules/login/login.component').then(m => m.LoginComponent),
     canActivate: [AuthGuard, loginCanActivateGuard],
