@@ -1,7 +1,7 @@
 @if (vm$ | async; as vm) {
   <div class="retro-board">
     @if (remainingSeconds !== null) {
-      <div [class.timer-display--expired]="!paused && remainingSeconds <= 0" [class.timer-display--paused]="paused"
+      <div @collapse [class.timer-display--expired]="!paused && remainingSeconds <= 0" [class.timer-display--paused]="paused"
            class="timer-display">
         <fa-icon [icon]="faStopwatch"></fa-icon>
         <span class="timer-time">{{formatRemaining(remainingSeconds)}}</span>
@@ -52,7 +52,7 @@
               </div>
             }
           </div>
-          <div (cdkDropListDropped)="onDrop($event, vm, colView.column.id)"
+          <div (cdkDropListDropped)="onDrop($event, vm, colView.column.id)" @card
                [cdkDropListData]="colView.cards" [cdkDropListSortingDisabled]="true" cdkDropList class="cards">
             @for (card of colView.cards; track card.id) {
               <div (cdkDragEnded)="onCardDragEnded()" (cdkDragMoved)="onCardDragMoved($event, vm)"
@@ -61,7 +61,7 @@
                    [class.card--merge-target]="dropTargetCardId === card.id && dropZone === 'merge'"
                    [class.card--drop-before]="dropTargetCardId === card.id && dropZone === 'before'"
                    [class.card--drop-after]="dropTargetCardId === card.id && dropZone === 'after'"
-                   [class.card--editing]="isBeingEditedByOther(card, vm)" cdkDrag class="card">
+                   [class.card--editing]="isBeingEditedByOther(card, vm)" @cardListItem cdkDrag class="card card-child">
                 @if (editingCardId === card.id) {
                   <textarea appAutofocus [(ngModel)]="editingText" class="card-input" rows="3"></textarea>
                   <div class="card-actions">

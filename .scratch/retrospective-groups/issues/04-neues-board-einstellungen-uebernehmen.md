@@ -1,7 +1,7 @@
 # 04 — Neues Sprint-Board in der Gruppe mit Einstellungs-Übernahme + Titel-Hochzählung
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 01, 02
 
 ## Question

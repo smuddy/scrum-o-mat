@@ -2,7 +2,7 @@ import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faPen} from '@fortawesome/free-solid-svg-icons/faPen';
@@ -10,13 +10,21 @@ import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 import {faBoxArchive} from '@fortawesome/free-solid-svg-icons/faBoxArchive';
 import {faTrashCanArrowUp} from '@fortawesome/free-solid-svg-icons/faTrashCanArrowUp';
+import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
+import {faLayerGroup} from '@fortawesome/free-solid-svg-icons/faLayerGroup';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import {faChevronUp} from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import {RetroService} from '../retro.service';
-import {RetroBoardId} from '../models/retro';
+import {RetroBoardId, RetroGroupId} from '../models/retro';
 import {HeaderService} from '../../../shared/header/header.service';
 import {MenuService} from '../../../shared/menu/menu.service';
 import {cardTransition, fadeTranslateInstant} from '../../../animation';
+
+// Gruppen-Feature: eine Gruppe in der Uebersicht + die Anzahl ihrer Boards (Basis fuer die Gruppen-Karte).
+interface GroupCardView {
+  group: RetroGroupId;
+  boardCount: number;
+}
 
 @Component({
   selector: 'app-retro-board-list',
@@ -37,6 +45,8 @@ export class BoardListComponent implements OnInit, OnDestroy {
   public faTimes = faTimes;
   public faBoxArchive = faBoxArchive;
   public faTrashCanArrowUp = faTrashCanArrowUp;
+  public faTrash = faTrash;
+  public faLayerGroup = faLayerGroup;
   public faChevronDown = faChevronDown;
   public faChevronUp = faChevronUp;
 
@@ -44,26 +54,46 @@ export class BoardListComponent implements OnInit, OnDestroy {
   public editingBoardId: string | null = null;
   public editingTitle = '';
 
+  // Gruppen-Feature: Inline-Umbenennung einer Gruppe (analog zum Board-Rename).
+  public editingGroupId: string | null = null;
+  public editingGroupName = '';
+
+  // Gruppen-Feature: Inline-Anlage einer neuen Gruppe (per Seitenleisten-Aktion aufgeklappt).
+  public creatingGroup = false;
+  public newGroupName = '';
+
   // Ticket 12: Archiv-Abschnitt ist standardmaessig eingeklappt (Nebenbereich, keine primaere Ansicht).
   public archivedExpanded = false;
 
   // Alle Boards des Nutzers, sortiert wie bisher (neueste zuerst nach created, Fallback modified).
-  // shareReplay(1): boards$ und archivedBoards$ leiten beide von diesem Stream ab -- ohne shareReplay
-  // wuerde jeder der beiden Konsumenten (siehe Template, je ein async-Pipe) eine eigene Subscription
-  // (und damit einen eigenen Firestore-Listener via retroService.listMyBoards$) aufbauen.
+  // shareReplay(1): mehrere Konsumenten (boards$, archivedBoards$, groupViews$) leiten davon ab -- ohne
+  // shareReplay wuerde jeder Konsument eine eigene Subscription (Firestore-Listener) aufbauen.
   private allBoards$: Observable<RetroBoardId[]> = this.retroService.listMyBoards$.pipe(
     map(boards => [...boards].sort((a, b) => BoardListComponent.createdMillis(b) - BoardListComponent.createdMillis(a))),
     shareReplay(1),
   );
 
-  // Aktive Boards (Hauptliste): alles ohne archived-Flag, Sortierung bleibt erhalten (created desc).
+  // Aktive Boards OHNE Gruppe (Hauptliste "Ohne Gruppe"). Gruppierte Boards erscheinen nur auf der
+  // jeweiligen Gruppen-Seite, nicht in dieser Uebersicht.
   public boards$: Observable<RetroBoardId[]> = this.allBoards$.pipe(
-    map(boards => boards.filter(board => !board.archived)),
+    map(boards => boards.filter(board => !board.archived && !board.groupId)),
   );
 
-  // Archivierte Boards (eigener, einklappbarer Abschnitt), gleiche Sortierung.
+  // Archivierte Boards OHNE Gruppe (eigener, einklappbarer Abschnitt), gleiche Sortierung.
   public archivedBoards$: Observable<RetroBoardId[]> = this.allBoards$.pipe(
-    map(boards => boards.filter(board => board.archived)),
+    map(boards => boards.filter(board => board.archived && !board.groupId)),
+  );
+
+  // Gruppen des Owners als Karten (Name + Board-Anzahl), alphabetisch nach Name sortiert.
+  public groupViews$: Observable<GroupCardView[]> = combineLatest([this.retroService.listMyGroups$, this.allBoards$]).pipe(
+    map(([groups, boards]) => [...groups]
+      .map(group => ({group, boardCount: boards.filter(b => b.groupId === group.id).length}))
+      .sort((a, b) => a.group.name.localeCompare(b.group.name))),
+  );
+
+  // Gruppenliste fuer die "In Gruppe verschieben"-Auswahl an den ungruppierten Board-Zeilen.
+  public sortedGroups$: Observable<RetroGroupId[]> = this.retroService.listMyGroups$.pipe(
+    map(groups => [...groups].sort((a, b) => a.name.localeCompare(b.name))),
   );
 
   // Normalisiert created/modified (Firestore-Timestamp mit toDate(), Date oder String) zu Millis.
@@ -80,6 +110,7 @@ export class BoardListComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.menuService.addCustomAction('Neues Board anlegen', () => this.newBoard());
+    this.menuService.addCustomAction('Neue Gruppe anlegen', () => this.startCreateGroup());
     this.headerService.setBreadcrumb([{route: '/retrospective', name: 'Retrospektive'}]);
   }
 
@@ -94,6 +125,8 @@ export class BoardListComponent implements OnInit, OnDestroy {
   public toggleArchivedSection(): void {
     this.archivedExpanded = !this.archivedExpanded;
   }
+
+  // --- Board umbenennen (Ticket 12) -------------------------------------------------------------
 
   public startEdit(board: RetroBoardId): void {
     this.editingBoardId = board.id;
@@ -120,5 +153,70 @@ export class BoardListComponent implements OnInit, OnDestroy {
       this.cancelEdit();
     }
     await this.retroService.setArchived(board.id, !board.archived);
+  }
+
+  // --- Gruppe anlegen / umbenennen / loeschen (Ticket 03) ---------------------------------------
+
+  public startCreateGroup(): void {
+    this.creatingGroup = true;
+    this.newGroupName = '';
+  }
+
+  public cancelCreateGroup(): void {
+    this.creatingGroup = false;
+    this.newGroupName = '';
+  }
+
+  public async saveNewGroup(): Promise<void> {
+    const name = this.newGroupName.trim();
+    if (!name) {
+      return;
+    }
+    await this.retroService.createGroup(name);
+    this.cancelCreateGroup();
+  }
+
+  public startEditGroup(group: RetroGroupId): void {
+    this.editingGroupId = group.id;
+    this.editingGroupName = group.name;
+  }
+
+  public cancelGroupEdit(): void {
+    this.editingGroupId = null;
+    this.editingGroupName = '';
+  }
+
+  public async saveGroupEdit(groupId: string): Promise<void> {
+    const name = this.editingGroupName.trim();
+    if (!name) {
+      return;
+    }
+    await this.retroService.renameGroup(groupId, name);
+    this.cancelGroupEdit();
+  }
+
+  // Loescht die Gruppe nach Bestaetigung. Enthaltene Boards bleiben erhalten (werden zu Einzel-Boards,
+  // siehe RetroService.deleteGroup) -- der Confirm-Text macht das explizit.
+  public async deleteGroup(group: RetroGroupId): Promise<void> {
+    if (!confirm(`Gruppe „${group.name}" löschen? Die enthaltenen Boards bleiben erhalten und werden zu Einzel-Boards.`)) {
+      return;
+    }
+    if (this.editingGroupId === group.id) {
+      this.cancelGroupEdit();
+    }
+    await this.retroService.deleteGroup(group.id);
+  }
+
+  // --- Board in eine Gruppe verschieben (Ticket 05) ---------------------------------------------
+
+  // Ordnet ein (bisher ungruppiertes) Board der ausgewaehlten Gruppe zu. Der Select-Wert wird sofort
+  // auf den Platzhalter zurueckgesetzt; das Board wandert danach reaktiv in die Gruppen-Seite.
+  public async moveBoardToGroup(boardId: string, event: Event): Promise<void> {
+    const select = event.target as HTMLSelectElement;
+    const groupId = select.value;
+    select.value = '';
+    if (groupId) {
+      await this.retroService.assignBoardToGroup(boardId, groupId);
+    }
   }
 }

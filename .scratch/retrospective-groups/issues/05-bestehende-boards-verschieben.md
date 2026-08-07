@@ -1,7 +1,7 @@
 # 05 — Bestehende Boards einer Gruppe zuordnen / verschieben
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 01, 03
 
 ## Question

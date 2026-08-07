@@ -1,7 +1,7 @@
 # 03 — Owner-Übersicht nach Gruppen + Gruppe anlegen/umbenennen/löschen
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 01
 
 ## Question

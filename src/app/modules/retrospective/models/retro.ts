@@ -18,9 +18,26 @@ export interface RetroBoard {
   modified: any;
   // Ticket 12: optionales Archiv-Flag -- fehlt bei Alt-Boards, wird dann als "nicht archiviert" behandelt.
   archived?: boolean;
+  // Gruppen-Feature: optionale Zugehoerigkeit zu genau EINER Gruppe (retroGroup/{groupId}). Fehlt das
+  // Feld, ist es ein Einzel-Board wie bisher (additiv, nicht brechend).
+  groupId?: string;
 }
 
 export interface RetroBoardId extends RetroBoard {
+  id: string;
+}
+
+// Gruppen-Feature: eine Gruppe (= Team, Gruppenname = Teamname) buendelt mehrere Boards eines Owners
+// und wird per Link geteilt (/retrospective/group/:groupId). Zugehoerige Boards referenzieren die
+// Gruppe ueber RetroBoard.groupId. Gespeichert unter retroGroup/{groupId} (siehe retro.service.ts).
+export interface RetroGroup {
+  ownerId: string;
+  name: string;
+  created: any;
+  modified: any;
+}
+
+export interface RetroGroupId extends RetroGroup {
   id: string;
 }
 

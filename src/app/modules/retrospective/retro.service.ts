@@ -1,10 +1,10 @@
 import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
 import {addDoc, arrayRemove, arrayUnion, collection, collectionData, deleteDoc, deleteField, doc, docData, FieldPath, Firestore, increment, query, updateDoc, where, writeBatch} from '@angular/fire/firestore';
-import {distinctUntilChanged, mergeMap} from 'rxjs/operators';
-import {firstValueFrom, Observable} from 'rxjs';
+import {catchError, distinctUntilChanged, mergeMap} from 'rxjs/operators';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {LoginService} from '../login/login.service';
 import {ID} from '../../helpers/id';
-import {RetroActionItem, RetroActionItemId, RetroBoard, RetroBoardId, RetroCard, RetroCardId, RetroColumn} from './models/retro';
+import {RetroActionItem, RetroActionItemId, RetroBoard, RetroBoardId, RetroCard, RetroCardId, RetroColumn, RetroGroup, RetroGroupId} from './models/retro';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class RetroService {
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
   );
 
-  public async createBoard(title: string, columns: { name: string; color: string }[]): Promise<string> {
+  public async createBoard(title: string, columns: { name: string; color: string }[], groupId?: string): Promise<string> {
     const uid = await firstValueFrom(this.loginService.currentUserId$());
     const board: RetroBoard = {
       ownerId: uid,
@@ -39,6 +39,11 @@ export class RetroService {
       created: new Date(),
       modified: new Date(),
     };
+    // groupId bleibt bewusst als fehlender Key statt "undefined" -- Firestore lehnt explizite
+    // undefined-Werte in addDoc() ab (analog zu addActionItem() weiter unten).
+    if (groupId) {
+      board.groupId = groupId;
+    }
     const newDoc = await this.inCtx(() => addDoc(collection(this.afs, 'retro'), board));
     return newDoc.id;
   }
@@ -293,5 +298,77 @@ export class RetroService {
 
   public async deleteActionItem(boardId: string, actionItemId: string): Promise<void> {
     await this.inCtx(() => deleteDoc(doc(this.afs, 'retro/' + boardId + '/actionItems/' + actionItemId)));
+  }
+
+  // ===========================================================================================
+  // Gruppen-Feature: Boards eines Owners in Gruppen (= Teams) buendeln und per Link teilen.
+  // Neue Collection retroGroup/{groupId}; Boards referenzieren ihre Gruppe ueber RetroBoard.groupId
+  // (genau EINE Gruppe je Board). Alle Methoden im gleichen Stil wie oben (inCtx, modularer Firestore).
+  // ===========================================================================================
+
+  // Liste der Gruppen des eingeloggten Owners (reale uid), analog zu listMyBoards$. Guard gegen eine
+  // fehlende uid (anonyme Gruppen-Link-Mitglieder): dieser Stream wird auch auf der oeffentlichen
+  // Gruppen-Seite konsumiert, und where('ownerId','==', undefined) wuerde im echten Firestore werfen ->
+  // fuer nicht eingeloggte Betrachter liefern wir eine leere Liste.
+  public listMyGroups$: Observable<RetroGroupId[]> = this.loginService.currentUserId$().pipe(
+    mergeMap(uid => uid
+      ? this.inCtx(() => collectionData(
+        query(collection(this.afs, 'retroGroup'), where('ownerId', '==', uid)),
+        {idField: 'id'}
+      )) as Observable<RetroGroupId[]>
+      : of([] as RetroGroupId[])),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    // Robustheit: schlaegt der retroGroup-Read fehl (z.B. Rules im Backend noch nicht deployed), darf
+    // das NICHT die ganze Uebersicht leeren -- dann eben "keine Gruppen" statt Fehler. Nach dem
+    // Deploy der Rules + Reload erscheinen die Gruppen normal.
+    catchError(() => of([] as RetroGroupId[])),
+  );
+
+  public async createGroup(name: string): Promise<string> {
+    const uid = await firstValueFrom(this.loginService.currentUserId$());
+    const group: RetroGroup = {ownerId: uid, name, created: new Date(), modified: new Date()};
+    const newDoc = await this.inCtx(() => addDoc(collection(this.afs, 'retroGroup'), group));
+    return newDoc.id;
+  }
+
+  public getGroup$(groupId: string): Observable<RetroGroupId | undefined> {
+    return this.inCtx(() => docData(doc(this.afs, 'retroGroup/' + groupId), {idField: 'id'})) as Observable<RetroGroupId | undefined>;
+  }
+
+  public async renameGroup(groupId: string, name: string): Promise<void> {
+    await this.inCtx(() => updateDoc(doc(this.afs, 'retroGroup/' + groupId), {name, modified: new Date()}));
+  }
+
+  // Alle Boards einer Gruppe (where groupId == groupId). Basis fuer die Gruppen-Seite (group.component).
+  public listBoardsByGroup$(groupId: string): Observable<RetroBoardId[]> {
+    return this.inCtx(() => collectionData(
+      query(collection(this.afs, 'retro'), where('groupId', '==', groupId)),
+      {idField: 'id'}
+    )) as Observable<RetroBoardId[]>;
+  }
+
+  // Ordnet ein Board einer Gruppe zu (groupId gesetzt) oder loest es heraus (groupId == null ->
+  // deleteField(), damit der Key ganz verschwindet statt eines null-Werts). Zwei Zweige, damit der
+  // Feldwert typisiert string bzw. FieldValue bleibt und kein Union-Typ ins Objektliteral geraet.
+  public async assignBoardToGroup(boardId: string, groupId: string | null): Promise<void> {
+    if (groupId) {
+      await this.inCtx(() => updateDoc(doc(this.afs, 'retro/' + boardId), {groupId, modified: new Date()}));
+    } else {
+      await this.inCtx(() => updateDoc(doc(this.afs, 'retro/' + boardId), {groupId: deleteField(), modified: new Date()}));
+    }
+  }
+
+  // Loescht die Gruppe. Entschieden (Charting): enthaltene Boards bleiben erhalten und werden zu
+  // Einzel-Boards (groupId entfernt) -- NICHT mitgeloescht. Board-Updates + Group-Delete laufen in
+  // EINEM writeBatch (atomar, analog deleteBoard()).
+  public async deleteGroup(groupId: string): Promise<void> {
+    const boards = await firstValueFrom(this.listBoardsByGroup$(groupId));
+    await this.inCtx(() => {
+      const batch = writeBatch(this.afs);
+      const now = new Date();
+      boards.forEach(board => batch.update(doc(this.afs, 'retro/' + board.id), {groupId: deleteField(), modified: now}));
+      batch.delete(doc(this.afs, 'retroGroup/' + groupId));
+      return batch.commit();
+    });
   }
 }

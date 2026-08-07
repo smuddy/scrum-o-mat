@@ -1,7 +1,7 @@
 # 06 — Tests (Vitest) für die Gruppen-Funktionalität
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 02, 03, 04, 05
 
 ## Question

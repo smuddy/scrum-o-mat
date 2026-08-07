@@ -1,0 +1,91 @@
+@if (vm$ | async; as vm) {
+  <div @fadeTranslateInstant class="retro-group">
+    @if (!vm.group) {
+      <div class="empty">Diese Gruppe existiert nicht (mehr).</div>
+    } @else {
+      <div class="group-header">
+        @if (vm.isOwner && editingName) {
+          <div class="rename">
+            <input
+              (keyup.enter)="saveRename()"
+              (keyup.escape)="cancelRename()"
+              [(ngModel)]="editingNameValue"
+              class="name-input"
+              type="text"/>
+            <fa-icon (click)="saveRename()" [icon]="faCheck" class="button"></fa-icon>
+            <fa-icon (click)="cancelRename()" [icon]="faTimes" class="button"></fa-icon>
+          </div>
+        } @else {
+          <h2 class="group-name">{{vm.group.name}}</h2>
+        }
+        @if (linkCopied) {
+          <div class="copied-hint">Gruppen-Link kopiert</div>
+        }
+      </div>
+
+      @if (!vm.currentBoard && vm.archivedBoards.length === 0) {
+        <div class="empty">
+          @if (vm.isOwner) {
+            Noch keine Boards in dieser Gruppe — leg über das Menü das erste an.
+          } @else {
+            In dieser Gruppe gibt es noch keine Boards.
+          }
+        </div>
+      }
+
+      @if (vm.currentBoard) {
+        <div class="section-label">Aktuelles Board</div>
+        <div @card class="list">
+          <ng-container [ngTemplateOutletContext]="{$implicit: vm.currentBoard, current: true, vm: vm}" [ngTemplateOutlet]="boardRow"></ng-container>
+        </div>
+      }
+
+      @if (vm.otherActiveBoards.length !== 0) {
+        <div class="section-label">Weitere Boards</div>
+        <div @card class="list">
+          @for (board of vm.otherActiveBoards; track board.id) {
+            <ng-container [ngTemplateOutletContext]="{$implicit: board, current: false, vm: vm}" [ngTemplateOutlet]="boardRow"></ng-container>
+          }
+        </div>
+      }
+
+      @if (vm.archivedBoards.length !== 0) {
+        <div class="archived-section">
+          <button (click)="toggleArchivedSection()" class="archived-toggle" type="button">
+            <fa-icon [icon]="archivedExpanded ? faChevronUp : faChevronDown"></fa-icon>
+            Archiviert ({{vm.archivedBoards.length}})
+          </button>
+          @if (archivedExpanded) {
+            <div @card class="list">
+              @for (board of vm.archivedBoards; track board.id) {
+                <ng-container [ngTemplateOutletContext]="{$implicit: board, current: false, vm: vm}" [ngTemplateOutlet]="boardRow"></ng-container>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+}
+
+<!-- Zeilen-Vorlage: Navigation liegt bewusst NUR auf .board-content. Die Verschiebe-Auswahl (nur Owner,
+     Ticket 05) ist ein eigenstaendiges Geschwister-Element, damit ein Klick darauf nie ins Board navigiert. -->
+<ng-template #boardRow let-board let-current="current" let-vm="vm">
+  <div [class.board--current]="current" class="board card-child">
+    <div [routerLink]="'/retrospective/' + board.id" class="board-content">
+      <span class="title">{{board.title}}</span>
+      <span class="columns">{{board.columns.length}} Spalten</span>
+    </div>
+    @if (vm.isOwner) {
+      <div class="actions">
+        <select (change)="moveBoard(board.id, $event)" class="move-select" title="Board verschieben">
+          <option selected value="">Verschieben…</option>
+          @for (g of otherGroups(vm); track g.id) {
+            <option [value]="g.id">→ {{g.name}}</option>
+          }
+          <option value="__remove__">Aus Gruppe entfernen</option>
+        </select>
+      </div>
+    }
+  </div>
+</ng-template>

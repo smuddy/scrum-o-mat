@@ -7,6 +7,9 @@ service cloud.firestore {
     match /retro/{document=**} {
       allow read, write;
     }
+    match /retroGroup/{document=**} {
+      allow read, write;
+    }
     match /user/{document=**} {
       allow read, write;
       allow list: if false;

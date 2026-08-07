@@ -31,6 +31,14 @@ Ein **featurecomplete, lokal lauffähiges** Erweiterungs-Feature des Retrospecti
 
 <!-- eine Zeile je geschlossenem Ticket: Gist + Link -->
 
+- [01 — Fundament](issues/01-fundament-modell-groupservice-routing.md) — `RetroGroup`/`RetroGroupId` + optionales `RetroBoard.groupId`; Gruppen-Methoden in `RetroService` (`createGroup`/`listMyGroups$`/`getGroup$`/`renameGroup`/`listBoardsByGroup$`/`assignBoardToGroup`/`deleteGroup`, `createBoard(…, groupId?)`); offene `retroGroup/**`-Rules; Routen `group/:groupId` (offen) + `group/:groupId/new` (AuthGuard). `listMyGroups$` gegen fehlende uid geguardet (anonyme Mitglieder).
+- [02 — Gruppen-Seite](issues/02-gruppen-seite-liste-aktuelles-sharelink.md) — `GroupComponent` unter `/retrospective/group/:groupId` (kein AuthGuard): Board-Liste, aktuelles Board (neuestes nicht-archiviertes) hervorgehoben, Archiv-Abschnitt; Owner-Menü (Neues Board / **Link kopieren nur Owner** / Umbenennen) + Inline-Rename; Mitglieder sehen nur Liste + Öffnen.
+- [03 — Owner-Übersicht](issues/03-owner-uebersicht-gruppen-anlegen.md) — `board-list` zeigt Gruppen-Karten (→ Gruppen-Seite, umbenennen, löschen mit Confirm) + „Neue Gruppe"; ungruppierte Boards im Abschnitt „Ohne Gruppe"; `deleteGroup` löst Boards heraus statt sie zu löschen.
+- [04 — Neues Board (Übernahme)](issues/04-neues-board-einstellungen-uebernehmen.md) — Gruppen-Modus der `CreateComponent`: Spalten des neuesten Boards verbatim + Titel via `nextTitle()` hochgezählt („Sprint 5"→„Sprint 6", sonst „ 2"); speichert mit `groupId` und navigiert direkt ins neue Board.
+- [05 — Boards verschieben](issues/05-bestehende-boards-verschieben.md) — Verschiebe-Auswahl (`assignBoardToGroup`): in der Übersicht ungruppierte Boards → Gruppe; auf der Gruppen-Seite (Owner) Board → andere Gruppe / „Aus Gruppe entfernen".
+- [06 — Tests (Vitest)](issues/06-tests-vitest.md) — Specs für `group`/`create` neu, `board-list`-Spec erweitert (Gruppen-Filter, groupViews, anlegen/umbenennen/löschen, verschieben, Titel-Hochzählung, Owner-vs-Mitglied). Gesamtsuite **478/478 grün**.
+- [07 — Verifikation](issues/07-verifikation-durchklick-rollen.md) — `ng build` grün + Vitest 478/478 grün; Rollen-Grenze code-/testseitig verankert (Mitglied = nur Karten). Live-Durchklick als Checkliste an den Nutzer übergeben (anonymer Member-Flow braucht echtes Firebase-Backend).
+
 ## Not yet specified
 
 <!-- Gesamtbild am 2026-08-07 durchgeklärt; aktuell kein grober Fog offen. Reine Umsetzungs-Feinheiten

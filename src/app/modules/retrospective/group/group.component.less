@@ -4,7 +4,7 @@
   align-items: center;
 }
 
-.board-list {
+.retro-group {
   width: 100%;
   max-width: 600px;
   padding: 20px;
@@ -14,18 +14,43 @@
   text-align: center;
 }
 
-.btn-primary {
-  font-weight: bold;
-  margin: 10px 0 20px;
-}
-
-.list {
+.group-header {
   width: 100%;
-  display: grid;
-  grid-gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-// Gruppen-Feature: Abschnittsueberschrift ("Gruppen" / "Ohne Gruppe").
+.group-name {
+  margin: 0;
+}
+
+.rename {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.name-input {
+  box-sizing: border-box;
+  padding: 6px 8px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.copied-hint {
+  font-size: 0.8em;
+  color: #7bd88f;
+}
+
 .section-label {
   width: 100%;
   text-align: left;
@@ -34,34 +59,10 @@
   margin: 16px 0 6px;
 }
 
-// Gruppen-Feature: Inline-Formular fuer "Neue Gruppe anlegen".
-.new-group {
+.list {
   width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.button {
-  cursor: pointer;
-}
-
-// Gruppen-Feature: "In Gruppe verschieben"-Auswahl an einer Board-Zeile.
-.move-select {
-  max-width: 130px;
-  padding: 4px 6px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid #fff5;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 0.8em;
-  cursor: pointer;
-
-  option {
-    color: initial;
-  }
+  display: grid;
+  grid-gap: 10px;
 }
 
 .board {
@@ -80,8 +81,14 @@
   }
 }
 
-// Ticket 12: nur dieser Bereich navigiert (routerLink im Template) -- die Aktions-Icons liegen
-// als Geschwister-Element ausserhalb und triggern deshalb nie eine Navigation.
+// Aktuelles Sprint-Board: dezent hervorgehoben (Akzentrahmen, volle Deckkraft).
+.board--current {
+  opacity: 1;
+  border: 1px solid #7bd88f;
+  background-color: #7bd88f18;
+}
+
+// Navigation liegt (wie in board-list) NUR auf .board-content -- die Verschiebe-Auswahl ist Geschwister.
 .board-content {
   display: flex;
   flex: 1 1 auto;
@@ -99,27 +106,13 @@
   }
 }
 
-// Inline-Rename (Ticket 12): kein Navigations-Hover, das Eingabefeld ist keine Navigationsflaeche.
-.board-content--edit {
-  cursor: default;
-
-  &:hover {
-    background-color: transparent;
-    cursor: default;
-  }
+.title {
+  font-weight: bold;
 }
 
-.title-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 6px 8px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid #fff5;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: bold;
+.columns {
+  font-size: 0.8em;
+  color: #fffa;
 }
 
 .actions {
@@ -133,13 +126,24 @@
   }
 }
 
-.title {
-  font-weight: bold;
+.button {
+  cursor: pointer;
 }
 
-.columns {
+.move-select {
+  max-width: 160px;
+  padding: 4px 6px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #fff5;
+  border-radius: 4px;
+  font-family: inherit;
   font-size: 0.8em;
-  color: #fffa;
+  cursor: pointer;
+
+  option {
+    color: initial;
+  }
 }
 
 .empty {
@@ -147,7 +151,6 @@
   margin-top: 20px;
 }
 
-// Ticket 12: einklappbarer Archiv-Bereich unterhalb der aktiven Boards.
 .archived-section {
   width: 100%;
   margin-top: 20px;

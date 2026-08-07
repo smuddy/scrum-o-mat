@@ -1,7 +1,7 @@
 # 02 — Gruppen-Seite: Board-Liste, aktuelles Board hervorgehoben, Share-Link, Owner/Mitglied-Sicht
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 01
 
 ## Question

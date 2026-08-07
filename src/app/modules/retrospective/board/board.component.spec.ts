@@ -688,6 +688,43 @@ describe('BoardComponent', () => {
       });
     });
 
+    describe('deriveCountdown (expiry grace window)', () => {
+      it('keeps showing the expired state (0) during the grace window after the deadline', () => {
+        const endsAt = new Date('2026-08-06T10:00:00.000Z');
+        const now = new Date('2026-08-06T10:00:05.000Z'); // 5s nach Ablauf, < Nachlaufzeit
+
+        expect(component.deriveCountdown({...board, timerEndsAt: endsAt}, now)).toEqual({remainingSeconds: 0, paused: false});
+      });
+
+      it('hides the display (null) once the grace window has fully elapsed', () => {
+        const endsAt = new Date('2026-08-06T10:00:00.000Z');
+        const now = new Date('2026-08-06T10:00:15.000Z'); // 15s nach Ablauf, > Nachlaufzeit
+
+        expect(component.deriveCountdown({...board, timerEndsAt: endsAt}, now)).toEqual({remainingSeconds: null, paused: false});
+      });
+
+      it('hides the display exactly at the grace-window boundary (>=, not >)', () => {
+        const endsAt = new Date('2026-08-06T10:00:00.000Z');
+        const now = new Date(endsAt.getTime() + component.EXPIRED_DISPLAY_GRACE_MS); // exakt Ablauf + Nachlaufzeit
+
+        expect(component.deriveCountdown({...board, timerEndsAt: endsAt}, now)).toEqual({remainingSeconds: null, paused: false});
+      });
+
+      it('still shows a running countdown before the deadline (grace window does not apply)', () => {
+        const endsAt = new Date('2026-08-06T10:00:30.000Z');
+        const now = new Date('2026-08-06T10:00:00.000Z');
+
+        expect(component.deriveCountdown({...board, timerEndsAt: endsAt}, now)).toEqual({remainingSeconds: 30, paused: false});
+      });
+
+      it('never auto-hides a paused timer (paused state takes precedence, even at 0)', () => {
+        const now = new Date('2026-08-06T10:00:15.000Z');
+
+        expect(component.deriveCountdown({...board, timerEndsAt: null, timerPausedRemainingMs: 0}, now))
+          .toEqual({remainingSeconds: 0, paused: true});
+      });
+    });
+
     describe('formatRemaining', () => {
       it('formats whole seconds as zero-padded mm:ss', () => {
         expect(component.formatRemaining(0)).toBe('00:00');

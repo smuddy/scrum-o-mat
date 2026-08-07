@@ -1,7 +1,7 @@
 # 01 — Fundament: RetroGroup-Modell, groupId, Service-Methoden, Routing
 
 Type: task
-Status: open
+Status: resolved
 
 ## Question
 Wie sieht das Datenfundament für Gruppen aus, damit die weiteren Tickets darauf aufsetzen können?

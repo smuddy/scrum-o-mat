@@ -1,7 +1,7 @@
 # 07 — Verifikation: Durchklick inkl. Rollen-Boundary
 
 Type: task
-Status: open
+Status: resolved
 Blocked by: 06
 
 ## Question

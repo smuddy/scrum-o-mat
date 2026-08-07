@@ -22,7 +22,7 @@ import {LoginService} from '../../login/login.service';
 import {HeaderService} from '../../../shared/header/header.service';
 import {MenuService} from '../../../shared/menu/menu.service';
 import {RetroBoardId, RetroCardId, RetroColumn} from '../models/retro';
-import {cardTransition} from '../../../animation';
+import {cardListItem, cardTransition, collapse} from '../../../animation';
 import {TimerControlComponent} from './timer-control/timer-control.component';
 import {ActionItemsComponent} from './action-items/action-items.component';
 import {AutofocusDirective} from './autofocus.directive';
@@ -52,7 +52,7 @@ interface BoardView {
   imports: [CommonModule, FormsModule, FaIconComponent, CdkDropListGroup, CdkDropList, CdkDrag, ActionItemsComponent, AutofocusDirective],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less'],
-  animations: [cardTransition],
+  animations: [cardTransition, cardListItem, collapse],
 })
 export class BoardComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
@@ -129,6 +129,12 @@ export class BoardComponent implements OnDestroy {
   // Wird benoetigt, um das Seitenleisten-Menu auch bei rein lokalen Aenderungen (z.B.
   // revealTemporarily via toggleReveal()) ohne neuen Firestore-Snapshot neu aufzubauen.
   private currentOwnerBoard: RetroBoardId | null = null;
+  // Nachlaufzeit (ms), wie lange nach Ablauf des Timers "Zeit abgelaufen" noch angezeigt wird, bevor
+  // die Countdown-Anzeige automatisch ausgeblendet wird (siehe deriveCountdown()/Template @collapse).
+  // Rein clientseitige Anzeige-Logik, deterministisch aus board.timerEndsAt abgeleitet -- kein
+  // Firestore-Write, daher fuer alle Clients (auch nachtraeglich beigetretene) konsistent.
+  public readonly EXPIRED_DISPLAY_GRACE_MS = 10000;
+
   // Wird sekuendlich aus board.timerEndsAt bzw. board.timerPausedRemainingMs aktualisiert, siehe
   // tickSubscription weiter unten. null = kein Timer aktiv; Zahl (auch 0) = aktiver, abgelaufener
   // oder pausierter Timer.
@@ -835,7 +841,18 @@ export class BoardComponent implements OnDestroy {
     if (board.timerPausedRemainingMs != null) {
       return {remainingSeconds: Math.max(0, Math.ceil(board.timerPausedRemainingMs / 1000)), paused: true};
     }
-    return {remainingSeconds: this.getRemainingSeconds(board.timerEndsAt, now), paused: false};
+    const remainingSeconds = this.getRemainingSeconds(board.timerEndsAt, now);
+    // Nach Ablauf (remainingSeconds === 0) bleibt "Zeit abgelaufen" nur fuer eine kurze Nachlaufzeit
+    // (EXPIRED_DISPLAY_GRACE_MS) sichtbar; danach wird die Anzeige ausgeblendet (null), damit der Timer
+    // nicht dauerhaft als abgelaufen stehen bleibt. Deterministisch aus timerEndsAt abgeleitet, daher
+    // fuer alle Clients konsistent (auch spaet beitretende sehen nicht ewig einen alten Ablauf).
+    if (remainingSeconds === 0 && board.timerEndsAt != null) {
+      const endsAtMs = BoardComponent.toDate(board.timerEndsAt).getTime();
+      if (now.getTime() >= endsAtMs + this.EXPIRED_DISPLAY_GRACE_MS) {
+        return {remainingSeconds: null, paused: false};
+      }
+    }
+    return {remainingSeconds, paused: false};
   }
 
   // Formatiert Restzeit als mm:ss, zero-padded. Negative Werte werden auf 0 geklemmt (-> "00:00").

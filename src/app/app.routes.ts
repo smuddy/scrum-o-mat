@@ -88,6 +88,19 @@ export const routes: Routes = [
         data: {authGuardPipe: redirectUnauthorizedToLogin, moduleName: 'Retrospektive'},
       },
       {
+        // Neues Board innerhalb einer Gruppe anlegen (Owner-only) -- muss VOR 'group/:groupId' und
+        // ':boardId' stehen. Uebernimmt die Einstellungen des letzten Boards der Gruppe (siehe CreateComponent).
+        path: 'group/:groupId/new',
+        loadComponent: () => import('./modules/retrospective/create/create.component').then(m => m.CreateComponent),
+        canActivate: [AuthGuard],
+        data: {authGuardPipe: redirectUnauthorizedToLogin, moduleName: 'Retrospektive'},
+      },
+      {
+        // Gruppen-Seite (per Link teilbar) -- bewusst OHNE AuthGuard, anonyme Teilnehmer erlaubt.
+        path: 'group/:groupId',
+        loadComponent: () => import('./modules/retrospective/group/group.component').then(m => m.GroupComponent),
+      },
+      {
         path: ':boardId',
         loadComponent: () => import('./modules/retrospective/board/board.component').then(m => m.BoardComponent),
       },
