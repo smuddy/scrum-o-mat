@@ -3,6 +3,24 @@
 
 :root {
   --border-color: #fff2;
+
+  /* Flat-Design-Tokens (zuerst im Retro-Board eingesetzt): Ebenen unterscheiden sich ueber
+     Helligkeit statt ueber Rahmen -- heller = weiter vorne (Karte), dunkler = eingelassen (Chip). */
+  --surface-1: rgba(255, 255, 255, 0.035); /* Spalte / Container-Flaeche      */
+  --surface-2: rgba(255, 255, 255, 0.08);  /* Karte / Action-Item / Button    */
+  --inset:     rgba(0, 0, 0, 0.20);         /* Chip / Pill (eingelassen)       */
+  --hover:     rgba(255, 255, 255, 0.13);
+
+  --text:      #eef2f7;
+  --text-dim:  rgba(238, 242, 247, 0.60);
+  --text-mute: rgba(238, 242, 247, 0.32);
+
+  --accent:      #ffd166;                    /* der EINE interaktive Akzent     */
+  --accent-soft: rgba(255, 209, 102, 0.18);
+  --positive:    #7bd88f;
+
+  --radius-lg: 12px;
+  --radius:    9px;
 }
 
 body {

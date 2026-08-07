@@ -39,7 +39,7 @@
   @if (loggedIn|async) {
     <div (click)="logout()" class="menu-item">Abmelden</div>
   }
-  @for (entry of menuEntries$|async; track entry) {
+  @for (entry of menuEntries$|async; track entry.name) {
     @if (entry.component) {
       <div class="menu-item menu-component">
         <ng-container *ngComponentOutlet="entry.component; inputs: entry.inputs"></ng-container>

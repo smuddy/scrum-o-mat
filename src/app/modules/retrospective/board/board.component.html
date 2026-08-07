@@ -14,9 +14,8 @@
     }
     <div @card cdkDropListGroup class="columns">
       @for (colView of vm.columns; track colView.column.id) {
-        <div [style.border-top-color]="colView.column.color" class="column card-child">
-          <div [style.background]="'linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), ' + colView.column.color"
-               class="column-header">
+        <div [style.--col]="colView.column.color" class="column card-child">
+          <div class="column-header">
             @if (editColumns && vm.isOwner) {
               <div class="column-edit">
                 <div class="column-edit-row">
@@ -65,8 +64,12 @@
                 @if (editingCardId === card.id) {
                   <textarea appAutofocus [(ngModel)]="editingText" class="card-input" rows="3"></textarea>
                   <div class="card-actions">
-                    <fa-icon (click)="saveEdit(card.id)" [icon]="faCheck" class="button"></fa-icon>
-                    <fa-icon (click)="cancelEdit()" [icon]="faTimes" class="button"></fa-icon>
+                    <button (click)="saveEdit(card.id)" class="card-action-btn" type="button" aria-label="Änderung speichern">
+                      <fa-icon [icon]="faCheck"></fa-icon>
+                    </button>
+                    <button (click)="cancelEdit()" class="card-action-btn" type="button" aria-label="Bearbeitung abbrechen">
+                      <fa-icon [icon]="faTimes"></fa-icon>
+                    </button>
                   </div>
                 } @else {
                   <div [class.card-text--hidden]="vm.scrambledById[card.id]"
@@ -100,8 +103,12 @@
                     }
                     @if (canEdit(card, vm)) {
                       <div class="card-actions">
-                        <fa-icon (click)="startEdit(card)" [icon]="faPen" class="button"></fa-icon>
-                        <fa-icon (click)="deleteCard(card.id)" [icon]="faTrash" class="button"></fa-icon>
+                        <button (click)="startEdit(card)" class="card-action-btn" type="button" aria-label="Karte bearbeiten">
+                          <fa-icon [icon]="faPen"></fa-icon>
+                        </button>
+                        <button (click)="deleteCard(card.id)" class="card-action-btn" type="button" aria-label="Karte löschen">
+                          <fa-icon [icon]="faTrash"></fa-icon>
+                        </button>
                       </div>
                     }
                   </div>

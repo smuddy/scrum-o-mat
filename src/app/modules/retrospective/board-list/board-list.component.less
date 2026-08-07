@@ -1,7 +1,12 @@
+// Flaches System wie board.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
 :host {
   display: flex;
   flex-direction: column;
   align-items: center;
+  // Retro-Listen auf eine kompakte Basisgroesse bringen (App-Basis ist body 30px); so passen die
+  // em-basierten Groessen hier zum flachen, dichten Board-Look, ohne body global zu aendern.
+  font-size: 0.75em;
 }
 
 .board-list {
@@ -25,12 +30,15 @@
   grid-gap: 10px;
 }
 
-// Gruppen-Feature: Abschnittsueberschrift ("Gruppen" / "Ohne Gruppe").
+// Gruppen-Feature: Abschnittsueberschrift ("Gruppen" / "Ohne Gruppe") -- einheitliche Label-Sprache
+// (Versalien, getrackt, gedimmt) wie im Board.
 .section-label {
   width: 100%;
   text-align: left;
-  font-size: 0.8em;
-  color: #fffa;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
   margin: 16px 0 6px;
 }
 
@@ -50,11 +58,11 @@
 // Gruppen-Feature: "In Gruppe verschieben"-Auswahl an einer Board-Zeile.
 .move-select {
   max-width: 130px;
-  padding: 4px 6px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid #fff5;
-  border-radius: 4px;
+  padding: 5px 8px;
+  color: var(--text);
+  background: var(--inset);
+  border: none;
+  border-radius: 6px;
   font-family: inherit;
   font-size: 0.8em;
   cursor: pointer;
@@ -70,14 +78,9 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px 15px;
-  border-radius: 8px;
-  background-color: #fff0;
-  opacity: 0.8;
-  transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
-
-  &:hover {
-    opacity: 1;
-  }
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  transition: background-color 0.3s ease;
 }
 
 // Ticket 12: nur dieser Bereich navigiert (routerLink im Template) -- die Aktions-Icons liegen
@@ -91,10 +94,10 @@
   min-width: 0;
   padding: 4px 6px;
   border-radius: 6px;
-  transition: background-color 0.3s ease-in-out;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: #fff2;
+    background: var(--hover);
     cursor: pointer;
   }
 }
@@ -104,7 +107,7 @@
   cursor: default;
 
   &:hover {
-    background-color: transparent;
+    background: transparent;
     cursor: default;
   }
 }
@@ -113,10 +116,10 @@
   box-sizing: border-box;
   width: 100%;
   padding: 6px 8px;
-  color: inherit;
-  background: transparent;
-  border: 1px solid #fff5;
-  border-radius: 4px;
+  color: var(--text);
+  background: var(--inset);
+  border: none;
+  border-radius: 6px;
   font-family: inherit;
   font-size: 1em;
   font-weight: bold;
@@ -135,15 +138,16 @@
 
 .title {
   font-weight: bold;
+  color: var(--text);
 }
 
 .columns {
   font-size: 0.8em;
-  color: #fffa;
+  color: var(--text-dim);
 }
 
 .empty {
-  opacity: 0.8;
+  color: var(--text-dim);
   margin-top: 20px;
 }
 
@@ -159,7 +163,7 @@
   gap: 8px;
   margin: 0 0 10px;
   padding: 6px 0;
-  color: #fffa;
+  color: var(--text-dim);
   background: transparent;
   border: none;
   font-family: inherit;
@@ -167,7 +171,7 @@
   cursor: pointer;
 
   &:hover {
-    color: #fff;
+    color: var(--text);
   }
 
   fa-icon {
