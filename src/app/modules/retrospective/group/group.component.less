@@ -1,3 +1,5 @@
+@import 'mixins';
+
 // Flaches System wie board.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
 // src/styles.less (:root).
 :host {
@@ -39,13 +41,8 @@
 }
 
 .name-input {
-  box-sizing: border-box;
+  .ui-field();
   padding: 6px 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 1.1em;
   font-weight: bold;
   text-align: center;
@@ -57,13 +54,10 @@
 }
 
 .section-label {
+  .ui-label();
   width: 100%;
   text-align: left;
   font-size: 0.75em;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-dim);
   margin: 16px 0 6px;
 }
 
@@ -133,13 +127,9 @@
 }
 
 .move-select {
+  .ui-field();
   max-width: 160px;
   padding: 5px 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 0.8em;
   cursor: pointer;
 

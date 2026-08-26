@@ -12,8 +12,12 @@
               [(ngModel)]="editingNameValue"
               class="name-input"
               type="text"/>
-            <fa-icon (click)="saveRename()" [icon]="faCheck" class="button"></fa-icon>
-            <fa-icon (click)="cancelRename()" [icon]="faTimes" class="button"></fa-icon>
+            <button (click)="saveRename()" class="icon-btn" type="button" aria-label="Speichern">
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </button>
+            <button (click)="cancelRename()" class="icon-btn" type="button" aria-label="Abbrechen">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
           </div>
         } @else {
           <h2 class="group-name">{{vm.group.name}}</h2>

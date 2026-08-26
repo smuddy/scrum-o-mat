@@ -8,7 +8,7 @@
   <div class="div-estimate-id">
     <input (keyup.enter)="login()" [formControl]="pass" name="pass" placeholder="Passwort" type="password">
   </div>
-  <button (click)="login()" [disabled]="!email || !pass">Anmelden</button>
+  <button (click)="login()" [disabled]="!email || !pass" class="btn-primary">Anmelden</button>
   <button (click)="register()" [disabled]="!email || !pass">Registrieren</button>
 </div>
 

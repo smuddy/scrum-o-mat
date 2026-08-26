@@ -7,7 +7,9 @@
       <div class="date">{{planning.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>
     </div>
     <div class="delete">
-      <fa-icon (click)="delete(planning.id)" [icon]="faTrash" class="button"></fa-icon>
+      <button (click)="delete(planning.id)" aria-label="Löschen" class="icon-btn" type="button">
+        <fa-icon [icon]="faTrash"></fa-icon>
+      </button>
     </div>
   </div>
 }

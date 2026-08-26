@@ -1,3 +1,5 @@
+@import 'mixins';
+
 // Flaches System wie board.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
 // src/styles.less (:root).
 :host {
@@ -19,11 +21,6 @@
   text-align: center;
 }
 
-.btn-primary {
-  font-weight: bold;
-  margin: 10px 0 20px;
-}
-
 .list {
   width: 100%;
   display: grid;
@@ -33,12 +30,9 @@
 // Gruppen-Feature: Abschnittsueberschrift ("Gruppen" / "Ohne Gruppe") -- einheitliche Label-Sprache
 // (Versalien, getrackt, gedimmt) wie im Board.
 .section-label {
+  .ui-label();
   width: 100%;
   text-align: left;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-dim);
   margin: 16px 0 6px;
 }
 
@@ -57,13 +51,9 @@
 
 // Gruppen-Feature: "In Gruppe verschieben"-Auswahl an einer Board-Zeile.
 .move-select {
+  .ui-field();
   max-width: 130px;
   padding: 5px 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 0.8em;
   cursor: pointer;
 
@@ -113,14 +103,9 @@
 }
 
 .title-input {
-  box-sizing: border-box;
+  .ui-field();
   width: 100%;
   padding: 6px 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 1em;
   font-weight: bold;
 }

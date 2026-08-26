@@ -1,8 +1,14 @@
+@import 'mixins';
+
+// Flaches System wie board-list.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
 :host {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // Geroutete Seite auf die kompakte Basisgroesse bringen, siehe board-list.
+  font-size: 0.75em;
 }
 
 .projects {
@@ -11,9 +17,8 @@
 
 .list {
   width: 100%;
-  // border: #fff 1px solid;
-  border-radius: 8px;
   display: grid;
+  grid-gap: 10px;
   padding: 0;
 }
 
@@ -22,14 +27,27 @@
 }
 
 .project {
-  padding: 5px 10px;
-  transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
-  background-color: #fff0;
-  opacity: 0.8;
+  padding: 10px 15px;
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #fff2;
+    background: var(--hover);
     cursor: pointer;
-    opacity: 1;
   }
+}
+
+// Abschnittsueberschrift ("Leser/Bearbeiter Mitgliedschaft") -- einheitliche Label-Sprache
+// (Versalien, getrackt, gedimmt) wie im Retro-Board.
+.section-label {
+  .ui-label();
+  width: 100%;
+  text-align: left;
+  margin: 16px 0 6px;
+}
+
+.empty {
+  color: var(--text-dim);
+  margin-top: 20px;
 }

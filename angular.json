@@ -37,6 +37,11 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "less",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            },
             "assets": [
               "src/assets"
             ],

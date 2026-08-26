@@ -56,9 +56,12 @@
   }
 
   <div @fadeTranslateInstant class="div-planning-id">
-    <fa-icon (click)="showQrCode=true" [icon]="faQrcode" class="button"></fa-icon>
-    <fa-icon (click)="copyLink(link())" [icon]="faClipboard" class="button"></fa-icon>
-    &nbsp;
+    <button (click)="showQrCode=true" aria-label="QR-Code anzeigen" class="icon-btn" type="button">
+      <fa-icon [icon]="faQrcode"></fa-icon>
+    </button>
+    <button (click)="copyLink(link())" aria-label="Link kopieren" class="icon-btn" type="button">
+      <fa-icon [icon]="faClipboard"></fa-icon>
+    </button>
     {{link()}}
   </div>
 </div>

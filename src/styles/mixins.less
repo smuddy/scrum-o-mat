@@ -1,0 +1,65 @@
+// Wiederverwendbare Design-Primitive als LESS-Mixins. Ueber includePaths (angular.json ->
+// architect.build.options.stylePreprocessorOptions) global verfuegbar: in einer Komponente
+// `@import 'mixins';` und das Mixin im bestehenden (scoped) Selektor aufrufen. So bleibt die
+// Layout-Ebene lokal und die Angular-Scoping-Spezifitaet stimmt -- kein Template-Umbau noetig.
+//
+// Namenskonvention: `ui-`-Praefix, damit die Mixins nicht mit semantischen Klassen (z.B. `.field`,
+// `.btn-primary`) kollidieren -- `.field` (Klasse) und `.field()` (Mixin) waeren in LESS mehrdeutig.
+
+// Eyebrow/Label: Versalien, getrackt, gedimmt. Groesse/Abstand/Layout setzt der Aufrufer.
+.ui-label() {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+// Eingelassenes Eingabefeld (Fokus etwas heller). Padding/Breite/Flex setzt der Aufrufer.
+.ui-field() {
+  box-sizing: border-box;
+  margin: 0;
+  color: var(--text);
+  background: var(--inset);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+
+  &:focus {
+    background: var(--surface-2);
+  }
+}
+
+// Flacher Sekundaer-Button. Padding/Groesse setzt der Aufrufer.
+.ui-btn() {
+  margin: 0;
+  color: var(--text);
+  background: var(--surface-2);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--hover);
+  }
+}
+
+// Primaerer CTA -- der eine Gold-Akzent (dunkler Text auf Gold).
+.ui-btn-primary() {
+  margin: 0;
+  color: #15233a;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+
+  &:disabled {
+    opacity: .5;
+    cursor: default;
+    filter: none;
+  }
+}

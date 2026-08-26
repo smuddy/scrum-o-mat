@@ -1,3 +1,11 @@
+@import 'mixins';
+
+:host {
+  // Kompakte Basisgroesse (App-Basis ist body 30px), passend zum flachen Design -- siehe
+  // retrospective/board-list.
+  font-size: 0.75em;
+}
+
 .div-scrum-master {
   display: flex;
   align-items: center;
@@ -9,7 +17,10 @@
 }
 
 .div-planning-id {
-  color: #fff2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-mute);
 }
 
 .div-results {
@@ -24,10 +35,6 @@
   top: 10px;
 }
 
-.button {
-  margin-left: 20px;
-}
-
 .qrcode-background {
   position: fixed;
   top: 0;
@@ -40,4 +47,10 @@
 .comment {
   margin-left: 38px;
   margin-top: 20px;
+}
+
+// Sekundaere Buttons ("Schaetzung wiederholen/beenden", "Kaffepause beendet") -- flache Flaeche
+// statt globalem weissem Rand.
+button {
+  .ui-btn();
 }

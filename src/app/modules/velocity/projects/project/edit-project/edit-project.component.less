@@ -1,8 +1,14 @@
+@import 'mixins';
+
+// Flaches System wie board-list.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
 :host {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // Geroutete Seite auf die kompakte Basisgroesse bringen, siehe board-list.
+  font-size: 0.75em;
 }
 
 h1 {
@@ -11,7 +17,7 @@ h1 {
 
 .edit-project {
   width: 1000px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   margin: 20px;
   padding: 20px;
 }
@@ -30,4 +36,19 @@ h1 {
 .staff {
   display: grid;
   grid-template-columns: 50px 3fr;
+}
+
+// Abschnittsueberschrift ("Lesend"/"Schreibend") in der einheitlichen Label-Sprache (Versalien,
+// getrackt, gedimmt); Groesse explizit zurueckgesetzt, da h2 sonst die grosse Default-Headline-Groesse hat.
+.section-label {
+  .ui-label();
+  font-size: 0.85em;
+  letter-spacing: 0.06em;
+  margin: 16px 0 6px;
+}
+
+// Sekundaerer Button ("+ Mitarbeiter hinzufuegen") -- flache Flaeche statt globalem Rahmen-Button.
+.add-button {
+  .ui-btn();
+  padding: 10px 16px;
 }

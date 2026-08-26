@@ -11,20 +11,18 @@
     width: 500px;
   }
 
-  background: #fff2;
-  border-radius: 8px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
   margin: 0 auto 20px;
   padding: 10px;
-  transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-  box-shadow: none;
+  transition: background-color 0.3s ease, margin 0.3s ease;
 
   &.middle {
     margin-top: 40vh;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   }
 
   .div-subject {
-    color: #fff5;
+    color: var(--text-mute);
   }
 }
 
@@ -33,13 +31,3 @@ input {
   text-align: center;
 }
 
-fa-icon {
-  display: block;
-  width: 35px;
-  height: 35px;
-}
-
-button {
-  margin: 0;
-  border: none;
-}

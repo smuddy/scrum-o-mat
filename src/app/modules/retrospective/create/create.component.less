@@ -1,13 +1,12 @@
-// Flaches System wie board.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
-// src/styles.less (:root).
+@import 'mixins';
+
 :host {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
   text-align: center;
-  // Kompakte Basisgroesse (App-Basis ist body 30px), passend zum Board -- siehe board-list.
-  font-size: 16px;
+  font-size: 0.75em;
 }
 
 .retro-create {
@@ -30,26 +29,17 @@
   gap: 6px;
   text-align: left;
 
-  // Feld-Beschriftung in der einheitlichen Label-Sprache (Versalien, gedimmt).
+  // Feld-Beschriftung in der einheitlichen Label-Sprache.
   span {
+    .ui-label();
     font-size: 0.8em;
-    font-weight: 700;
     letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-dim);
   }
 
   input[type='text'],
   input[type='number'] {
-    background: var(--inset);
+    .ui-field();
     padding: 10px;
-    border-radius: var(--radius);
-    margin: 0;
-  }
-
-  input[type='text']:focus,
-  input[type='number']:focus {
-    background: var(--surface-2);
   }
 }
 
@@ -64,16 +54,9 @@
   }
 
   button {
+    .ui-btn();
     width: 36px;
     padding: 10px 0;
-    color: var(--text);
-    background: var(--surface-2);
-    border: none;
-    border-radius: var(--radius);
-
-    &:hover {
-      background: var(--hover);
-    }
   }
 }
 
@@ -99,15 +82,9 @@
   }
 
   input[type='text'] {
+    .ui-field();
     flex: 1;
-    background: var(--inset);
     padding: 10px;
-    border-radius: var(--radius);
-    margin: 0;
-  }
-
-  input[type='text']:focus {
-    background: var(--surface-2);
   }
 }
 
@@ -116,43 +93,19 @@
   gap: 8px;
 
   input {
+    .ui-field();
     flex: 1;
-    background: var(--inset);
     padding: 10px;
-    border-radius: var(--radius);
-    margin: 0;
   }
 
   button {
-    margin: 0;
+    .ui-btn();
     padding: 10px 16px;
-    color: var(--text);
-    background: var(--surface-2);
-    border: none;
-    border-radius: var(--radius);
-
-    &:hover {
-      background: var(--hover);
-    }
   }
 }
 
-// Primaere Aktion -- der eine Gold-Akzent als klarer Call-to-Action (dunkler Text auf Gold).
+// Primaere Aktion -- der eine Gold-Akzent als klarer Call-to-Action.
 .btn-primary {
-  font-weight: bold;
+  .ui-btn-primary();
   padding: 11px 18px;
-  color: #15233a;
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius);
-
-  &:hover {
-    filter: brightness(1.08);
-  }
-
-  &:disabled {
-    opacity: .5;
-    cursor: default;
-    filter: none;
-  }
 }

@@ -59,8 +59,8 @@
 @if (issue && estimateRequested) {
   <div @fade class="wrapper">
     <app-progress-circle
-      [innerStrokeColor]="'#fff3'"
-      [outerStrokeColor]="'#fff8'"
+      [innerStrokeColor]="'var(--border-color)'"
+      [outerStrokeColor]="'var(--text-dim)'"
       [outerStrokeWidth]="16"
       [percent]="chosenPercent"
       [radius]="100"

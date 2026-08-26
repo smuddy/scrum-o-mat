@@ -9,12 +9,12 @@
       </div>
     }
     @if (projects.length===0) {
-      <div>Es sind noch keine eigenen Projekte vorhanden.</div>
+      <div class="empty">Es sind noch keine eigenen Projekte vorhanden.</div>
     }
     @if (projectsReader$|async; as projectsReader) {
       @if (projectsReader.length > 0) {
+        <div class="section-label">Leser Mitgliedschaft an Projekten:</div>
         <div class="list follow-up-list">
-          Leser Mitgliedschaft an Projekten:
           @for (project of projectsReader; track project.id) {
             <div [routerLink]="project.id" class="project">{{project.name}}</div>
           }
@@ -23,8 +23,8 @@
     }
     @if (projectsWriter$|async; as projectsWriter) {
       @if (projectsWriter.length > 0) {
+        <div class="section-label">Bearbeiter Mitgliedschaft an Projekten:</div>
         <div class="list follow-up-list">
-          Bearbeiter Mitgliedschaft an Projekten:
           @for (project of projectsWriter; track project.id) {
             <div [routerLink]="project.id" class="project">{{project.name}}</div>
           }

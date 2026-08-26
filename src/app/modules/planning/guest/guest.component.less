@@ -1,3 +1,9 @@
+:host {
+  // Kompakte Basisgroesse (App-Basis ist body 30px), passend zum flachen Design -- siehe
+  // retrospective/board-list.
+  font-size: 0.75em;
+}
+
 .div-issue {
   text-align: center;
   margin-bottom: 20px;
@@ -15,7 +21,7 @@
   text-align: center;
   margin: 0;
   padding-top: 20px;
-  color: #fff5;
+  color: var(--text-mute);
 }
 
 .div-logout {
@@ -39,7 +45,7 @@
   white-space: normal;
 
   .div-result {
-    background-color: #fff4;
+    background-color: var(--surface-2);
     height: 27px;
     margin-top: 10px;
   }

@@ -1,3 +1,5 @@
+@import 'mixins';
+
 :host {
   display: flex;
   justify-content: center;
@@ -5,6 +7,8 @@
   align-items: center;
   height: 100vh;
   text-align: center;
+  // Geroutete Seite in app-root -- kompakte Basis.
+  font-size: 0.75em;
 }
 
 .div-estimate-id {
@@ -12,18 +16,12 @@
 }
 
 input {
-  background: #fff1;
+  .ui-field();
   padding: 10px;
-  border-radius: 8px;
-  margin: 0;
 
   &.ng-touched.ng-invalid {
     border: 1px solid red;
   }
-}
-
-input:focus {
-  background: #fff2;
 }
 
 .div-init {
@@ -35,7 +33,19 @@ input:focus {
     grid-template-columns: 400px;
   }
 
+  // Sekundaerer Button (Registrieren) -- flache Flaeche.
   button {
-    margin: 0;
+    .ui-btn();
+    padding: 11px 18px;
+
+    &:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+  }
+
+  // Primaere Aktion (Anmelden) -- Gold-Akzent (hoehere Spezifitaet als ".div-init button").
+  .btn-primary {
+    .ui-btn-primary();
   }
 }

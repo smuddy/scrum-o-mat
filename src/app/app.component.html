@@ -1,6 +1,8 @@
 <div [class.menu-open]="menuOpen" class="main">
   <div class="menu-button">
-    <fa-icon (click)="onClickMenuButton()" [icon]="faBars" class="button"></fa-icon>
+    <button (click)="onClickMenuButton()" class="icon-btn" type="button" aria-label="Menü öffnen">
+      <fa-icon [icon]="faBars"></fa-icon>
+    </button>
   </div>
   <div class="menu">
     <app-menu [visible]="menuOpen"></app-menu>

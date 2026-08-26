@@ -2,9 +2,9 @@
   <div [@listAnimation]="developers.length" class="div-developers">
     @for (developer of sortedDevelopers; track trackById($index, developer)) {
       <div class="div-developer-row">
-        <div (click)="delete(developer.id)" class="deleteButton">
-          <fa-icon [icon]="faTrash" class="button"></fa-icon>
-        </div>
+        <button (click)="delete(developer.id)" aria-label="Entwickler entfernen" class="deleteButton icon-btn" type="button">
+          <fa-icon [icon]="faTrash"></fa-icon>
+        </button>
         @if (developer) {
           <div [class.is-ready]="devIsReady(developer.storyPoints) && showIndicators" class="div-developer"
           >{{developer.name}}</div>

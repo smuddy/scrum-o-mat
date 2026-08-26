@@ -6,8 +6,8 @@
         [text]="(sprintName$|async)"
       [width]="'200px'"></app-edit-text></h1>
       <div>
-        <button class="step" (click)="onClickLeft()"><fa-icon [icon]="faLeft"></fa-icon></button>
-        <button class="step" (click)="onClickRight()"><fa-icon [icon]="faRight"></fa-icon></button>
+        <button class="step" (click)="onClickLeft()" type="button" aria-label="Vorheriger Sprint"><fa-icon [icon]="faLeft"></fa-icon></button>
+        <button class="step" (click)="onClickRight()" type="button" aria-label="Nächster Sprint"><fa-icon [icon]="faRight"></fa-icon></button>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
         </p>
       </div>
       <div>
-        <div class="staff">
+        <div class="staff staff-header">
           <div></div>
           <div>Name</div>
           <div class="center">Tage</div>
@@ -38,7 +38,9 @@
         </div>
         @for (staff of (availableStaff$|async); track trackBy($index, staff)) {
           <div class="staff">
-            <fa-icon (click)="removeStaff(sprintNumber, staff)" [icon]="faTrash" class="button trash"></fa-icon>
+            <button (click)="removeStaff(sprintNumber, staff)" class="icon-btn trash" type="button" aria-label="Mitarbeiter entfernen">
+              <fa-icon [icon]="faTrash"></fa-icon>
+            </button>
             <app-edit-text (textChanged)="updateStaffName(sprintNumber, staff.name, $event)"
             [text]="staff.name"></app-edit-text>
             <app-edit-number (numberChanged)="updateStaffDays(sprintNumber, staff.name, $event)"
@@ -57,7 +59,7 @@
           </div>
         }
 
-        <button (click)="addStaff(sprintNumber)">+ Personal hinzufügen</button>
+        <button (click)="addStaff(sprintNumber)" class="add-button" type="button">+ Personal hinzufügen</button>
       </div>
     </div>
 

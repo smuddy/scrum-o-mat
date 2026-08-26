@@ -1,3 +1,5 @@
+@import 'mixins';
+
 // Flaches System wie board.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
 // src/styles.less (:root).
 :host {
@@ -13,12 +15,9 @@
 }
 
 .action-items-title {
+  .ui-label();
   margin: 0 0 14px;
   font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-dim);
 }
 
 .action-items-list {
@@ -37,7 +36,7 @@
 
 .action-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   background: var(--surface-2);
   border-radius: var(--radius);
@@ -90,15 +89,10 @@
 }
 
 .action-item-input {
-  box-sizing: border-box;
+  .ui-field();
   flex: 1;
   min-width: 120px;
   padding: 7px 9px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 14.5px;
 }
 
@@ -128,19 +122,11 @@
   border-top: 1px solid var(--border-color);
 
   button {
+    .ui-btn();
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0;
     padding: 8px 14px;
-    color: var(--text);
-    background: var(--surface-2);
-    border: none;
-    border-radius: var(--radius);
     font-size: 15px;
-
-    &:hover {
-      background: var(--hover);
-    }
   }
 }

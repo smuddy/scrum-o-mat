@@ -1,3 +1,5 @@
+@import 'mixins';
+
 // Design: flach, Flaechen statt Rahmen. Zentrale Tokens in src/styles.less (:root). Ebenen ueber
 // Helligkeit: --surface-1 (Spalte) < --surface-2 (Karte) < heller bei Hover; --inset fuer
 // eingelassene Chips. Farbe pro Spalte kommt via --col (im Template auf .column gesetzt,
@@ -165,15 +167,10 @@
 }
 
 .column-name-input {
+  .ui-field();
   flex: 1;
-  box-sizing: border-box;
   min-width: 0;
   padding: 5px 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 15px;
 }
 
@@ -248,8 +245,8 @@
 .cards {
   display: flex;
   flex-direction: column;
-  max-height: 55vh;
-  overflow-y: auto;
+  //max-height: 55vh;
+  //overflow-y: auto;
   // Kein Flex-gap, sondern margin-bottom je Karte (siehe .card) -- nur so laesst sich der Abstand
   // beim Ein-/Ausblenden einzelner Karten mitanimieren (@cardListItem), damit die uebrigen Karten
   // weich nachruecken.
@@ -273,6 +270,14 @@
   padding: 11px 13px 9px;
   // Ersetzt den frueheren Flex-gap von .cards (siehe dort) -- als margin animierbar.
   margin-bottom: 8px;
+  transition: background 200ms ease, scale 200ms ease, box-shadow 200ms ease;
+
+}
+
+.card:hover {
+  scale: 1.02;
+  background: var(--hover);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 // Ticket 07: dezentes Hover-Feedback, waehrend eine Karte auf das mittlere Drittel einer anderen
@@ -508,14 +513,9 @@
 }
 
 .card-input {
-  box-sizing: border-box;
+  .ui-field();
   width: 100%;
   padding: 8px;
-  color: var(--text);
-  background: var(--inset);
-  border: none;
-  border-radius: 6px;
-  font-family: inherit;
   font-size: 15px;
   resize: vertical;
 }

@@ -3,6 +3,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // Landing ist eine geroutete Seite in app-root -- kompakte Basis; der Hero skaliert relativ mit.
+  font-size: 0.75em;
 }
 
 .main {
@@ -30,7 +32,7 @@
 .changelog {
   grid-area: changelog;
   font-size: 0.8em;
-  color: #fffa;
+  color: var(--text-dim);
 }
 
 .planning {
@@ -51,10 +53,10 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: var(--radius);
 
   &:hover {
-    background: #fff1;
+    background: var(--hover);
     cursor: pointer;
   }
 }

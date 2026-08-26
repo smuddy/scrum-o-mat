@@ -1,3 +1,8 @@
+:host {
+  // Chrome-Komponente in app-root (kein font-size am Container) -- kompakte Basis, kaskadiert sicher.
+  font-size: 0.75em;
+}
+
 aside {
   position: absolute;
   right: 0;
@@ -22,7 +27,7 @@ aside {
 
   .version {
     font-size: 12px;
-    color: #fff8;
+    color: var(--text-dim);
     height: unset;
     padding: 0 20px 0;
     margin-top: -10px;
@@ -31,7 +36,7 @@ aside {
   .head {
     width: 300px;
     height: 75px;
-    background: #fff1;
+    background: var(--surface-1);
   }
 }
 
@@ -41,12 +46,12 @@ a, div.menu-item {
   width: 300px;
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 10px 20px;
   box-sizing: border-box;
   justify-content: space-between;
 
   &:hover {
-    background: #fff1;
+    background: var(--hover);
     cursor: pointer;
   }
 

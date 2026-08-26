@@ -1,25 +1,31 @@
+@import 'mixins';
+
+// Flaches System wie board-list.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
 :host {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // Geroutete Seite auf die kompakte Basisgroesse bringen, siehe board-list.
+  font-size: 0.75em;
 }
 
 .sprints {
   width: 1000px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 
 
   .table {
     border-collapse: collapse;
     border-spacing: 0;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     border-style: none;
     width: 100%;
     text-align: center;
-    background-color: #fff0;
+    background: var(--surface-1);
     margin-bottom: 20px;
 
     .tr-1 th {
@@ -31,10 +37,17 @@
     }
 
     thead {
-      background: #fff3;
+      background: var(--surface-2);
       overflow: hidden;
       word-break: normal;
-      vertical-align: bottom
+      vertical-align: bottom;
+
+      // Tabellenkopf in der einheitlichen Label-Sprache (Versalien, getrackt, gedimmt).
+      th {
+        .ui-label();
+        letter-spacing: 0.05em;
+        font-size: 0.8em;
+      }
     }
 
     td, th {
@@ -42,13 +55,11 @@
     }
 
     tbody tr {
-      transition: all 0.6s cubic-bezier(.25, .8, .25, 1);
-      background-color: #fff0;
+      transition: background-color 0.3s ease;
 
       &:hover {
-        background-color: #fff2;
+        background: var(--hover);
         cursor: pointer;
-        opacity: 1;
       }
     }
 
@@ -57,7 +68,7 @@
       overflow: hidden;
       word-break: normal;
       font-family: "Ubuntu Mono", monospace;
-      opacity: 0.8;
+      color: var(--text-dim);
     }
   }
 }
@@ -90,7 +101,7 @@ td.tr-velocity {
 
 .kw {
   font-size: 0.5em;
-  color: #fff5;
+  color: var(--text-mute);
   margin-right: 5px;
   width: 23px;
   display: inline-block;

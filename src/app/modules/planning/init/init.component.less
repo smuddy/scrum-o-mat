@@ -1,3 +1,5 @@
+@import 'mixins';
+
 :host {
   display: flex;
   //justify-content: center;
@@ -5,6 +7,9 @@
   align-items: center;
   height: 100%;
   text-align: center;
+  // Kompakte Basisgroesse (App-Basis ist body 30px), passend zum flachen Design -- siehe
+  // retrospective/board-list.
+  font-size: 0.75em;
 }
 
 .div-estimate-id {
@@ -13,14 +18,9 @@
 }
 
 input {
-  background: #fff1;
+  .ui-field();
   padding: 10px;
-  border-radius: 8px;
   margin: 0;
-}
-
-input:focus {
-  background: #fff2;
 }
 
 .div-init {
@@ -35,4 +35,15 @@ input:focus {
   button {
     margin: 0;
   }
+}
+
+// Sekundaere Buttons -- flache Flaeche statt globalem weissem Rand.
+button {
+  .ui-btn();
+}
+
+// Primaerer CTA je Ansicht ("Teilnehmen" / "Schaetzung starten") -- der eine Gold-Akzent.
+.btn-primary {
+  .ui-btn-primary();
+  padding: 11px 18px;
 }

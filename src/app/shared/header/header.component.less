@@ -1,27 +1,41 @@
+:host {
+  // Chrome-Komponente in app-root -- kompakte Basis (kaskadiert sicher, Container hat kein font-size).
+  font-size: 0.75em;
+}
+
 .header {
   font-family: "Roboto Condensed", sans-serif;
   width: 100%;
   margin: 0;
+  padding-left: 5px;
   height: 75px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--border-color);
   transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-  transform: translateY();
+  display: flex;
+  align-items: center;
 }
 
 .headline {
   cursor: pointer;
-  padding: 20px;
+  padding: 15px;
   transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-  background-color: #fff0;
+  background-color: transparent;
 
-  &:hover {
-    background-color: #fff2;
-  }
+
 }
 
 .element {
   display: inline-block;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Breadcrumb-Trenner: dezentes Chevron statt Text-">" -- ruhiger als die Links, kein Hover-Unterstrich.
+.separator {
+  color: var(--text-dim);
+  font-size: 0.7em;
 }
 
 

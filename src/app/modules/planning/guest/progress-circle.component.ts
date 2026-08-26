@@ -14,11 +14,11 @@ import {Component, Input} from '@angular/core';
     <svg [attr.viewBox]="viewBox" class="progress-circle" xmlns="http://www.w3.org/2000/svg">
       <circle
         [attr.cx]="center" [attr.cy]="center" [attr.r]="radius"
-        [attr.stroke]="innerStrokeColor" [attr.stroke-width]="outerStrokeWidth"
+        [style.stroke]="innerStrokeColor" [attr.stroke-width]="outerStrokeWidth"
         fill="none"></circle>
       <circle
         [attr.cx]="center" [attr.cy]="center" [attr.r]="radius"
-        [attr.stroke]="outerStrokeColor" [attr.stroke-width]="outerStrokeWidth"
+        [style.stroke]="outerStrokeColor" [attr.stroke-width]="outerStrokeWidth"
         [attr.stroke-dasharray]="circumference"
         [attr.stroke-dashoffset]="dashOffset"
         [attr.transform]="'rotate(-90 ' + center + ' ' + center + ')'"
@@ -44,8 +44,8 @@ import {Component, Input} from '@angular/core';
 export class ProgressCircleComponent {
   @Input() radius = 100;
   @Input() outerStrokeWidth = 16;
-  @Input() outerStrokeColor = '#fff8';
-  @Input() innerStrokeColor = '#fff3';
+  @Input() outerStrokeColor = 'var(--text-dim)';
+  @Input() innerStrokeColor = 'var(--border-color)';
   @Input() percent = 0;
 
   public get center(): number {

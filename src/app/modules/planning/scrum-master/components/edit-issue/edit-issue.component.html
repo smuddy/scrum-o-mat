@@ -7,13 +7,13 @@
     placeholder="Schätzung für"
     type="text">
     @if (edit) {
-      <button (click)="setIssue()">
-        <fa-icon [icon]="faCheck" class="button"></fa-icon>
+      <button (click)="setIssue()" aria-label="Bestätigen" class="icon-btn" type="button">
+        <fa-icon [icon]="faCheck"></fa-icon>
       </button>
     }
     @if (!edit) {
-      <button (click)="resetIssue()">
-        <fa-icon [icon]="faTimes" class="button"></fa-icon>
+      <button (click)="resetIssue()" aria-label="Zurücksetzen" class="icon-btn" type="button">
+        <fa-icon [icon]="faTimes"></fa-icon>
       </button>
     }
   </div>

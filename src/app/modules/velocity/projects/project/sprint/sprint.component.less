@@ -1,8 +1,14 @@
+@import 'mixins';
+
+// Flaches System wie board-list.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
 :host {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  // Geroutete Seite auf die kompakte Basisgroesse bringen, siehe board-list.
+  font-size: 0.75em;
 }
 
 h1 {
@@ -11,9 +17,7 @@ h1 {
 
 .sprint {
   width: 1000px;
-  // border: #fff 1px solid;
-  border-radius: 8px;
-  /* padding: 20px; */
+  border-radius: var(--radius-lg);
   margin: 20px;
   padding: 20px;
 }
@@ -26,13 +30,28 @@ h1 {
 
 .kw {
   font-size: 0.5em;
-  color: #fff5;
+  color: var(--text-mute);
   margin-right: 5px;
 }
 
 .staff {
   display: grid;
   grid-template-columns: 50px 3fr 1fr 1fr;
+}
+
+// Kopfzeile der Personal-Liste in der einheitlichen Label-Sprache (Versalien, getrackt, gedimmt).
+.staff-header {
+  > div {
+    .ui-label();
+    letter-spacing: 0.06em;
+    font-size: 0.8em;
+  }
+}
+
+// Sekundaerer Button ("+ Personal hinzufuegen") -- flache Flaeche statt globalem Rahmen-Button.
+.add-button {
+  .ui-btn();
+  padding: 10px 16px;
 }
 
 .center {
@@ -53,8 +72,7 @@ h1 {
     display: flex;
 
     & > button {
-      margin: 0;
-      border: none;
+      .ui-btn();
       height: 52px;
       width: 52px;
     }

@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faHome} from '@fortawesome/free-solid-svg-icons';
+import {faChevronRight, faHome} from '@fortawesome/free-solid-svg-icons';
 import {HeaderService} from './header.service';
 import {fadefast} from '../../animation';
 
@@ -21,6 +21,7 @@ export class HeaderComponent {
   public fullscreen$ = this.headerService.fullscreen$;
   public breadcrumb$ = this.headerService.breadcrumb$;
   public faHome = faHome;
+  public faChevronRight = faChevronRight;
 
   public trackBy = (index, route) => route.name;
 }
