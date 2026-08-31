@@ -38,9 +38,7 @@
         </div>
         @for (staff of (availableStaff$|async); track trackBy($index, staff)) {
           <div class="staff">
-            <button (click)="removeStaff(sprintNumber, staff)" class="icon-btn trash" type="button" aria-label="Mitarbeiter entfernen">
-              <fa-icon [icon]="faTrash"></fa-icon>
-            </button>
+            <app-icon-button [icon]="faTrash" label="Mitarbeiter entfernen" (click)="removeStaff(sprintNumber, staff)" class="trash"/>
             <app-edit-text (textChanged)="updateStaffName(sprintNumber, staff.name, $event)"
             [text]="staff.name"></app-edit-text>
             <app-edit-number (numberChanged)="updateStaffDays(sprintNumber, staff.name, $event)"
@@ -59,7 +57,7 @@
           </div>
         }
 
-        <button (click)="addStaff(sprintNumber)" class="add-button" type="button">+ Personal hinzufügen</button>
+        <app-button (click)="addStaff(sprintNumber)">+ Personal hinzufügen</app-button>
       </div>
     </div>
 

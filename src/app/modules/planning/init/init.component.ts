@@ -1,18 +1,19 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {fade, fadeTranslate, fadeTranslateInstant} from '../../../animation';
 import {PlanningService} from '../planning.service';
 import {HeaderService} from '../../../shared/header/header.service';
 import {UserService} from '../../login/user.service';
 import {firstValueFrom} from 'rxjs';
 import {MySessionsComponent} from './my-sessions/my-sessions.component';
+import {ButtonComponent} from '../../../shared/ui/button.component';
 
 @Component({
   selector: 'app-init',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MySessionsComponent],
+  imports: [CommonModule, FormsModule, MySessionsComponent, ButtonComponent],
   templateUrl: './init.component.html',
   styleUrls: ['./init.component.less'],
   animations: [fadeTranslateInstant, fade, fadeTranslate]
@@ -71,6 +72,12 @@ export class InitComponent implements OnInit {
 
   public async goGuest(): Promise<void> {
     await this.router.navigateByUrl('/planning/' + this.planningId + '/guest');
+  }
+
+  // Navigation als (click) statt routerLink am <app-button>: der routerLink saesse sonst auf dem
+  // Wrapper-Host, waehrend der fokussierbare Button das gekapselte innere <button> ist -> zwei Ziele.
+  public goScan(): void {
+    void this.router.navigate(['scan'], {relativeTo: this.activatedRoute});
   }
 
   private paramsChanged(params) {

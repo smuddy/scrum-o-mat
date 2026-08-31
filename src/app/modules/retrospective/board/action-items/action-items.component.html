@@ -10,12 +10,8 @@
             <input [(ngModel)]="editingAssignee" class="action-item-input action-item-input--assignee"
                    placeholder="Zuständig (optional)" type="text" />
             <div class="action-item-actions">
-              <button (click)="saveEdit(item.id)" class="icon-btn" type="button" aria-label="Speichern">
-                <fa-icon [icon]="faCheck"></fa-icon>
-              </button>
-              <button (click)="cancelEdit()" class="icon-btn" type="button" aria-label="Abbrechen">
-                <fa-icon [icon]="faTimes"></fa-icon>
-              </button>
+              <app-icon-button [icon]="faCheck" label="Speichern" (click)="saveEdit(item.id)"/>
+              <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelEdit()"/>
             </div>
           </div>
         } @else {
@@ -27,12 +23,8 @@
           </div>
           @if (canEdit(item)) {
             <div class="action-item-actions">
-              <button (click)="startEdit(item)" class="icon-btn" type="button" aria-label="Bearbeiten">
-                <fa-icon [icon]="faPen"></fa-icon>
-              </button>
-              <button (click)="deleteItem(item.id)" class="icon-btn" type="button" aria-label="Löschen">
-                <fa-icon [icon]="faTrash"></fa-icon>
-              </button>
+              <app-icon-button [icon]="faPen" label="Bearbeiten" (click)="startEdit(item)"/>
+              <app-icon-button [icon]="faTrash" label="Löschen" (click)="deleteItem(item.id)"/>
             </div>
           }
         }
@@ -44,9 +36,9 @@
     <input [(ngModel)]="newItemText" class="action-item-input" placeholder="Neues Action-Item..." type="text" />
     <input [(ngModel)]="newItemAssignee" class="action-item-input action-item-input--assignee"
            placeholder="Zuständig (optional)" type="text" />
-    <button (click)="addItem()" type="button">
+    <app-button size="sm" (click)="addItem()">
       <fa-icon [icon]="faPlus"></fa-icon>
       Hinzufügen
-    </button>
+    </app-button>
   </div>
 </div>

@@ -5,6 +5,9 @@
 :host {
   display: block;
   margin-top: 22px;
+  // Eingebettet im Board (das dort kein kompaktes :host font-size hat) -- Basisgroesse setzen, damit
+  // die eingebetteten <app-button>/<app-icon-button> nicht die grosse Body-Schrift (30px) erben.
+  font-size: 15px;
 }
 
 .action-items {
@@ -106,11 +109,6 @@
   align-items: center;
   gap: 11px;
   margin-left: auto;
-
-  fa-icon {
-    font-size: 16px;
-    cursor: pointer;
-  }
 }
 
 .action-items-add {
@@ -120,13 +118,4 @@
   gap: 10px;
   padding-top: 15px;
   border-top: 1px solid var(--border-color);
-
-  button {
-    .ui-btn();
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    font-size: 15px;
-  }
 }

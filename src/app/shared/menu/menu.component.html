@@ -51,9 +51,7 @@
         class="menu-item">{{entry.name}}{{entry.open ? '?' : ''}}
         @if (entry.open) {
           <div class="confirm">
-            <button (click)="entry.action(); closeMenu()" class="icon-btn" type="button" aria-label="Bestätigen">
-              <fa-icon [icon]="faCheck"></fa-icon>
-            </button>
+            <app-icon-button [icon]="faCheck" label="Bestätigen" (click)="entry.action(); closeMenu()"/>
           </div>
         }
       </div>

@@ -4,11 +4,12 @@ import {fadeTranslateInstant} from '../../animation';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {LoginService} from './login.service';
 import {HeaderService} from '../../shared/header/header.service';
+import {ButtonComponent} from '../../shared/ui/button.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ButtonComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.less'],
   animations: [fadeTranslateInstant]

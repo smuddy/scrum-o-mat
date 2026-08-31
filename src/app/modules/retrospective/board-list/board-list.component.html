@@ -12,12 +12,8 @@
               class="title-input"
               placeholder="Gruppenname (z.B. Teamname)"
               type="text"/>
-            <button (click)="saveNewGroup()" class="icon-btn" type="button" aria-label="Gruppe speichern">
-              <fa-icon [icon]="faCheck"></fa-icon>
-            </button>
-            <button (click)="cancelCreateGroup()" class="icon-btn" type="button" aria-label="Abbrechen">
-              <fa-icon [icon]="faTimes"></fa-icon>
-            </button>
+            <app-icon-button [icon]="faCheck" label="Gruppe speichern" (click)="saveNewGroup()"/>
+            <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelCreateGroup()"/>
           </div>
         }
 
@@ -36,12 +32,8 @@
                       type="text"/>
                   </div>
                   <div class="actions">
-                    <button (click)="saveGroupEdit(gv.group.id)" class="icon-btn" type="button" aria-label="Speichern">
-                      <fa-icon [icon]="faCheck"></fa-icon>
-                    </button>
-                    <button (click)="cancelGroupEdit()" class="icon-btn" type="button" aria-label="Abbrechen">
-                      <fa-icon [icon]="faTimes"></fa-icon>
-                    </button>
+                    <app-icon-button [icon]="faCheck" label="Speichern" (click)="saveGroupEdit(gv.group.id)"/>
+                    <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelGroupEdit()"/>
                   </div>
                 } @else {
                   <div [routerLink]="'/retrospective/group/' + gv.group.id" class="board-content">
@@ -49,12 +41,8 @@
                     <span class="columns">{{gv.boardCount}} Boards</span>
                   </div>
                   <div class="actions">
-                    <button (click)="startEditGroup(gv.group)" class="icon-btn" type="button" aria-label="Gruppe umbenennen">
-                      <fa-icon [icon]="faPen"></fa-icon>
-                    </button>
-                    <button (click)="deleteGroup(gv.group)" class="icon-btn" type="button" aria-label="Gruppe löschen" title="Gruppe löschen">
-                      <fa-icon [icon]="faTrash"></fa-icon>
-                    </button>
+                    <app-icon-button [icon]="faPen" label="Gruppe umbenennen" (click)="startEditGroup(gv.group)"/>
+                    <app-icon-button [icon]="faTrash" label="Gruppe löschen" title="Gruppe löschen" (click)="deleteGroup(gv.group)"/>
                   </div>
                 }
               </div>
@@ -112,12 +100,8 @@
           type="text"/>
       </div>
       <div class="actions">
-        <button (click)="saveEdit(board.id)" class="icon-btn" type="button" aria-label="Speichern">
-          <fa-icon [icon]="faCheck"></fa-icon>
-        </button>
-        <button (click)="cancelEdit()" class="icon-btn" type="button" aria-label="Abbrechen">
-          <fa-icon [icon]="faTimes"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faCheck" label="Speichern" (click)="saveEdit(board.id)"/>
+        <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelEdit()"/>
       </div>
     } @else {
       <div [routerLink]="'/retrospective/' + board.id" class="board-content">
@@ -135,17 +119,11 @@
             </select>
           }
         }
-        <button (click)="startEdit(board)" class="icon-btn" type="button" aria-label="Umbenennen">
-          <fa-icon [icon]="faPen"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faPen" label="Umbenennen" (click)="startEdit(board)"/>
         @if (board.archived) {
-          <button (click)="toggleArchived(board)" class="icon-btn" type="button" aria-label="Wiederherstellen" title="Wiederherstellen">
-            <fa-icon [icon]="faTrashCanArrowUp"></fa-icon>
-          </button>
+          <app-icon-button [icon]="faTrashCanArrowUp" label="Wiederherstellen" title="Wiederherstellen" (click)="toggleArchived(board)"/>
         } @else {
-          <button (click)="toggleArchived(board)" class="icon-btn" type="button" aria-label="Archivieren" title="Archivieren">
-            <fa-icon [icon]="faBoxArchive"></fa-icon>
-          </button>
+          <app-icon-button [icon]="faBoxArchive" label="Archivieren" title="Archivieren" (click)="toggleArchived(board)"/>
         }
       </div>
     }

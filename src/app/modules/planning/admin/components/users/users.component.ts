@@ -1,14 +1,14 @@
 import {Component, inject, Input, OnInit} from '@angular/core';
 
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {AdminService} from '../admin.service';
 import {faTrash} from '@fortawesome/free-solid-svg-icons';
 import {DeveloperId} from '../../../models/delevoper';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [FaIconComponent],
+  imports: [IconButtonComponent],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.less']
 })

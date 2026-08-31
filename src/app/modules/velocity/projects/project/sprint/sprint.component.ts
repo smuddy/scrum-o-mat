@@ -16,11 +16,13 @@ import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {EditTextComponent} from './edit-text/edit-text.component';
 import {EditDateComponent} from './edit-date/edit-date.component';
 import {EditNumberComponent} from './edit-number/edit-number.component';
+import {ButtonComponent} from '../../../../../shared/ui/button.component';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-sprint',
   standalone: true,
-  imports: [CommonModule, FaIconComponent, EditTextComponent, EditDateComponent, EditNumberComponent],
+  imports: [CommonModule, FaIconComponent, EditTextComponent, EditDateComponent, EditNumberComponent, ButtonComponent, IconButtonComponent],
   templateUrl: './sprint.component.html',
   styleUrls: ['./sprint.component.less'],
   animations: [fadeTranslateInstant],

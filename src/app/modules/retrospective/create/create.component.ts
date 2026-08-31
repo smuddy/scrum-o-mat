@@ -8,6 +8,7 @@ import {HeaderService} from '../../../shared/header/header.service';
 import {RetroService} from '../retro.service';
 import {RetroBoardId} from '../models/retro';
 import {fade, fadeTranslate, fadeTranslateInstant} from '../../../animation';
+import {ButtonComponent} from '../../../shared/ui/button.component';
 
 interface RetroColumnDraft {
   name: string;
@@ -17,7 +18,7 @@ interface RetroColumnDraft {
 @Component({
   selector: 'app-retro-create',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ButtonComponent],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.less'],
   animations: [fadeTranslateInstant, fade, fadeTranslate],

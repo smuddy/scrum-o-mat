@@ -15,9 +15,9 @@
         [showResults]="!estimateRequested() && !coffeeBreak()">
         <div class="div-repeat">
           @if (estimateFailed()) {
-            <button (click)="requestEstimate()" @fadeTranslateInstant class="comment">Schätzung
+            <app-button (click)="requestEstimate()" @fadeTranslateInstant class="comment">Schätzung
               wiederholen
-            </button>
+            </app-button>
           }
           @if (estimateSucceeded()) {
             <div class="comment">
@@ -38,17 +38,17 @@
             </div>
           }
           @if (estimateSucceeded()) {
-            <button (click)="edit.resetIssue()" @fadeTranslateInstant class="comment">Schätzung
+            <app-button (click)="edit.resetIssue()" @fadeTranslateInstant class="comment">Schätzung
               beenden
-            </button>
+            </app-button>
           }
           @if (coffeeBreak()) {
             <div class="comment">Wir brauchen mal eine Pause!</div>
           }
           @if (coffeeBreak()) {
-            <button (click)="resumeAfterCoffeeBreak()" @fadeTranslateInstant class="comment">
+            <app-button (click)="resumeAfterCoffeeBreak()" @fadeTranslateInstant class="comment">
               Kaffepause beendet
-            </button>
+            </app-button>
           }
         </div>
       </app-developers>
@@ -56,12 +56,8 @@
   }
 
   <div @fadeTranslateInstant class="div-planning-id">
-    <button (click)="showQrCode=true" aria-label="QR-Code anzeigen" class="icon-btn" type="button">
-      <fa-icon [icon]="faQrcode"></fa-icon>
-    </button>
-    <button (click)="copyLink(link())" aria-label="Link kopieren" class="icon-btn" type="button">
-      <fa-icon [icon]="faClipboard"></fa-icon>
-    </button>
+    <app-icon-button [icon]="faQrcode" label="QR-Code anzeigen" (click)="showQrCode=true"/>
+    <app-icon-button [icon]="faClipboard" label="Link kopieren" (click)="copyLink(link())"/>
     {{link()}}
   </div>
 </div>

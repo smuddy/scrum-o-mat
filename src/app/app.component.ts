@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {RouterOutlet} from '@angular/router';
 import {asapScheduler} from 'rxjs';
 import {observeOn} from 'rxjs/operators';
-import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {IconButtonComponent} from './shared/ui/icon-button.component';
 import {faBars} from '@fortawesome/free-solid-svg-icons/faBars';
 import {MenuComponent} from './shared/menu/menu.component';
 import {HeaderComponent} from './shared/header/header.component';
@@ -16,9 +16,9 @@ import {HeaderService} from './shared/header/header.service';
   imports: [
     CommonModule,
     RouterOutlet,
-    FontAwesomeModule,
     MenuComponent,
     HeaderComponent,
+    IconButtonComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],

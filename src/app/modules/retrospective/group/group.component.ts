@@ -16,6 +16,7 @@ import {HeaderService} from '../../../shared/header/header.service';
 import {MenuService} from '../../../shared/menu/menu.service';
 import {RetroBoardId, RetroGroupId} from '../models/retro';
 import {cardTransition, fadeTranslateInstant} from '../../../animation';
+import {IconButtonComponent} from '../../../shared/ui/icon-button.component';
 
 interface GroupView {
   group: RetroGroupId | null;
@@ -32,7 +33,7 @@ interface GroupView {
 @Component({
   selector: 'app-retro-group',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent, IconButtonComponent],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.less'],
   animations: [fadeTranslateInstant, cardTransition],

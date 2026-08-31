@@ -5,24 +5,14 @@
       <input [(ngModel)]="minutes" class="form center" max="120" min="1" type="number">
       <span class="minutes-unit">m</span>
     </span>
-    <button (click)="startTimer()" class="icon-btn" type="button" aria-label="Timer starten">
-      <fa-icon [icon]="faPlay"></fa-icon>
-    </button>
+    <app-icon-button [icon]="faPlay" label="Timer starten" (click)="startTimer()"/>
   }
   @case ('running') {
-    <button (click)="pauseTimer()" class="icon-btn" type="button" aria-label="Timer pausieren">
-      <fa-icon [icon]="faPause"></fa-icon>
-    </button>
-    <button (click)="resetTimer()" class="icon-btn" type="button" aria-label="Timer zurücksetzen">
-      <fa-icon [icon]="faRotateLeft"></fa-icon>
-    </button>
+    <app-icon-button [icon]="faPause" label="Timer pausieren" (click)="pauseTimer()"/>
+    <app-icon-button [icon]="faRotateLeft" label="Timer zurücksetzen" (click)="resetTimer()"/>
   }
   @case ('paused') {
-    <button (click)="resumeTimer()" class="icon-btn" type="button" aria-label="Timer fortsetzen">
-      <fa-icon [icon]="faPlay"></fa-icon>
-    </button>
-    <button (click)="resetTimer()" class="icon-btn" type="button" aria-label="Timer zurücksetzen">
-      <fa-icon [icon]="faRotateLeft"></fa-icon>
-    </button>
+    <app-icon-button [icon]="faPlay" label="Timer fortsetzen" (click)="resumeTimer()"/>
+    <app-icon-button [icon]="faRotateLeft" label="Timer zurücksetzen" (click)="resetTimer()"/>
   }
 }

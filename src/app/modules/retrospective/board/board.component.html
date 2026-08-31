@@ -64,12 +64,8 @@
                 @if (editingCardId === card.id) {
                   <textarea appAutofocus [(ngModel)]="editingText" class="card-input" rows="3"></textarea>
                   <div class="card-actions">
-                    <button (click)="saveEdit(card.id)" class="card-action-btn" type="button" aria-label="Änderung speichern">
-                      <fa-icon [icon]="faCheck"></fa-icon>
-                    </button>
-                    <button (click)="cancelEdit()" class="card-action-btn" type="button" aria-label="Bearbeitung abbrechen">
-                      <fa-icon [icon]="faTimes"></fa-icon>
-                    </button>
+                    <app-icon-button [icon]="faCheck" label="Änderung speichern" (click)="saveEdit(card.id)"/>
+                    <app-icon-button [icon]="faTimes" label="Bearbeitung abbrechen" (click)="cancelEdit()"/>
                   </div>
                 } @else {
                   <div [class.card-text--hidden]="vm.scrambledById[card.id]"
@@ -103,12 +99,8 @@
                     }
                     @if (canEdit(card, vm)) {
                       <div class="card-actions">
-                        <button (click)="startEdit(card)" class="card-action-btn" type="button" aria-label="Karte bearbeiten">
-                          <fa-icon [icon]="faPen"></fa-icon>
-                        </button>
-                        <button (click)="deleteCard(card.id)" class="card-action-btn" type="button" aria-label="Karte löschen">
-                          <fa-icon [icon]="faTrash"></fa-icon>
-                        </button>
+                        <app-icon-button [icon]="faPen" label="Karte bearbeiten" (click)="startEdit(card)"/>
+                        <app-icon-button [icon]="faTrash" label="Karte löschen" (click)="deleteCard(card.id)"/>
                       </div>
                     }
                   </div>
@@ -131,10 +123,10 @@
       }
       @if (editColumns && vm.isOwner) {
         <div class="column column--add">
-          <button (click)="addColumn(vm)" class="add-column-button" type="button">
+          <app-button (click)="addColumn(vm)">
             <fa-icon [icon]="faPlus"></fa-icon>
             Spalte hinzufügen
-          </button>
+          </app-button>
         </div>
       }
     </div>

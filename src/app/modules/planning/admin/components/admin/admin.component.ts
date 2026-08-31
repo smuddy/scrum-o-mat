@@ -1,16 +1,16 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {AdminService} from '../admin.service';
 import {faExternalLinkAlt, faTrash, faUserCog} from '@fortawesome/free-solid-svg-icons';
 import {Router} from '@angular/router';
 import {PlanningId} from '../../../models/planning';
 import {UsersComponent} from '../users/users.component';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FaIconComponent, UsersComponent],
+  imports: [CommonModule, UsersComponent, IconButtonComponent],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.less']
 })

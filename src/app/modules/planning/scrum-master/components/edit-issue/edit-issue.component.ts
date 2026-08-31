@@ -1,16 +1,16 @@
 import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
 
 import {FormsModule} from '@angular/forms';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {filter} from 'rxjs/operators';
 import {PlanningService} from '../../../planning.service';
 import {fade} from '../../../../../animation';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-edit-issue',
   standalone: true,
-  imports: [FormsModule, FaIconComponent],
+  imports: [FormsModule, IconButtonComponent],
   templateUrl: './edit-issue.component.html',
   styleUrls: ['./edit-issue.component.less'],
   animations: [fade],

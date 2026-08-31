@@ -12,6 +12,8 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 
 import {RetroService} from '../../retro.service';
 import {RetroActionItemId} from '../../models/retro';
+import {IconButtonComponent} from '../../../../shared/ui/icon-button.component';
+import {ButtonComponent} from '../../../../shared/ui/button.component';
 
 // Ticket 17: Action-Items/To-dos -- eigene Sektion unter dem Board (keine Spalte, siehe
 // board.component.html), self-contained analog zu TimerControlComponent: haelt eine eigene
@@ -19,7 +21,7 @@ import {RetroActionItemId} from '../../models/retro';
 @Component({
   selector: 'app-action-items',
   standalone: true,
-  imports: [CommonModule, FormsModule, FaIconComponent],
+  imports: [CommonModule, FormsModule, FaIconComponent, IconButtonComponent, ButtonComponent],
   templateUrl: './action-items.component.html',
   styleUrls: ['./action-items.component.less'],
 })

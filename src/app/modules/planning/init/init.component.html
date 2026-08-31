@@ -4,11 +4,11 @@
     <div class="div-estimate-id">
       <input (keyup.enter)="goDeveloper()" [(ngModel)]="username" name="Name" placeholder="Name" type="text">
     </div>
-    <button (click)="goDeveloper()" class="btn-primary">Teilnehmen</button>
+    <app-button variant="primary" full (click)="goDeveloper()">Teilnehmen</app-button>
     @if (hasLastSession()) {
-      <button (click)="goDeveloperLastSession()">letzter Session beitreten</button>
+      <app-button full (click)="goDeveloperLastSession()">letzter Session beitreten</app-button>
     }
-    <button (click)="goGuest()">als Gast beitreten</button>
+    <app-button full (click)="goGuest()">als Gast beitreten</app-button>
   </div>
 }
 
@@ -19,12 +19,11 @@
     <div class="div-estimate-id">
       <input (keyup.enter)="goMaster()" [(ngModel)]="subject" placeholder="Beschreibung" type="text">
     </div>
-    <button (click)="goMaster()" class="btn-primary">Schätzung starten</button>
-    <button routerLink="scan">QR Code Scannen</button>
+    <app-button variant="primary" full (click)="goMaster()">Schätzung starten</app-button>
+    <app-button full (click)="goScan()">QR Code Scannen</app-button>
     @if (myPlannings$|async; as plannings) {
       @if (!showMySessions && plannings.length > 0) {
-        <button (click)="showMySessions=true" @fade>Meine Schätzungen
-        </button>
+        <app-button full (click)="showMySessions=true" @fade>Meine Schätzungen</app-button>
       }
       @if (showMySessions  && plannings.length > 0) {
         <div @fade>

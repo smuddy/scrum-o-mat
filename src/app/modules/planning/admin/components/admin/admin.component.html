@@ -2,20 +2,14 @@
   <div>
     <div class="div-planning-values">
       <div>
-        <button (click)="delete(planning.id)" aria-label="Löschen" class="icon-btn" type="button">
-          <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faTrash" label="Löschen" (click)="delete(planning.id)"/>
       </div>
       <div>
-        <button (click)="openUser = openUser === planning.id ? null : planning.id" aria-label="Teilnehmer anzeigen"
-        class="icon-btn" type="button">
-          <fa-icon [icon]="faUsers"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faUsers" label="Teilnehmer anzeigen"
+                          (click)="openUser = openUser === planning.id ? null : planning.id"/>
       </div>
       <div>
-        <button (click)="goto(planning.id)" aria-label="Zur Session wechseln" class="icon-btn" type="button">
-          <fa-icon [icon]="faLink"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faLink" label="Zur Session wechseln" (click)="goto(planning.id)"/>
       </div>
       <div>{{planning.subject}}</div>
       <div>{{planning.modified.seconds * 1000  | date:'dd.MM.yyyy HH.mm'   }}</div>

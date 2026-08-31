@@ -9,6 +9,7 @@ import {Observable} from 'rxjs';
 import {MenuEntry, MenuService} from './menu.service';
 import version from '../../../../package.json';
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
+import {IconButtonComponent} from '../ui/icon-button.component';
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes';
 import {faDice} from '@fortawesome/free-solid-svg-icons/faDice';
 import {faCalendarAlt} from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
@@ -19,7 +20,7 @@ import {faChalkboardTeacher} from '@fortawesome/free-solid-svg-icons/faChalkboar
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.less'],
-  imports: [CommonModule, RouterLink, FaIconComponent, NgComponentOutlet],
+  imports: [CommonModule, RouterLink, FaIconComponent, NgComponentOutlet, IconButtonComponent],
   animations: [listAnimation]
 })
 export class MenuComponent {

@@ -1,7 +1,6 @@
 import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 
 import {ActivatedRoute, Router} from '@angular/router';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {QRCodeComponent} from 'angularx-qrcode';
 import {faClipboard} from '@fortawesome/free-solid-svg-icons/faClipboard';
 import {faQrcode} from '@fortawesome/free-solid-svg-icons/faQrcode';
@@ -18,11 +17,13 @@ import {EditIssueComponent} from '../edit-issue/edit-issue.component';
 import {DashboardComponent} from '../dashboard/dashboard.component';
 import {DevelopersComponent} from '../developers/developers.component';
 import {FireworksService} from '../../../../../shared/fireworks/fireworks.service';
+import {ButtonComponent} from '../../../../../shared/ui/button.component';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-scrum-master',
   standalone: true,
-  imports: [FaIconComponent, QRCodeComponent, EditIssueComponent, DashboardComponent, DevelopersComponent],
+  imports: [QRCodeComponent, EditIssueComponent, DashboardComponent, DevelopersComponent, ButtonComponent, IconButtonComponent],
   templateUrl: './scrum-master.component.html',
   styleUrls: ['./scrum-master.component.less'],
   animations: [fadeTranslateInstant, fadeBlur]

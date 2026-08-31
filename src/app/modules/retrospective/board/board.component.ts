@@ -28,6 +28,8 @@ import {ActionItemsComponent} from './action-items/action-items.component';
 import {AutofocusDirective} from './autofocus.directive';
 import {ID} from '../../../helpers/id';
 import {boardToCsv, boardToMarkdown} from './export/retro-export';
+import {ButtonComponent} from '../../../shared/ui/button.component';
+import {IconButtonComponent} from '../../../shared/ui/icon-button.component';
 
 interface ColumnView {
   column: RetroColumn;
@@ -49,7 +51,7 @@ interface BoardView {
 @Component({
   selector: 'app-retro-board',
   standalone: true,
-  imports: [CommonModule, FormsModule, FaIconComponent, CdkDropListGroup, CdkDropList, CdkDrag, ActionItemsComponent, AutofocusDirective],
+  imports: [CommonModule, FormsModule, FaIconComponent, CdkDropListGroup, CdkDropList, CdkDrag, ActionItemsComponent, AutofocusDirective, ButtonComponent, IconButtonComponent],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less'],
   animations: [cardTransition, cardListItem, collapse],

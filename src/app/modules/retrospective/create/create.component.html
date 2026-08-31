@@ -25,7 +25,7 @@
       }
     </div>
 
-    <button (click)="createBoard()" [disabled]="!title || creating" class="btn-primary" type="button">Board anlegen</button>
+    <app-button variant="primary" full (click)="createBoard()" [disabled]="!title || creating">Board anlegen</app-button>
   </div>
 }
 
@@ -36,9 +36,9 @@
 
     <div class="share-link">
       <input [value]="shareLink" readonly type="text">
-      <button (click)="copyLink()" type="button">{{copied ? 'Kopiert!' : 'Kopieren'}}</button>
+      <app-button (click)="copyLink()">{{copied ? 'Kopiert!' : 'Kopieren'}}</app-button>
     </div>
 
-    <button (click)="openBoard()" class="btn-primary" type="button">Board öffnen</button>
+    <app-button variant="primary" full (click)="openBoard()">Board öffnen</app-button>
   </div>
 }

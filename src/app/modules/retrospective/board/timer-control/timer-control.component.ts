@@ -1,6 +1,5 @@
 import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faPlay} from '@fortawesome/free-solid-svg-icons/faPlay';
 import {faPause} from '@fortawesome/free-solid-svg-icons/faPause';
 import {faRotateLeft} from '@fortawesome/free-solid-svg-icons/faRotateLeft';
@@ -8,6 +7,7 @@ import {Subscription} from 'rxjs';
 
 import {RetroService} from '../../retro.service';
 import {RetroBoardId} from '../../models/retro';
+import {IconButtonComponent} from '../../../../shared/ui/icon-button.component';
 
 export type TimerControlState = 'idle' | 'running' | 'paused';
 
@@ -20,7 +20,7 @@ export type TimerControlState = 'idle' | 'running' | 'paused';
 @Component({
   selector: 'app-timer-control',
   standalone: true,
-  imports: [FormsModule, FaIconComponent],
+  imports: [FormsModule, IconButtonComponent],
   templateUrl: './timer-control.component.html',
   styleUrls: ['./timer-control.component.less'],
 })

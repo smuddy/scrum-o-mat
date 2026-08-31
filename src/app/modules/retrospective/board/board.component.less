@@ -222,23 +222,11 @@
   // Nur knopfgross am Ende der Zeile -- nicht auf volle Spaltenbreite dehnen.
   flex: 0 0 auto;
   min-height: 60px;
-}
 
-.add-column-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 10px 14px;
-  color: var(--text-dim);
-  background: var(--surface-1);
-  border: none;
-  border-radius: var(--radius);
-  font-size: 15px;
-
-  &:hover {
-    background: var(--surface-2);
-    color: var(--text);
+  // Board nutzt absolute px (kein 0.75em-:host) -- Groesse des <app-button> hier setzen,
+  // sonst erbt er die grosse Body-Schrift (30px).
+  app-button {
+    font-size: 15px;
   }
 }
 
@@ -333,34 +321,10 @@
   // Gruppe an den rechten Rand; im Editier-Modus (eigene Zeile, Save/Cancel) hat es keinen Effekt.
   margin-left: auto;
   gap: 8px;
-}
 
-// a11y: Edit/Delete bzw. Save/Cancel sind echte <button> (tastaturbedienbar, mit aria-label und
-// sichtbarem Fokus) statt klickbarer <fa-icon>. Optisch weiterhin nur das Icon, flach.
-.card-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 4px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: var(--text-mute);
-  cursor: pointer;
-  transition: color 150ms ease, background 150ms ease;
-
-  &:hover {
-    background: var(--hover);
-    color: var(--text);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  fa-icon {
+  // Edit/Delete bzw. Save/Cancel sind <app-icon-button> (a11y gekapselt). Das Board nutzt absolute px
+  // (kein kompaktes 0.75em-:host), daher hier die Icon-Groesse explizit setzen.
+  app-icon-button {
     font-size: 16px;
   }
 }

@@ -17,16 +17,14 @@
         <h2 class="section-label">Lesend</h2>
         @for (coReader of project.coReaders; track coReader) {
           <div class="staff">
-            <button (click)="removeReader(coReader)" class="icon-btn trash" type="button" aria-label="Mitarbeiter entfernen">
-              <fa-icon [icon]="faTrash"></fa-icon>
-            </button>
+            <app-icon-button [icon]="faTrash" label="Mitarbeiter entfernen" (click)="removeReader(coReader)"/>
             <div >{{coReader}}</div>
           </div>
         }
         <div class="split">
           <app-edit-text (textChanged)="editReaderName($event)"
           [text]="newReaderName" placeholder="Benutzer ID"></app-edit-text>
-          <button (click)="addReader()" class="add-button" type="button">+ Mitarbeiter hinzufügen</button>
+          <app-button (click)="addReader()">+ Mitarbeiter hinzufügen</app-button>
         </div>
         <h2 class="section-label">Schreibend</h2>
       </div>

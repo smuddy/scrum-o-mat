@@ -19,6 +19,7 @@ import {RetroBoardId, RetroGroupId} from '../models/retro';
 import {HeaderService} from '../../../shared/header/header.service';
 import {MenuService} from '../../../shared/menu/menu.service';
 import {cardTransition, fadeTranslateInstant} from '../../../animation';
+import {IconButtonComponent} from '../../../shared/ui/icon-button.component';
 
 // Gruppen-Feature: eine Gruppe in der Uebersicht + die Anzahl ihrer Boards (Basis fuer die Gruppen-Karte).
 interface GroupCardView {
@@ -29,7 +30,7 @@ interface GroupCardView {
 @Component({
   selector: 'app-retro-board-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent, IconButtonComponent],
   templateUrl: './board-list.component.html',
   styleUrls: ['./board-list.component.less'],
   animations: [fadeTranslateInstant, cardTransition],

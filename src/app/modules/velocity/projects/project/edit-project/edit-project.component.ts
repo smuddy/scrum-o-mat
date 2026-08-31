@@ -10,15 +10,16 @@ import {MenuService} from '../../../../../shared/menu/menu.service';
 import {HeaderService} from '../../../../../shared/header/header.service';
 import {LoginService} from '../../../../login/login.service';
 import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {fadeTranslateInstant} from '../../../../../animation';
 import {EditTextComponent} from '../sprint/edit-text/edit-text.component';
 import {EditNumberComponent} from '../sprint/edit-number/edit-number.component';
+import {ButtonComponent} from '../../../../../shared/ui/button.component';
+import {IconButtonComponent} from '../../../../../shared/ui/icon-button.component';
 
 @Component({
   selector: 'app-edit-project',
   standalone: true,
-  imports: [CommonModule, FaIconComponent, EditTextComponent, EditNumberComponent],
+  imports: [CommonModule, EditTextComponent, EditNumberComponent, ButtonComponent, IconButtonComponent],
   templateUrl: './edit-project.component.html',
   styleUrls: ['./edit-project.component.less'],
   animations: [fadeTranslateInstant],

@@ -2,9 +2,7 @@
   <div>
     <div class="div-planning-users">
       <div>
-        <button (click)="delete(user.id)" aria-label="Löschen" class="icon-btn" type="button">
-          <fa-icon [icon]="faTrash"></fa-icon>
-        </button>
+        <app-icon-button [icon]="faTrash" label="Löschen" (click)="delete(user.id)"/>
       </div>
       <div>{{user.name}}</div>
     </div>
