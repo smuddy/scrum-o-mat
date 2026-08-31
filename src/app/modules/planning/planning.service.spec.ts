@@ -33,6 +33,7 @@ import {
   collectionData,
   docData,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
 } from '@angular/fire/firestore';
@@ -53,6 +54,7 @@ describe('PlanningService', () => {
     vi.mocked(collectionData).mockReturnValue(of([]) as any);
     vi.mocked(docData).mockReturnValue(of(undefined) as any);
     vi.mocked(addDoc).mockResolvedValue({id: 'newId'} as any);
+    vi.mocked(setDoc).mockResolvedValue(undefined as any);
     vi.mocked(updateDoc).mockResolvedValue(undefined as any);
     vi.mocked(deleteDoc).mockResolvedValue(undefined as any);
 
@@ -119,15 +121,27 @@ describe('PlanningService', () => {
     expect(planning).toEqual({subject: 'Sprint planning'} as any);
   });
 
-  it('adds a developer, stores the name locally and returns the new id', async () => {
+  it('registers a new developer under the user id, stores the name locally and returns the id', async () => {
     const setItem = vi.spyOn(Storage.prototype, 'setItem');
 
     const id = await service.addUser('p1', 'Ada');
 
-    expect(id).toBe('newId');
+    expect(id).toBe('u1');
     expect(setItem).toHaveBeenCalledWith('user', 'Ada');
-    expect(vi.mocked(collection)).toHaveBeenCalledWith(expect.anything(), 'planning/p1/developer');
-    expect(vi.mocked(addDoc)).toHaveBeenCalledWith(expect.anything(), {name: 'Ada', storyPoints: null});
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'planning/p1/developer/u1');
+    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {name: 'Ada', storyPoints: null});
+  });
+
+  it('reuses the existing developer entry on rejoin and keeps the story points', async () => {
+    // Fenster neu geoeffnet: derselbe Nutzer (uid) tritt erneut bei. Kein neuer Eintrag, die
+    // bisherige Schaetzung bleibt erhalten - nur der Name wird per merge aktualisiert.
+    vi.mocked(docData).mockReturnValue(of({name: 'Ada', storyPoints: StoryPoints.s5}) as any);
+
+    const id = await service.addUser('p1', 'Ada');
+
+    expect(id).toBe('u1');
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'planning/p1/developer/u1');
+    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {name: 'Ada'}, {merge: true});
   });
 
   it('updates the story points of a developer', async () => {

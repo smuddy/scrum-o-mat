@@ -1,5 +1,5 @@
 import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
-import {addDoc, collection, collectionData, deleteDoc, doc, docData, Firestore, query, updateDoc, where} from '@angular/fire/firestore';
+import {addDoc, collection, collectionData, deleteDoc, doc, docData, Firestore, query, setDoc, updateDoc, where} from '@angular/fire/firestore';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, first, mergeMap} from 'rxjs/operators';
 import {StoryPoints} from './models/storyPoints';
@@ -84,11 +84,21 @@ export class PlanningService {
   }
 
   public async addUser(planningId: string, name: string): Promise<string> {
-    const user = PlanningService.newDeveloper(name);
-    localStorage.setItem('user', name);
-    const newDoc = await this.inCtx(() => addDoc(collection(this.afs, 'planning/' + planningId + '/developer'), user));
+    const authUser = await firstValueFrom(this.loginService.authStateAllowAnonymous$);
+    const developerPath = 'planning/' + planningId + '/developer/' + authUser.uid;
 
-    return newDoc.id;
+    const existing = await firstValueFrom(
+      (this.inCtx(() => docData(doc(this.afs, developerPath))) as Observable<Developer | undefined>).pipe(first())
+    );
+
+    if (existing) {
+      await this.inCtx(() => setDoc(doc(this.afs, developerPath), {name}, {merge: true}));
+    } else {
+      await this.inCtx(() => setDoc(doc(this.afs, developerPath), PlanningService.newDeveloper(name)));
+    }
+
+    localStorage.setItem('user', name);
+    return authUser.uid;
   }
 
   public async updateStoryPoints(planningId: string, userId: string, storyPoints: StoryPoints) {
