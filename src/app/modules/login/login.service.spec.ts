@@ -11,6 +11,19 @@ vi.mock('@angular/fire/auth', () => {
   }
   return g.__fireAuthMock;
 });
+vi.mock('@angular/fire/firestore', () => {
+  const g = globalThis as any;
+  if (!g.__fireFirestoreMock) {
+    g.__fireFirestoreMock = {
+      Firestore: class Firestore {},
+      collection: vi.fn(), doc: vi.fn(), query: vi.fn(), where: vi.fn(), orderBy: vi.fn(), limit: vi.fn(),
+      collectionData: vi.fn(), docData: vi.fn(),
+      addDoc: vi.fn(), setDoc: vi.fn(), updateDoc: vi.fn(), deleteDoc: vi.fn(),
+      Timestamp: {fromDate: (d: any) => ({toDate: () => d}), now: () => ({toDate: () => new Date()})},
+    };
+  }
+  return g.__fireFirestoreMock;
+});
 
 import {TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
@@ -23,6 +36,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
+import {Firestore, doc, setDoc} from '@angular/fire/firestore';
 
 import {LoginService} from './login.service';
 
@@ -34,6 +48,7 @@ describe('LoginService', () => {
       providers: [
         LoginService,
         {provide: Auth, useValue: {}},
+        {provide: Firestore, useValue: {}},
         {provide: Router, useValue: router},
       ],
     });
@@ -44,9 +59,11 @@ describe('LoginService', () => {
     vi.clearAllMocks();
     // authStateAllowAnonymous$ wird bereits im Feld-Initializer ausgewertet -> Default vor Konstruktion setzen.
     vi.mocked(authState).mockReturnValue(of(null) as any);
-    vi.mocked(signInWithEmailAndPassword).mockResolvedValue(undefined as any);
-    vi.mocked(createUserWithEmailAndPassword).mockResolvedValue(undefined as any);
+    vi.mocked(signInWithEmailAndPassword).mockResolvedValue({user: {uid: 'u1'}} as any);
+    vi.mocked(createUserWithEmailAndPassword).mockResolvedValue({user: {uid: 'u1'}} as any);
     vi.mocked(signOut).mockResolvedValue(undefined as any);
+    vi.mocked(doc).mockReturnValue({} as any);
+    vi.mocked(setDoc).mockResolvedValue(undefined as any);
 
     router = {navigateByUrl: vi.fn().mockResolvedValue(true)};
   });
@@ -66,6 +83,15 @@ describe('LoginService', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   });
 
+  it('login persistiert die E-Mail im User-Doc (merge)', async () => {
+    const service = createService();
+
+    await service.login('user@example.com', 'secret');
+
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'user/u1');
+    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {email: 'user@example.com'}, {merge: true});
+  });
+
   it('returns an error message when login fails with a wrong password', async () => {
     vi.mocked(signInWithEmailAndPassword).mockRejectedValue({code: 'auth/wrong-password'});
     const service = createService();
@@ -83,6 +109,48 @@ describe('LoginService', () => {
     expect(result).toBeNull();
     expect(vi.mocked(createUserWithEmailAndPassword)).toHaveBeenCalledWith(expect.anything(), 'user@example.com', 'secret');
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');
+  });
+
+  it('register persistiert die E-Mail im User-Doc (merge)', async () => {
+    const service = createService();
+
+    await service.register('user@example.com', 'secret');
+
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'user/u1');
+    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {email: 'user@example.com'}, {merge: true});
+  });
+
+  describe('Vertreter-Feature (Ticket 02): Ruecksprung nach Login/Registrieren', () => {
+    it('login navigiert zur hinterlegten retroReturnUrl und entfernt sie danach aus localStorage', async () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('/retrospective/join/abc123');
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => undefined);
+      const service = createService();
+
+      await service.login('user@example.com', 'secret');
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/retrospective/join/abc123');
+      expect(removeItemSpy).toHaveBeenCalledWith('retroReturnUrl');
+    });
+
+    it('register navigiert zur hinterlegten retroReturnUrl und entfernt sie danach aus localStorage', async () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('/retrospective/join/abc123');
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => undefined);
+      const service = createService();
+
+      await service.register('user@example.com', 'secret');
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/retrospective/join/abc123');
+      expect(removeItemSpy).toHaveBeenCalledWith('retroReturnUrl');
+    });
+
+    it('login navigiert wie bisher auf "/", wenn keine retroReturnUrl hinterlegt ist', async () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
+      const service = createService();
+
+      await service.login('user@example.com', 'secret');
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/');
+    });
   });
 
   it('returns an error message when registration fails because the e-mail is already in use', async () => {

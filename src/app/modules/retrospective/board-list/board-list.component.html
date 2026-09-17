@@ -1,86 +1,106 @@
 @if (boards$|async; as boards) {
   @if (archivedBoards$|async; as archivedBoards) {
     @if (groupViews$|async; as groups) {
-      <div @fadeTranslateInstant class="board-list">
+      @if (deputyGroupViews$|async; as deputyGroups) {
+        <div @fadeTranslateInstant class="board-list">
 
-        @if (creatingGroup) {
-          <div class="new-group">
-            <input
-              (keyup.enter)="saveNewGroup()"
-              (keyup.escape)="cancelCreateGroup()"
-              [(ngModel)]="newGroupName"
-              class="title-input"
-              placeholder="Gruppenname (z.B. Teamname)"
-              type="text"/>
-            <app-icon-button [icon]="faCheck" label="Gruppe speichern" (click)="saveNewGroup()"/>
-            <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelCreateGroup()"/>
-          </div>
-        }
-
-        @if (groups.length !== 0) {
-          <div class="section-label">Gruppen</div>
-          <div @card class="list">
-            @for (gv of groups; track gv.group.id) {
-              <div class="board card-child">
-                @if (editingGroupId === gv.group.id) {
-                  <div class="board-content board-content--edit">
-                    <input
-                      (keyup.enter)="saveGroupEdit(gv.group.id)"
-                      (keyup.escape)="cancelGroupEdit()"
-                      [(ngModel)]="editingGroupName"
-                      class="title-input"
-                      type="text"/>
-                  </div>
-                  <div class="actions">
-                    <app-icon-button [icon]="faCheck" label="Speichern" (click)="saveGroupEdit(gv.group.id)"/>
-                    <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelGroupEdit()"/>
-                  </div>
-                } @else {
-                  <div [routerLink]="'/retrospective/group/' + gv.group.id" class="board-content">
-                    <span class="title"><fa-icon [icon]="faLayerGroup"></fa-icon> {{gv.group.name}}</span>
-                    <span class="columns">{{gv.boardCount}} Boards</span>
-                  </div>
-                  <div class="actions">
-                    <app-icon-button [icon]="faPen" label="Gruppe umbenennen" (click)="startEditGroup(gv.group)"/>
-                    <app-icon-button [icon]="faTrash" label="Gruppe löschen" title="Gruppe löschen" (click)="deleteGroup(gv.group)"/>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        }
-
-        @if (boards.length!==0) {
-          @if (groups.length !== 0) {
-            <div class="section-label">Ohne Gruppe</div>
+          @if (creatingGroup) {
+            <div class="new-group">
+              <input
+                (keyup.enter)="saveNewGroup()"
+                (keyup.escape)="cancelCreateGroup()"
+                [(ngModel)]="newGroupName"
+                class="title-input"
+                placeholder="Gruppenname (z.B. Teamname)"
+                type="text"/>
+              <app-icon-button [icon]="faCheck" label="Gruppe speichern" (click)="saveNewGroup()"/>
+              <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelCreateGroup()"/>
+            </div>
           }
-          <div @card class="list">
-            @for (board of boards; track board.id) {
-              <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
-            }
-          </div>
-        }
 
-        @if (boards.length===0 && archivedBoards.length===0 && groups.length===0) {
-          <div class="empty">Noch keine Boards — leg dein erstes an.</div>
-        }
+          @if (groups.length !== 0) {
+            <div class="section-label">Gruppen</div>
+            <div @card class="list">
+              @for (gv of groups; track gv.group.id) {
+                <div class="board card-child">
+                  @if (editingGroupId === gv.group.id) {
+                    <div class="board-content board-content--edit">
+                      <input
+                        (keyup.enter)="saveGroupEdit(gv.group.id)"
+                        (keyup.escape)="cancelGroupEdit()"
+                        [(ngModel)]="editingGroupName"
+                        class="title-input"
+                        type="text"/>
+                    </div>
+                    <div class="actions">
+                      <app-icon-button [icon]="faCheck" label="Speichern" (click)="saveGroupEdit(gv.group.id)"/>
+                      <app-icon-button [icon]="faTimes" label="Abbrechen" (click)="cancelGroupEdit()"/>
+                    </div>
+                  } @else {
+                    <div [routerLink]="'/retrospective/group/' + gv.group.id" class="board-content">
+                      <span class="title"><fa-icon [icon]="faLayerGroup"></fa-icon> {{gv.group.name}}</span>
+                      <span class="columns">{{gv.boardCount}} Boards</span>
+                    </div>
+                    <div class="actions">
+                      <app-icon-button [icon]="faPen" label="Gruppe umbenennen" (click)="startEditGroup(gv.group)"/>
+                      <app-icon-button [icon]="faTrash" label="Gruppe löschen" title="Gruppe löschen" (click)="deleteGroup(gv.group)"/>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
 
-        @if (archivedBoards.length!==0) {
-          <div class="archived-section">
-            <button (click)="toggleArchivedSection()" class="archived-toggle" type="button">
-              <fa-icon [icon]="archivedExpanded ? faChevronUp : faChevronDown"></fa-icon>
-              Archiviert ({{archivedBoards.length}})
-            </button>
-            @if (archivedExpanded) {
-              <div @card class="list">
-                @for (board of archivedBoards; track board.id) {
-                  <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
-                }
-              </div>
+          <!-- Ticket 05: Gruppen, in denen der eingeloggte Nutzer nur Vertreter ist (nicht Owner) --
+               eigener Abschnitt, KEINE Owner-Aktionen (kein Umbenennen/Loeschen/Vertreter-Verwalten),
+               KEINE Board-Anzahl (die Uebersicht kennt nur die eigenen Boards, nicht den vollen Inhalt
+               fremder Gruppen). Nur Name + Navigation auf die Gruppen-Seite. -->
+          @if (deputyGroups.length !== 0) {
+            <div class="section-label">Gruppen, in denen ich Mitarbeiter bin</div>
+            <div @card class="list deputy-list">
+              @for (deputyGroup of deputyGroups; track deputyGroup.id) {
+                <div class="board card-child">
+                  <div [routerLink]="'/retrospective/group/' + deputyGroup.id" class="board-content">
+                    <span class="title"><fa-icon [icon]="faLayerGroup"></fa-icon> {{deputyGroup.name}}</span>
+                    <span class="columns">Mitarbeiter</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (boards.length!==0) {
+            @if (groups.length !== 0 || deputyGroups.length !== 0) {
+              <div class="section-label">Ohne Gruppe</div>
             }
-          </div>
-        }
-      </div>
+            <div @card class="list">
+              @for (board of boards; track board.id) {
+                <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
+              }
+            </div>
+          }
+
+          @if (boards.length===0 && archivedBoards.length===0 && groups.length===0 && deputyGroups.length===0) {
+            <div class="empty">Noch keine Boards — leg dein erstes an.</div>
+          }
+
+          @if (archivedBoards.length!==0) {
+            <div class="archived-section">
+              <button (click)="toggleArchivedSection()" class="archived-toggle" type="button">
+                <fa-icon [icon]="archivedExpanded ? faChevronUp : faChevronDown"></fa-icon>
+                Archiviert ({{archivedBoards.length}})
+              </button>
+              @if (archivedExpanded) {
+                <div @card class="list">
+                  @for (board of archivedBoards; track board.id) {
+                    <ng-container [ngTemplateOutletContext]="{$implicit: board}" [ngTemplateOutlet]="boardRow"></ng-container>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
     }
   }
 }

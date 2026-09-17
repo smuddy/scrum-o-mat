@@ -1,0 +1,45 @@
+<div @fadeTranslateInstant class="join">
+  @switch (state) {
+    @case ('loading') {
+      <div class="hint">Code wird geprueft ...</div>
+    }
+    @case ('invalid') {
+      <div class="error">
+        Code ungueltig oder bereits eingeloest.
+        @if (joinErrorMessage) {
+          <div class="error-detail">{{joinErrorMessage}}</div>
+        }
+      </div>
+      <a class="back-link" routerLink="/retrospective">Zur Uebersicht</a>
+    }
+    @case ('expired') {
+      <div class="error">
+        Dieser Code ist abgelaufen (Freigabe-Codes gelten 3 Tage).
+        @if (joinErrorMessage) {
+          <div class="error-detail">{{joinErrorMessage}}</div>
+        }
+      </div>
+      <a class="back-link" routerLink="/retrospective">Zur Uebersicht</a>
+    }
+    @case ('ready') {
+      <div class="invite-preview">
+        <div class="hint">Einladung als Mitarbeiter für die Gruppe</div>
+        <h2 class="group-name">{{groupName}}</h2>
+      </div>
+      @if (isLoggedIn) {
+        <app-button variant="primary" full (click)="join()">Als Mitarbeiter beitreten</app-button>
+      } @else {
+        <div class="login-hint">Bitte zuerst anmelden oder registrieren, um beizutreten.</div>
+        <app-button variant="primary" full (click)="goToLogin()">Zum Login</app-button>
+      }
+    }
+    @case ('joining') {
+      <div class="hint">Wird beigetreten ...</div>
+    }
+    @case ('success') {
+      <div class="success">
+        Du bist jetzt Mitarbeiter der Gruppe „{{groupName}}“. Du wirst weitergeleitet ...
+      </div>
+    }
+  }
+</div>

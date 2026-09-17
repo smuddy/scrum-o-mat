@@ -1,0 +1,62 @@
+// Flaches System wie group.component.less: Flaechen ueber Helligkeit statt Rahmen. Tokens in
+// src/styles.less (:root).
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75em;
+}
+
+.join {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.hint {
+  color: var(--text-dim);
+}
+
+.invite-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.group-name {
+  margin: 0;
+  font-size: 20px;
+}
+
+.login-hint {
+  color: var(--text-dim);
+}
+
+.error {
+  color: #e0796a;
+}
+
+.error-detail {
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+.success {
+  color: var(--positive);
+}
+
+.back-link {
+  color: var(--text-dim);
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--text);
+  }
+}

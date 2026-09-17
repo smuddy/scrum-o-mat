@@ -35,9 +35,28 @@ export interface RetroGroup {
   name: string;
   created: any;
   modified: any;
+  // Vertreter-Feature: optionale Liste realer uids, die die Gruppe vertreten duerfen (Board-Vollzugriff
+  // + Boards anlegen/einordnen, aber KEINE Gruppen-Verwaltung). Fehlt/leer = keine Vertreter -> additiv,
+  // nicht brechend. Beitritt ausschliesslich per einmaligem Freigabe-Code (siehe RetroInvite).
+  deputies?: string[];
 }
 
 export interface RetroGroupId extends RetroGroup {
+  id: string;
+}
+
+// Vertreter-Feature: einmaliger Freigabe-Code, den der Owner erzeugt und (als Code oder Link
+// /retrospective/join/:code) teilt. Gespeichert unter invites/{code} -- die Doc-ID IST der zufaellige
+// Code. Ein eingeloggter Nutzer loest ihn genau einmal und nur binnen 3 Tagen (expiresAt) ein; dabei
+// wird er zur deputies-Liste der Gruppe hinzugefuegt und der Code geloescht (siehe RetroService).
+export interface RetroInvite {
+  groupId: string;
+  createdBy: string;
+  created: any;
+  expiresAt: any;
+}
+
+export interface RetroInviteId extends RetroInvite {
   id: string;
 }
 

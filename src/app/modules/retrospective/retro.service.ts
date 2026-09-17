@@ -1,10 +1,10 @@
 import {inject, Injectable, Injector, runInInjectionContext} from '@angular/core';
-import {addDoc, arrayRemove, arrayUnion, collection, collectionData, deleteDoc, deleteField, doc, docData, FieldPath, Firestore, increment, query, updateDoc, where, writeBatch} from '@angular/fire/firestore';
+import {addDoc, arrayRemove, arrayUnion, collection, collectionData, deleteDoc, deleteField, doc, docData, FieldPath, Firestore, getDoc, increment, query, runTransaction, setDoc, updateDoc, where, writeBatch} from '@angular/fire/firestore';
 import {catchError, distinctUntilChanged, mergeMap} from 'rxjs/operators';
 import {firstValueFrom, Observable, of} from 'rxjs';
 import {LoginService} from '../login/login.service';
 import {ID} from '../../helpers/id';
-import {RetroActionItem, RetroActionItemId, RetroBoard, RetroBoardId, RetroCard, RetroCardId, RetroColumn, RetroGroup, RetroGroupId} from './models/retro';
+import {RetroActionItem, RetroActionItemId, RetroBoard, RetroBoardId, RetroCard, RetroCardId, RetroColumn, RetroGroup, RetroGroupId, RetroInvite} from './models/retro';
 
 @Injectable({
   providedIn: 'root'
@@ -370,5 +370,89 @@ export class RetroService {
       batch.delete(doc(this.afs, 'retroGroup/' + groupId));
       return batch.commit();
     });
+  }
+
+  // ===========================================================================================
+  // Vertreter-Feature: Vertreter (deputies) einer Gruppe + einmalige Freigabe-Codes (invites).
+  // Rollen-Predikate liegen in retro-permissions.ts (rein/testbar). Beitritt ausschliesslich per Code.
+  // ===========================================================================================
+
+  // Fuegt eine reale uid zur deputies-Liste hinzu (Owner-Aktion bzw. Einloesung). arrayUnion ist
+  // idempotent -> kein Doppel-Eintrag. Wird auch aus redeemInvite() heraus (in der Transaktion) gesetzt.
+  public async addDeputy(groupId: string, uid: string): Promise<void> {
+    await this.inCtx(() => updateDoc(doc(this.afs, 'retroGroup/' + groupId), {deputies: arrayUnion(uid), modified: new Date()}));
+  }
+
+  // Entfernt einen Vertreter (Owner-Aktion) -> verliert sofort die Rechte.
+  public async removeDeputy(groupId: string, uid: string): Promise<void> {
+    await this.inCtx(() => updateDoc(doc(this.afs, 'retroGroup/' + groupId), {deputies: arrayRemove(uid), modified: new Date()}));
+  }
+
+  // Gruppen, in denen der eingeloggte Nutzer Vertreter ist -- fuer den eigenen Abschnitt in der
+  // Uebersicht (board-list). Guard/catchError exakt wie listMyGroups$ (anonyme Nutzer bzw. noch nicht
+  // deployte Rules duerfen die Uebersicht nicht leeren).
+  public listGroupsWhereDeputy$: Observable<RetroGroupId[]> = this.loginService.currentUserId$().pipe(
+    mergeMap(uid => uid
+      ? this.inCtx(() => collectionData(
+        query(collection(this.afs, 'retroGroup'), where('deputies', 'array-contains', uid)),
+        {idField: 'id'}
+      )) as Observable<RetroGroupId[]>
+      : of([] as RetroGroupId[])),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    catchError(() => of([] as RetroGroupId[])),
+  );
+
+  // Owner erzeugt einen einmaligen Freigabe-Code: zufaellige, nicht herleitbare Doc-ID (crypto.randomUUID),
+  // 3 Tage gueltig. Gibt den Code zurueck (fuer Anzeige/Link, siehe group.component). Der Code IST die
+  // Doc-ID unter invites/{code}; die Collection ist per Rules nicht auflistbar (kein list) -> nicht
+  // enumerierbar.
+  public async createInvite(groupId: string): Promise<string> {
+    const uid = await firstValueFrom(this.loginService.currentUserId$());
+    const code = crypto.randomUUID();
+    const invite: RetroInvite = {
+      groupId,
+      createdBy: uid ?? '',
+      created: new Date(),
+      expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    };
+    await this.inCtx(() => setDoc(doc(this.afs, 'invites/' + code), invite));
+    return code;
+  }
+
+  // Liest ein Invite-Doc per bekanntem Code (fuer die Vorschau auf der Einloese-Seite, Ticket 02).
+  // Liefert null, wenn der Code unbekannt ist -- die eigentliche Gueltigkeitspruefung (abgelaufen?)
+  // erledigt der Aufrufer bzw. massgeblich die Transaktion in redeemInvite().
+  public async getInvite(code: string): Promise<RetroInvite | null> {
+    const snap = await this.inCtx(() => getDoc(doc(this.afs, 'invites/' + code)));
+    return snap.exists() ? snap.data() as RetroInvite : null;
+  }
+
+  // Loest einen Freigabe-Code ein: EINMALIG und nur binnen 3 Tagen. Alles in EINER Firestore-Transaktion
+  // (atomar) -- so kann derselbe Code nicht doppelt eingeloest werden. Rueckgabe: {groupId} bei Erfolg,
+  // 'not-found' (unbekannt/bereits eingeloest) oder 'expired' (abgelaufen; der Doc wird dabei aufgeraeumt).
+  public async redeemInvite(code: string, uid: string): Promise<{ groupId: string } | 'not-found' | 'expired'> {
+    return this.inCtx(() => runTransaction(this.afs, async (tx) => {
+      const inviteRef = doc(this.afs, 'invites/' + code);
+      const snap = await tx.get(inviteRef);
+      if (!snap.exists()) {
+        return 'not-found' as const;
+      }
+      const invite = snap.data() as RetroInvite;
+      const exp = invite.expiresAt;
+      const expiresMs = exp?.toDate ? exp.toDate().getTime() : new Date(exp).getTime();
+      if (expiresMs < Date.now()) {
+        tx.delete(inviteRef);
+        return 'expired' as const;
+      }
+      tx.update(doc(this.afs, 'retroGroup/' + invite.groupId), {deputies: arrayUnion(uid), modified: new Date()});
+      tx.delete(inviteRef);
+      return {groupId: invite.groupId};
+    }));
+  }
+
+  // Widerruft einen (offenen) Freigabe-Code -- nur der gerade erzeugte, in der Session bekannte Code
+  // (invites ist bewusst nicht auflistbar, siehe Rules). Einmaligkeit + 3-Tage-TTL decken den Rest ab.
+  public async revokeInvite(code: string): Promise<void> {
+    await this.inCtx(() => deleteDoc(doc(this.afs, 'invites/' + code)));
   }
 }

@@ -83,7 +83,7 @@ describe('UserService', () => {
     const user = await firstValueFrom(service.user$);
 
     expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'user/u1');
-    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {name: null});
+    expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {name: null}, {merge: true});
     expect(user).toEqual({name: null} as any);
   });
 
@@ -97,6 +97,18 @@ describe('UserService', () => {
     // wenn es noch nicht existiert (Alt-Bug: updateDoc schlägt bei fehlendem Doc fehl).
     expect(vi.mocked(setDoc)).toHaveBeenCalledWith(expect.anything(), {name: 'Ada'}, {merge: true});
     expect(vi.mocked(updateDoc)).not.toHaveBeenCalled();
+  });
+
+  // Vertreter-Feature: liest das User-Doc eines fremden uid (Mitarbeiter-Liste im Owner-Abschnitt der Gruppe).
+  it('getUser$ liest das User-Doc einer fremden uid mit idField', async () => {
+    vi.mocked(docData).mockReturnValue(of({name: 'Bob', email: 'bob@example.com'}) as any);
+    const service = createService();
+
+    const user = await firstValueFrom(service.getUser$('other-uid'));
+
+    expect(vi.mocked(doc)).toHaveBeenCalledWith(expect.anything(), 'user/other-uid');
+    expect(vi.mocked(docData)).toHaveBeenCalledWith(expect.anything(), {idField: 'id'});
+    expect(user).toEqual({name: 'Bob', email: 'bob@example.com'} as any);
   });
 
 });

@@ -169,3 +169,76 @@
     font-size: 0.9em;
   }
 }
+
+// Ticket 03: Vertreter-Verwaltung (Owner-only) -- Freigabe-Code-Karte + Vertreter-Liste mit Papierkorb,
+// Optik analog zu .board/.list oben bzw. edit-project.component.html.
+.deputies-section {
+  width: 100%;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.invite-card {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  box-sizing: border-box;
+}
+
+.invite-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invite-code {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 1.1em;
+  font-weight: bold;
+  word-break: break-all;
+}
+
+.invite-link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.invite-link-input {
+  .ui-field();
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 0.85em;
+}
+
+.invite-hint {
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+
+.deputies-list {
+  margin-top: 10px;
+}
+
+.deputy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+
+.deputy-uid {
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 0.85em;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.deputies-empty {
+  margin-top: 10px;
+}

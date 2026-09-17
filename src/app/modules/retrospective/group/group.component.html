@@ -25,7 +25,7 @@
 
       @if (!vm.currentBoard && vm.archivedBoards.length === 0) {
         <div class="empty">
-          @if (vm.isOwner) {
+          @if (vm.canManage) {
             Noch keine Boards in dieser Gruppe — leg über das Menü das erste an.
           } @else {
             In dieser Gruppe gibt es noch keine Boards.
@@ -61,6 +61,46 @@
                 <ng-container [ngTemplateOutletContext]="{$implicit: board, current: false, vm: vm}" [ngTemplateOutlet]="boardRow"></ng-container>
               }
             </div>
+          }
+        </div>
+      }
+
+      <!-- Ticket 03: Vertreter-Verwaltung -- ausschliesslich fuer den Owner sichtbar (nicht fuer
+           Vertreter, nicht fuer Link-Mitglieder). Freigabe-Code erzeugen/widerrufen + Vertreter-Liste
+           mit Entfernen (Optik an edit-project.component.html angelehnt). -->
+      @if (vm.isOwner) {
+        <div class="deputies-section">
+          <div class="section-label">Mitarbeiter</div>
+
+          <div class="invite-card">
+            @if (!inviteCode) {
+              <app-button dense (click)="createInvite()" [disabled]="inviteCreating">Einladungs-Code erzeugen</app-button>
+            } @else {
+              <div class="invite-details">
+                <div class="invite-code">{{inviteCode}}</div>
+                <div class="invite-link-row">
+                  <input [value]="inviteLink" class="invite-link-input" readonly type="text"/>
+                  <app-button dense (click)="copyInviteLink()">{{inviteLinkCopied ? 'Kopiert!' : 'Link kopieren'}}</app-button>
+                </div>
+                <div class="invite-hint">Code ist einmalig einlösbar; jetzt kopieren. Gültig bis {{inviteExpiresLabel}}.</div>
+                <app-button dense (click)="revokeInvite()">Code widerrufen</app-button>
+              </div>
+            }
+          </div>
+
+          @if (deputyInfos$ | async; as deputyInfos) {
+            @if (deputyInfos.length !== 0) {
+              <div @card class="list deputies-list">
+                @for (info of deputyInfos; track info.uid) {
+                  <div class="deputy card-child">
+                    <span class="deputy-uid">{{info.label}}</span>
+                    <app-icon-button [icon]="faTrash" label="Mitarbeiter entfernen" (click)="removeDeputy(info.uid)"/>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty deputies-empty">Noch keine Mitarbeiter.</div>
+            }
           }
         </div>
       }

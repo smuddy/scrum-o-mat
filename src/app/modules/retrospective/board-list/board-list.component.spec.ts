@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -37,17 +37,27 @@ describe('BoardListComponent', () => {
     created: new Date('2026-01-04'), modified: new Date('2026-01-04'), groupId: 'g1',
   };
   const groupA: RetroGroupId = {id: 'g1', ownerId: 'me', name: 'Team Alpha', created: new Date('2026-01-01'), modified: new Date('2026-01-01')};
+  // Vertreter-Feature (Ticket 05): eine fremde Gruppe, in der "me" nur Vertreter ist (nicht Owner).
+  const deputyGroupZ: RetroGroupId = {id: 'g9', ownerId: 'other', name: 'Team Zeta', created: new Date('2026-01-01'), modified: new Date('2026-01-01'), deputies: ['me']};
 
-  beforeEach(async () => {
+  // Baut das TestBed mit ueberschreibbaren RetroService-Mocks neu auf (analog zu group.component.spec.ts),
+  // damit einzelne describe-Bloecke abweichende Streams (z.B. listGroupsWhereDeputy$) durchreichen koennen.
+  async function setup(overrides: Record<string, unknown> = {}): Promise<void> {
+    // Idempotent aufrufbar: erlaubt einzelnen Tests, nach dem globalen beforeEach (Standard-Mocks)
+    // per erneutem setup(...) abweichende Mocks (z.B. listGroupsWhereDeputy$) durchzureichen.
+    TestBed.resetTestingModule();
+
     retroService = {
       listMyBoards$: of([olderActiveBoard, activeBoard, archivedBoard, groupedBoard]),
       listMyGroups$: of([groupA]),
+      listGroupsWhereDeputy$: of([]),
       renameBoard: vi.fn().mockResolvedValue(undefined),
       setArchived: vi.fn().mockResolvedValue(undefined),
       createGroup: vi.fn().mockResolvedValue('new-group-id'),
       renameGroup: vi.fn().mockResolvedValue(undefined),
       deleteGroup: vi.fn().mockResolvedValue(undefined),
       assignBoardToGroup: vi.fn().mockResolvedValue(undefined),
+      ...overrides,
     };
 
     // Owner-Aktionen laufen ueber die Seitenleiste (MenuService), analog zu board.component.spec.ts.
@@ -62,12 +72,16 @@ describe('BoardListComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(BoardListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  }
+
+  beforeEach(async () => setup());
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 
   it('should create', () => {
@@ -109,6 +123,65 @@ describe('BoardListComponent', () => {
       const groups = await firstValueFrom(component.sortedGroups$);
 
       expect(groups.map(g => g.id)).toEqual(['g1']);
+    });
+  });
+
+  // Ticket 05: eigener Abschnitt fuer Gruppen, in denen der Nutzer nur Vertreter (nicht Owner) ist.
+  describe('Vertreter-Sicht (Ticket 05: Gruppen, in denen ich Vertreter bin)', () => {
+    it('deputyGroupViews$ liefert die Gruppen aus listGroupsWhereDeputy$', async () => {
+      await setup({listGroupsWhereDeputy$: of([deputyGroupZ])});
+
+      const views = await firstValueFrom(component.deputyGroupViews$);
+
+      expect(views.map(g => g.id)).toEqual(['g9']);
+    });
+
+    it('dedupliziert eine Gruppe, die gleichzeitig eine eigene Gruppe ist', async () => {
+      // groupA ist bereits Owner-Gruppe (listMyGroups$) -- selbst wenn der Deputy-Stream sie ebenfalls
+      // liefert, darf sie NICHT zusaetzlich im Vertreter-Abschnitt auftauchen.
+      await setup({listGroupsWhereDeputy$: of([groupA, deputyGroupZ])});
+
+      const views = await firstValueFrom(component.deputyGroupViews$);
+
+      expect(views.map(g => g.id)).toEqual(['g9']);
+    });
+
+    it('bleibt leer, wenn der Deputy-Stream leer ist (z.B. anonymer Nutzer)', async () => {
+      const views = await firstValueFrom(component.deputyGroupViews$);
+
+      expect(views).toEqual([]);
+    });
+
+    it('rendert den Vertreter-Abschnitt im Template nur, wenn Vertreter-Gruppen vorhanden sind', async () => {
+      await setup({listGroupsWhereDeputy$: of([deputyGroupZ])});
+
+      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+      expect(text).toContain('Gruppen, in denen ich Mitarbeiter bin');
+      expect(text).toContain('Team Zeta');
+    });
+
+    it('zeigt bei leerem Deputy-Stream KEINEN Vertreter-Abschnitt', () => {
+      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+      expect(text).not.toContain('Gruppen, in denen ich Mitarbeiter bin');
+    });
+
+    it('bietet an den Vertreter-Karten KEINE Owner-Aktionen (kein Umbenennen/Loeschen/Verwalten)', async () => {
+      await setup({listGroupsWhereDeputy$: of([deputyGroupZ])});
+
+      const deputyList = (fixture.nativeElement as HTMLElement).querySelector('.deputy-list');
+
+      expect(deputyList).toBeTruthy();
+      expect(deputyList?.querySelectorAll('app-icon-button').length).toBe(0);
+    });
+
+    it('sortedGroups$ (Verschiebe-Auswahl) enthaelt auch Vertreter-Gruppen', async () => {
+      await setup({listGroupsWhereDeputy$: of([deputyGroupZ])});
+
+      const groups = await firstValueFrom(component.sortedGroups$);
+
+      expect(groups.map(g => g.id).sort()).toEqual(['g1', 'g9']);
     });
   });
 

@@ -13,6 +13,7 @@ import {booleanAttribute, ChangeDetectionStrategy, Component, input} from '@angu
   host: {
     '[class.full]': 'full()',
     '[class.sm]': "size() === 'sm'",
+    '[class.dense]': 'dense()',
   },
   template: `
     <button [type]="type()" [disabled]="disabled()" [class.primary]="variant() === 'primary'">
@@ -36,6 +37,15 @@ import {booleanAttribute, ChangeDetectionStrategy, Component, input} from '@angu
     /* kompakte Variante -- gleiche Hoehe wie ein Eingabefeld, fuer inline neben Inputs */
     :host(.sm) button {
       padding: 7px 14px;
+    }
+
+    /* dichte Variante -- eigenstaendig kompakt (kleineres Padding + feste kleine Schrift), damit der
+       Button auch ausserhalb eines schriftgroesse-reduzierten Kontexts so kompakt wirkt wie die Buttons
+       in der Action-Items-Anzeige (dort size="sm" + host font-size 15px). */
+    :host(.dense) button {
+      padding: 7px 14px;
+      gap: 6px;
+      font-size: 15px;
     }
 
     button {
@@ -86,4 +96,7 @@ export class ButtonComponent {
   readonly disabled = input(false, {transform: booleanAttribute});
   readonly full = input(false, {transform: booleanAttribute});
   readonly size = input<'md' | 'sm'>('md');
+  // Dichte Darstellung (kompaktes Padding + feste kleine Schrift), wie die Buttons in der
+  // Action-Items-Anzeige -- u.a. in der Mitarbeiter-Uebersicht (group.component) verwendet.
+  readonly dense = input(false, {transform: booleanAttribute});
 }

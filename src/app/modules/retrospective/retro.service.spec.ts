@@ -25,6 +25,7 @@ vi.mock('@angular/fire/firestore', () => {
       where: vi.fn(),
       collectionData: vi.fn(),
       docData: vi.fn(),
+      getDoc: vi.fn(),
       addDoc: vi.fn(),
       updateDoc: vi.fn(),
       deleteDoc: vi.fn(),
@@ -45,6 +46,7 @@ import {
   doc,
   collectionData,
   docData,
+  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -55,7 +57,7 @@ import {of} from 'rxjs';
 
 import {RetroService} from './retro.service';
 import {LoginService} from '../login/login.service';
-import {RetroActionItemId, RetroCardId} from './models/retro';
+import {RetroActionItemId, RetroCardId, RetroInvite} from './models/retro';
 
 describe('RetroService', () => {
   let service: RetroService;
@@ -88,6 +90,10 @@ describe('RetroService', () => {
     vi.mocked(doc).mockImplementation((_afs: any, path: any) => path);
     vi.mocked(collectionData).mockImplementation((ref: any) => of(collectionByPath[ref] ?? []) as any);
     vi.mocked(docData).mockImplementation((ref: any) => of(cardByPath[ref]) as any);
+    vi.mocked(getDoc).mockImplementation(async (ref: any) => {
+      const data = cardByPath[ref];
+      return {exists: () => data !== undefined, data: () => data} as any;
+    });
     vi.mocked(addDoc).mockResolvedValue({id: 'newId'} as any);
     vi.mocked(updateDoc).mockResolvedValue(undefined as any);
     vi.mocked(deleteDoc).mockResolvedValue(undefined as any);
@@ -275,6 +281,24 @@ describe('RetroService', () => {
       await service.mergeCards('b1', 'source1', 'target1');
 
       expect(vi.mocked(writeBatch)).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getInvite (Ticket 02, Vorschau auf der Einloese-Seite)', () => {
+    it('liefert das Invite-Doc, wenn der Code bekannt ist', async () => {
+      const invite: RetroInvite = {groupId: 'g1', createdBy: 'owner1', created: new Date(), expiresAt: new Date()};
+      cardByPath['invites/code123'] = invite;
+
+      const result = await service.getInvite('code123');
+
+      expect(vi.mocked(getDoc)).toHaveBeenCalledWith('invites/code123');
+      expect(result).toEqual(invite);
+    });
+
+    it('liefert null, wenn der Code unbekannt ist', async () => {
+      const result = await service.getInvite('unknown');
+
+      expect(result).toBeNull();
     });
   });
 });

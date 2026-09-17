@@ -101,6 +101,13 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/retrospective/group/group.component').then(m => m.GroupComponent),
       },
       {
+        // Einloese-Seite fuer einen Freigabe-Code (Vertreter-Feature, Ticket 02) -- bewusst OHNE
+        // AuthGuard, anonyme Besucher muessen die Seite erreichen, um den Login-Hinweis zu sehen.
+        // Muss VOR ':boardId' stehen (sonst wuerde 'join' als boardId interpretiert).
+        path: 'join/:code',
+        loadComponent: () => import('./modules/retrospective/group/join/group-join.component').then(m => m.GroupJoinComponent),
+      },
+      {
         path: ':boardId',
         loadComponent: () => import('./modules/retrospective/board/board.component').then(m => m.BoardComponent),
       },

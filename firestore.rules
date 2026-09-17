@@ -10,6 +10,12 @@ service cloud.firestore {
     match /retroGroup/{document=**} {
       allow read, write;
     }
+    match /invites/{code} {
+      // Vertreter-Freigabe-Codes: nur per bekanntem Code lesbar (get) + schreibbar. list bewusst NICHT
+      // erlaubt, damit die Codes nicht enumerierbar sind. Achtung: 'read' wuerde 'list' einschliessen
+      // (OR-Semantik) -> hier ausdruecklich nur 'get'.
+      allow get, write;
+    }
     match /user/{document=**} {
       allow read, write;
       allow list: if false;

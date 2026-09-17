@@ -92,9 +92,39 @@ export class BoardListComponent implements OnInit, OnDestroy {
       .sort((a, b) => a.group.name.localeCompare(b.group.name))),
   );
 
-  // Gruppenliste fuer die "In Gruppe verschieben"-Auswahl an den ungruppierten Board-Zeilen.
-  public sortedGroups$: Observable<RetroGroupId[]> = this.retroService.listMyGroups$.pipe(
-    map(groups => [...groups].sort((a, b) => a.name.localeCompare(b.name))),
+  // Gruppenliste fuer die "In Gruppe verschieben"-Auswahl an den ungruppierten Board-Zeilen:
+  // Vereinigung aus eigenen Gruppen UND Vertreter-Gruppen (Ticket 04) -- ein Vertreter darf sein
+  // eigenes ungruppiertes Board auch in eine Gruppe legen, in der er nur Vertreter ist. Dedupliziert
+  // nach group.id, alphabetisch nach Name sortiert.
+  public sortedGroups$: Observable<RetroGroupId[]> = combineLatest([
+    this.retroService.listMyGroups$,
+    this.retroService.listGroupsWhereDeputy$,
+  ]).pipe(
+    map(([ownGroups, deputyGroups]) => {
+      const byId = new Map<string, RetroGroupId>();
+      for (const group of [...ownGroups, ...deputyGroups]) {
+        byId.set(group.id, group);
+      }
+      return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+    }),
+  );
+
+  // Ticket 05: Gruppen, in denen der Nutzer Vertreter (NICHT Owner) ist -- eigener Abschnitt in der
+  // Uebersicht, OHNE Owner-Aktionen (Umbenennen/Loeschen/Vertreter-Verwalten) und OHNE Board-Anzahl
+  // (die Uebersicht kennt nur die eigenen Boards des Nutzers, nicht den vollstaendigen Inhalt fremder
+  // Gruppen). Dedupliziert gegen die eigenen Gruppen: eine Gruppe, die man selbst besitzt, erscheint
+  // nicht zusaetzlich im Vertreter-Abschnitt. Alphabetisch nach Name sortiert. Fuer anonyme Nutzer
+  // liefert listGroupsWhereDeputy$ bereits of([]) -> der Abschnitt bleibt leer.
+  public deputyGroupViews$: Observable<RetroGroupId[]> = combineLatest([
+    this.retroService.listGroupsWhereDeputy$,
+    this.retroService.listMyGroups$,
+  ]).pipe(
+    map(([deputyGroups, ownGroups]) => {
+      const ownIds = new Set(ownGroups.map(group => group.id));
+      return deputyGroups
+        .filter(group => !ownIds.has(group.id))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }),
   );
 
   // Normalisiert created/modified (Firestore-Timestamp mit toDate(), Date oder String) zu Millis.

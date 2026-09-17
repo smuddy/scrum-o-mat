@@ -2,8 +2,8 @@ import {Component, inject, NgZone, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Subscription, timer} from 'rxjs';
-import {distinctUntilChanged, map, shareReplay} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, Subscription, timer} from 'rxjs';
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators';
 import {CdkDrag, CdkDragDrop, CdkDragMove, CdkDropList, CdkDropListGroup} from '@angular/cdk/drag-drop';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus';
@@ -22,6 +22,7 @@ import {LoginService} from '../../login/login.service';
 import {HeaderService} from '../../../shared/header/header.service';
 import {MenuService} from '../../../shared/menu/menu.service';
 import {RetroBoardId, RetroCardId, RetroColumn} from '../models/retro';
+import {canManageBoards, isGroupOwner} from '../retro-permissions';
 import {cardListItem, cardTransition, collapse} from '../../../animation';
 import {TimerControlComponent} from './timer-control/timer-control.component';
 import {ActionItemsComponent} from './action-items/action-items.component';
@@ -131,6 +132,10 @@ export class BoardComponent implements OnDestroy {
   // Wird benoetigt, um das Seitenleisten-Menu auch bei rein lokalen Aenderungen (z.B.
   // revealTemporarily via toggleReveal()) ohne neuen Firestore-Snapshot neu aufzubauen.
   private currentOwnerBoard: RetroBoardId | null = null;
+  // Vertreter-Feature: true, wenn der aktuelle Betrachter zusaetzlich zum Board-Manager-Recht auch
+  // "Board loeschen" darf (Owner bzw. bei Boards ohne Gruppe board.ownerId) -- steuert, ob
+  // buildOwnerMenu() den Loeschen-Eintrag ueberhaupt anhaengt (siehe menuSubscription).
+  private canDeleteBoard = false;
   // Nachlaufzeit (ms), wie lange nach Ablauf des Timers "Zeit abgelaufen" noch angezeigt wird, bevor
   // die Countdown-Anzeige automatisch ausgeblendet wird (siehe deriveCountdown()/Template @collapse).
   // Rein clientseitige Anzeige-Logik, deterministisch aus board.timerEndsAt abgeleitet -- kein
@@ -150,17 +155,41 @@ export class BoardComponent implements OnDestroy {
   // statt je Subscriber einen eigenen Firestore-Listener zu oeffnen.
   private board$ = this.retroService.getBoard$(this.boardId).pipe(shareReplay({bufferSize: 1, refCount: true}));
   private cards$ = this.retroService.getCards$(this.boardId).pipe(shareReplay({bufferSize: 1, refCount: true}));
+  // Vertreter-Feature: Gruppe des Boards (nur geladen, wenn das Board eine groupId hat) -- Basis fuer
+  // die Board-Manager-Pruefung (canManageBoards) unten. Boards ohne Gruppe liefern hier immer null.
+  private group$ = this.board$.pipe(
+    switchMap(board => board?.groupId ? this.retroService.getGroup$(board.groupId) : of(null)),
+    shareReplay({bufferSize: 1, refCount: true}),
+  );
   private myUid$ = this.loginService.authStateAllowAnonymous$.pipe(map(user => user.uid));
   // Live-Bearbeitungs-Hinweis: haelt die eigene uid ausserhalb von vm$ vor, da startEdit()/cancelEdit()/
   // ngOnDestroy() (kein vm-Parameter zur Hand) sie fuer RetroService.setCardEditing() brauchen.
   private myUid = '';
   private myUidSubscription: Subscription = this.myUid$.subscribe(uid => this.myUid = uid);
-  private isOwner$ = combineLatest([this.loginService.currentUserId$(), this.board$]).pipe(
-    map(([uid, board]) => !!board && uid === board.ownerId)
+  // Vertreter-Feature: "Board-Manager" (frueher isOwner$) -- fuer Boards MIT groupId Owner ODER
+  // Vertreter der Gruppe (canManageBoards), fuer Boards OHNE Gruppe unveraendert nur board.ownerId.
+  // Das BoardView-Feld heisst weiterhin "isOwner" (siehe buildBoardView()), bedeutet aber jetzt
+  // "ist Board-Manager" -- alle bisherigen Template-Nutzungen (Karte editieren, mergen, reorder,
+  // temporaer aufdecken, Spalten bearbeiten) sind genau die Rechte, die auch der Vertreter haben soll.
+  private isManager$ = combineLatest([this.loginService.currentUserId$(), this.board$, this.group$]).pipe(
+    map(([uid, board, group]) => {
+      if (!board) return false;
+      if (board.groupId) return canManageBoards(group, uid);
+      return !!uid && uid === board.ownerId;
+    })
+  );
+  // Die vier Owner-only-Aktionen (hier: "Board loeschen") bleiben auch auf Gruppen-Boards exklusiv dem
+  // Owner vorbehalten -- der Vertreter ist zwar Board-Manager (isManager$), darf aber nicht loeschen.
+  private canDelete$ = combineLatest([this.loginService.currentUserId$(), this.board$, this.group$]).pipe(
+    map(([uid, board, group]) => {
+      if (!board) return false;
+      if (board.groupId) return isGroupOwner(group, uid);
+      return !!uid && uid === board.ownerId;
+    })
   );
 
-  public vm$: Observable<BoardView | null> = combineLatest([this.board$, this.cards$, this.myUid$, this.isOwner$, this.revealTemporarily$]).pipe(
-    map(([board, cards, myUid, isOwner]) => board ? this.buildBoardView(board, cards, myUid, isOwner) : null)
+  public vm$: Observable<BoardView | null> = combineLatest([this.board$, this.cards$, this.myUid$, this.isManager$, this.revealTemporarily$]).pipe(
+    map(([board, cards, myUid, isManager]) => board ? this.buildBoardView(board, cards, myUid, isManager) : null)
   );
 
   // Sekuendliches Ticking (Client-Uhr) fuer den Countdown, unabhaengig vom vm$-Rendering.
@@ -193,19 +222,23 @@ export class BoardComponent implements OnDestroy {
     this.headerService.setBreadcrumb(breadcrumb);
   });
 
-  // Owner-Steuerung (Ticket 19): Die frueher inline im Template gerenderten Owner-Buttons (Hide/
-  // Reveal/Timer/Loeschen) werden stattdessen in der Seitenleiste ueber den MenuService registriert.
-  // Sobald Ownership feststeht (isOwner + Board vorhanden), wird das Menu ueber buildOwnerMenu()
-  // (neu) aufgebaut -- u.a. damit Beschriftungen wie "Texte verstecken"/"Texte einblenden" synchron
-  // zum aktuellen board.hidden bleiben. Ist der Betrachter kein Owner (mehr) oder das Board weg,
-  // wird das Menu geleert. resetCustomActions() in buildOwnerMenu() verhindert Doppel-Registrierung
-  // bei jedem Board-Update.
-  private menuSubscription: Subscription = combineLatest([this.board$, this.isOwner$]).subscribe(([board, isOwner]) => {
-    if (board && isOwner) {
+  // Owner-Steuerung (Ticket 19, erweitert um Vertreter-Feature Ticket 04): Die frueher inline im
+  // Template gerenderten Owner-Buttons (Hide/Reveal/Timer/Loeschen) werden stattdessen in der
+  // Seitenleiste ueber den MenuService registriert. Sobald Board-Manager-Status feststeht (isManager$
+  // + Board vorhanden), wird das Menu ueber buildOwnerMenu() (neu) aufgebaut -- u.a. damit
+  // Beschriftungen wie "Texte verstecken"/"Texte einblenden" synchron zum aktuellen board.hidden
+  // bleiben. Ist der Betrachter kein Board-Manager (mehr) oder das Board weg, wird das Menu geleert.
+  // canDeleteBoard wird separat vorgehalten -- "Board loeschen" bleibt den vier Owner-only-Aktionen
+  // vorbehalten und erscheint daher nur fuer den echten Owner, nicht fuer den Vertreter.
+  // resetCustomActions() in buildOwnerMenu() verhindert Doppel-Registrierung bei jedem Board-Update.
+  private menuSubscription: Subscription = combineLatest([this.board$, this.isManager$, this.canDelete$]).subscribe(([board, isManager, canDelete]) => {
+    if (board && isManager) {
       this.currentOwnerBoard = board;
+      this.canDeleteBoard = canDelete;
       this.buildOwnerMenu(board);
     } else {
       this.currentOwnerBoard = null;
+      this.canDeleteBoard = false;
       this.menuService.resetCustomActions();
     }
   });
@@ -255,7 +288,11 @@ export class BoardComponent implements OnDestroy {
     // (leere votes-Map je Karte, siehe RetroService.resetVotes()). Mit Bestaetigung, da destruktiv
     // und nicht auf die eigenen Stimmen beschraenkt.
     this.menuService.addCustomAction('Votes zurücksetzen', () => this.retroService.resetVotes(this.boardId), true);
-    this.menuService.addCustomAction('Board löschen', () => this.deleteBoard(), true);
+    // Vertreter-Feature: "Board loeschen" bleibt eine der vier Owner-only-Aktionen -- der Vertreter ist
+    // zwar Board-Manager (siehe isManager$), sieht diesen Eintrag aber nicht (canDeleteBoard = false).
+    if (this.canDeleteBoard) {
+      this.menuService.addCustomAction('Board löschen', () => this.deleteBoard(), true);
+    }
   }
 
   // Ticket 18: Export als Markdown -- liest Board/Karten/Action-Items je einmalig (firstValueFrom

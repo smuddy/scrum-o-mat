@@ -3,13 +3,13 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, Router} from '@angular/router';
-import {of} from 'rxjs';
+import {firstValueFrom, of} from 'rxjs';
 
 import {BoardComponent} from './board.component';
 import {RetroService} from '../retro.service';
 import {LoginService} from '../../login/login.service';
 import {MenuService} from '../../../shared/menu/menu.service';
-import {RetroBoardId, RetroCardId, RetroColumn} from '../models/retro';
+import {RetroBoardId, RetroCardId, RetroColumn, RetroGroupId} from '../models/retro';
 import {TimerControlComponent} from './timer-control/timer-control.component';
 
 describe('BoardComponent', () => {
@@ -1286,5 +1286,119 @@ describe('BoardComponent', () => {
         expect(component.reactionPickerCardId).toBeNull();
       });
     });
+  });
+});
+
+// Vertreter-Feature (Ticket 04): eigenes TestBed-Setup (anderes Board/andere uid je Test), daher als
+// eigenstaendiges Top-Level-describe (nicht verschachtelt im "BoardComponent"-describe oben, dessen
+// aeussere beforeEach-Hooks bereits eine eigene Komponente instanziieren -- ein erneutes
+// configureTestingModule() waere dort nicht mehr moeglich).
+describe('BoardComponent - Vertreter-Feature (Ticket 04: Board-Manager-Rechte auf Gruppen-Boards)', () => {
+  const groupBoard: RetroBoardId = {
+    id: 'gboard1', ownerId: 'owner1', title: 'Gruppen-Board', columns: [], hidden: false, timerEndsAt: null,
+    created: new Date(), modified: new Date(), groupId: 'g1',
+  };
+  const soloBoard: RetroBoardId = {
+    id: 'sboard1', ownerId: 'owner1', title: 'Einzel-Board', columns: [], hidden: false, timerEndsAt: null,
+    created: new Date(), modified: new Date(),
+  };
+  const group: RetroGroupId = {
+    id: 'g1', ownerId: 'owner1', name: 'Team', created: new Date(), modified: new Date(), deputies: ['dep1'],
+  };
+
+  let component: BoardComponent;
+  let retroService: any;
+  let menuService: any;
+
+  async function setup(board: RetroBoardId, uid: string): Promise<void> {
+    retroService = {
+      getBoard$: vi.fn().mockReturnValue(of(board)),
+      getCards$: vi.fn().mockReturnValue(of([])),
+      getActionItems$: vi.fn().mockReturnValue(of([])),
+      getGroup$: vi.fn().mockReturnValue(of(group)),
+      deleteBoard: vi.fn().mockResolvedValue(undefined),
+      setHidden: vi.fn().mockResolvedValue(undefined),
+      resetVotes: vi.fn().mockResolvedValue(undefined),
+      updateColumns: vi.fn().mockResolvedValue(undefined),
+    };
+    menuService = {addCustomAction: vi.fn(), addCustomComponent: vi.fn(), resetCustomActions: vi.fn()};
+    const loginService = {
+      authStateAllowAnonymous$: of({uid}),
+      currentUserId$: vi.fn().mockReturnValue(of(uid)),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [BoardComponent, NoopAnimationsModule],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        {provide: ActivatedRoute, useValue: {snapshot: {paramMap: {get: () => board.id}}}},
+        {provide: RetroService, useValue: retroService},
+        {provide: LoginService, useValue: loginService},
+        {provide: MenuService, useValue: menuService},
+        {provide: Router, useValue: {navigateByUrl: vi.fn().mockResolvedValue(true)}},
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(BoardComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('Vertreter ist Board-Manager auf einem Gruppen-Board (BoardView.isOwner bedeutet jetzt "ist Board-Manager")', async () => {
+    await setup(groupBoard, 'dep1');
+
+    const vm = await firstValueFrom(component.vm$);
+
+    expect(vm!.isOwner).toBe(true);
+  });
+
+  it('Vertreter sieht alle Manager-Aktionen im Menu, aber NICHT "Board löschen"', async () => {
+    await setup(groupBoard, 'dep1');
+
+    expect(menuService.addCustomAction).toHaveBeenCalledWith('Texte verstecken', expect.any(Function));
+    expect(menuService.addCustomAction).toHaveBeenCalledWith('Votes zurücksetzen', expect.any(Function), true);
+    expect(menuService.addCustomAction).not.toHaveBeenCalledWith('Board löschen', expect.any(Function), true);
+  });
+
+  it('Owner sieht auf demselben Gruppen-Board zusaetzlich "Board löschen"', async () => {
+    await setup(groupBoard, 'owner1');
+
+    const vm = await firstValueFrom(component.vm$);
+
+    expect(vm!.isOwner).toBe(true);
+    expect(menuService.addCustomAction).toHaveBeenCalledWith('Board löschen', expect.any(Function), true);
+  });
+
+  it('ein fremder eingeloggter Nutzer (weder Owner noch Vertreter) ist auf dem Gruppen-Board kein Board-Manager', async () => {
+    await setup(groupBoard, 'stranger1');
+
+    const vm = await firstValueFrom(component.vm$);
+
+    expect(vm!.isOwner).toBe(false);
+    expect(menuService.addCustomAction).not.toHaveBeenCalled();
+    expect(menuService.resetCustomActions).toHaveBeenCalled();
+  });
+
+  it('Boards OHNE groupId bleiben unveraendert owner-only -- ein Vertreter einer fremden Gruppe hat dort keine Rechte', async () => {
+    await setup(soloBoard, 'dep1');
+
+    const vm = await firstValueFrom(component.vm$);
+
+    expect(vm!.isOwner).toBe(false);
+    expect(retroService.getGroup$).not.toHaveBeenCalled();
+  });
+
+  it('deleteBoard bleibt ueber den echten Owner erreichbar (der Vertreter hat den Menu-Eintrag ohnehin nicht)', async () => {
+    await setup(groupBoard, 'owner1');
+    const deleteCall = menuService.addCustomAction.mock.calls.find((call: any[]) => call[0] === 'Board löschen');
+    expect(deleteCall).toBeTruthy();
+
+    await deleteCall[1]();
+
+    expect(retroService.deleteBoard).toHaveBeenCalledWith('gboard1');
   });
 });
